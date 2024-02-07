@@ -161,7 +161,9 @@ ui <- fluidPage(
       conditionalPanel(condition = "input.tabselected==5 && input.subPanel2 == 5.1",
                        fluidRow(
                          column(width = 6, uiOutput("select_control")),
-                         column(width = 6, uiOutput("select_samples"))
+                         column(width = 6, uiOutput("select_samples")),
+                         column(width = 6, uiOutput("select_cell_type")),
+                         column(width = 6, uiOutput("column_selector2"))
                        ),
                        
       ),
@@ -262,7 +264,9 @@ ui <- fluidPage(
                              id = "subPanel2",
                              selected = "5.1",
                              tabPanel(
-                               "Graphs", value = 5.1),
+                               "Graphs", value = 5.1,
+                               dataTableOutput("ddct_data"),
+                               dataTableOutput("delta_delta_ct_table")),
                              tabPanel(
                                "Stats", value = 5.2),
                              tabPanel(

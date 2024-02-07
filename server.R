@@ -106,16 +106,7 @@ server <- function(input, output) {
         .names = "{.fn}_{.col}"
       ))
     
-    # Retrieve the saved cell type names
-    #cell_type_variables <- saved_cell_types$names
-    
-    # Make a new column that places each sample as the specified cell type
-    # df$cell_type <- ifelse(grepl(paste0("_", cell_type_variables, collapse = "|"), df$Sample), cell_type_variables,"other")
-    
-    #df$cell_type <- as.factor(df$cell_type)
-    
-    # Move column
-    #df <- data_relocate(df, select = "cell_type", after = "Sample")
+
     
     # Make a new column that places each sample as the specified cell type
     df$cell_type <- gsub(".*_(\\w+)$", "\\1", df$Sample)
@@ -226,7 +217,7 @@ server <- function(input, output) {
     rep_avg_data()
   })
   
-  # Add this inside your server function
+
   output$rep_avg_download <- downloadHandler(
     filename = function() {
       paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
@@ -571,6 +562,41 @@ server <- function(input, output) {
     selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell_line), multiple = T)
   })
   
+  output$column_selector2 <- renderUI({
+    req(wrangled_data())
+    
+    # Filter column names to include only those starting with "dct"
+    dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
+
+    # Generate selectInput for choosing the column dynamically
+    selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
+  })
+  
+  ddct_filtered_data <- reactive({
+    req(wrangled_data())
+    req(input$select_gene)
+    
+    cell_type2 <- input$select_cell_type
+    control <- input$select_control
+    samples <- input$select_samples
+    selected_gene <- input$select_gene
+    
+    ddct_data <- wrangled_data() %>% 
+      filter((cell_line == control) | (cell_line %in% samples)) %>% 
+      filter(cell_type == cell_type2) %>%
+      select(cell_line, cell_type, all_of(selected_gene))
+
+    
+    return(ddct_data)
+  })
+  
+  output$ddct_data <- renderDataTable({
+    req(ddct_filtered_data())
+    ddct_filtered_data()
+  })
+  
+
+
   
   
 }
