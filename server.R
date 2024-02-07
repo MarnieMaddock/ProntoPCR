@@ -290,8 +290,6 @@ server <- function(input, output) {
   })
   
   
-  
-  
   # Get the color scheme based on user input
   color_schemes <- reactiveValues(
     colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
@@ -556,6 +554,11 @@ server <- function(input, output) {
   #
   #
   #
+  output$select_cell_type <- renderUI({
+    req(wrangled_data())
+    selectInput("select_cell_type", "Select Cell Type", choices = unique(wrangled_data()$cell_type))
+  })
+  
   output$select_control <- renderUI({
     req(wrangled_data())  # Ensure data is available
     

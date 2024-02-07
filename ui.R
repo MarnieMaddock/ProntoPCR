@@ -71,11 +71,18 @@ ui <- fluidPage(
                        tags$br(),
                        textOutput("text2")),
       conditionalPanel(condition = "input.tabselected==3",
+                       h6("Note: This step will not work if there is a Sample that has two measurements of the same target. Everything must be unique."),
+                       h6("Ensure that each sample has all housekeeper gene measurements (i.e. there are no missing values), or risk plotting the wrong data points."),
+                       tags$br(),
                        helpText("mean_hk: Calculates the mean of the houskeepers you insterted in the input data tab."),
+                       tags$br(),
                        helpText("dct_genename: Calculates the difference between the Ct value of your gene and the average of your housekeepers i.e. ΔCt = Ct (gene of interest) – Ct (housekeeping gene)."),
+                       tags$br(),
                        helpText("fc_dct_genename: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2^-(ΔCt)."),
+                       tags$br(),
                        helpText("Note: 2^-(∆∆Ct) will be performed in the ∆∆Ct tab upon following the instructions."),
-                       tags$style(HTML(".custom-break { height: 450px; }")),
+                       tags$br(),
+                       tags$style(HTML(".custom-break { height: 300px; }")),
                        tags$br(),
                        tags$div(class = "custom-break"),
                        uiOutput("cell_type_filter")
@@ -83,7 +90,7 @@ ui <- fluidPage(
       ),
       conditionalPanel(condition = "input.tabselected==5",
       ),
-      conditionalPanel(condition = "input.tabselected==4",
+      conditionalPanel(condition = "input.tabselected == 4 && input.subPanel == 4.1",
                        h5(HTML("<b>Create Graph</b>")),
                        fluidRow(
                          column(width = 6, uiOutput("cell_type_selector")),
@@ -151,7 +158,7 @@ ui <- fluidPage(
                        tags$br(),
                        tags$br()
       ),
-      conditionalPanel(condition = "input.tabselected==6",
+      conditionalPanel(condition = "input.tabselected==5 && input.subPanel2 == 5.1",
                        fluidRow(
                          column(width = 6, uiOutput("select_control")),
                          column(width = 6, uiOutput("select_samples"))
@@ -163,85 +170,106 @@ ui <- fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-      
-      tabsetPanel(type = "tabs", id = "tabselected", selected = 1, # Default tab selected is 1
-                  tabPanel("About", textOutput("about"), value = 1),
-                  tabPanel("Input Data", textOutput("inputdata"), value = 2,
-                           tags$img(src = "table.png", height = 400, width = 600),
+      tabsetPanel(
+        type = "tabs", 
+        id = "tabselected", 
+        selected = 1, # Default tab selected is 1
+        tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1),
+        tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table.png", height = 400, width = 600),
                            # Display uploaded data using DataTable
                            dataTableOutput("table"),
                            tags$br(),
                            tags$br()
                   ),
                   #Calculations tab
-                  tabPanel("Calculations", value = 3,
-                           h4(HTML("<b>Reformat the data, average the houskeeping genes and perform ∆Ct and 2^-∆Ct</b>")),
-                           h6("Note: This step will not work if there is a Sample that has two measurements of the same target. Everything must be unique."),
-                           h6("Ensure that each sample has all housekeeper gene measurements (i.e. there are no missing values)"),
-                           tags$br(),
-                           dataTableOutput("calculations_table"),
-                           # Add this inside your UI, preferably in the "Calculations" tabPanel
-                           downloadButton("downloadData", "Download Processed Data"),
+        tabPanel("Calculations", value = 3,
+                 tabsetPanel(
+                   id = "CalcSubPanel",
+                   selected = 3.1,
+                   tabPanel("All Data", value = 3.1,
+                     h4(HTML("<b>Reformat the data, average the houskeeping genes and perform ∆Ct and 2^-∆Ct</b>")),
+                     tags$br(),
+                     dataTableOutput("calculations_table"),
+                     # Add this inside your UI, preferably in the "Calculations" tabPanel
+                     downloadButton("downloadData", "Download Processed Data"),
+                     tags$br(),
+                     tags$br(),
+                     h4(HTML("<b>Filter by Cell Type</b>")),
+                     dataTableOutput("filtered_table"),
+                     downloadButton("downloadFilteredData", "Download Filtered Data"),
+                     tags$br(),
+                     tags$br(),
+                   ),
+                   tabPanel("Biological Replicate Data", value = 3.2,
+                            h4(HTML("<b>Biological Replicate Average Values</b>")),
+                            tags$br(),
+                            dataTableOutput("rep_avg_table"),
+                            downloadButton("rep_avg_download", "Download Replicate Average Data"),
+                            tags$br(),
+                            h4(HTML("<b>Filter by Cell Type</b>")),
+                            dataTableOutput("rep_avg_filtered_table"),
+                            downloadButton("rep_avg_filtered_download", "Download Filtered Replicate Average Data"),
+                            tags$br(),
+                            tags$br())
+                 )
+                 ),
                            
-                           tags$br(),
-                           tags$br(),
-                           h4(HTML("<b>Filter by Cell Type</b>")),
-                           dataTableOutput("filtered_table"),
-                           downloadButton("downloadFilteredData", "Download Filtered Data"),
-                           tags$br(),
-                           tags$br(),
-                           h4(HTML("<b>Biological Replicate Average Values</b>")),
-                           tags$br(),
-                           dataTableOutput("rep_avg_table"),
-                           downloadButton("rep_avg_download", "Download Replicate Average Data"),
-                           tags$br(),
-                           h4(HTML("<b>Filter by Cell Type</b>")),
-                           dataTableOutput("rep_avg_filtered_table"),
-                           downloadButton("rep_avg_filtered_download", "Download Filtered Replicate Average Data"),
-                           tags$br(),
-                           tags$br()),
-                  tabPanel("2^-(∆Ct) Graphs", value = 4,
-                           div(
-                             # Add a plot
-                             plotOutput("plot"),
-                             tags$br(),
-                             tags$br(),
-                             tags$br(),
-                             tags$br(),
-                             tags$br(),
-                             h4(HTML("Download Graph")),
-                             h6("SVG graphs are editable in illustrator, inkscape etc."),
-                             fluidRow(
-                               column(4,
-                                      selectInput("file_format", "Choose File Format:",
-                                                  choices = c("svg", "png", "jpeg", "tiff"),
-                                                  selected = "svg")
-                               ),
-                               column(4,
-                                      numericInput("dpi", "DPI:", 500)
-                               ),
-                               column(2, 
-                                      numericInput("width", "Width (inches):", 8)
-                               ),
-                               column(2,
-                                      numericInput("height", "Height (inches):", 5)
-                               ),
-                               column(12,
-                                      # Add a download button
-                                      downloadButton("downloadGraph", "Download Graph")
-                               )
-                             )
-                           ),
-                           tags$br(),
-                           tags$br()
+        tabPanel("2^-(∆Ct)", value = 4,
+         tabsetPanel(
+           id = "subPanel", 
+           selected = 4.1,
+           tabPanel("Graphs", value = 4.1,
+                                      div(
+                                        # Add a plot
+                                        plotOutput("plot"),
+                                        tags$br(),
+                                        tags$br(),
+                                        tags$br(),
+                                        tags$br(),
+                                        tags$br(),
+                                        h4(HTML("Download Graph")),
+                                        h6("SVG graphs are editable in illustrator, inkscape etc."),
+                                        fluidRow(
+                                          column(4,
+                                                 selectInput("file_format", "Choose File Format:",
+                                                             choices = c("svg", "png", "jpeg", "tiff"),
+                                                             selected = "svg")
+                                          ),
+                                          column(4,
+                                                 numericInput("dpi", "DPI:", 500)
+                                          ),
+                                          column(2, 
+                                                 numericInput("width", "Width (inches):", 8)
+                                          ),
+                                          column(2,
+                                                 numericInput("height", "Height (inches):", 5)
+                                          ),
+                                          column(12,
+                                                 # Add a download button
+                                                 downloadButton("downloadGraph", "Download Graph")
+                                          )
+                                        )
+                                      ),
+                                      tags$br(),
+                                      tags$br()),
+          tabPanel("Stats", value = 4.2),
+          tabPanel("Graphs & Stats", value = 4.3)
+                           )
                   ),
                   
-                  
-                  tabPanel("2^-(∆Ct) Statistics", value = 5,
-                  ),
-                  tabPanel("2^-(∆∆Ct)", value = 6,),
-                  tabPanel("2^-(∆∆Ct) Graphs", value = 7),
-                  tabPanel("2^-(∆∆Ct) Statistics", value = 8)
+                  tabPanel("2^-(∆∆Ct)", value = 5,
+                           tabsetPanel(
+                             id = "subPanel2",
+                             selected = "5.1",
+                             tabPanel(
+                               "Graphs", value = 5.1),
+                             tabPanel(
+                               "Stats", value = 5.2),
+                             tabPanel(
+                               "Graphs & Stats", value = 5.3)
+                           )
+                  )
+
       )
     )
   )
