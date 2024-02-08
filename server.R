@@ -604,12 +604,6 @@ server <- function(input, output) {
     selected_gene2 <- input$select_gene
     control2 <- input$select_control
     
-    # Calculate the average delta ct for the selected gene in the control samples
-    # avg_dct_ctrl <- ddct_filtered_data() %>%
-    #   group_by(cell_line, cell_type) %>%
-    #   summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE),  .groups = "drop") %>%
-    #   mutate(cell_type = cell_type3, cell_line = control2) %>%
-    #   left_join(ddct_filtered_data(), by = c("cell_type", "cell_line"))
     
     # Calculate the average delta ct for the selected gene in the control samples
     avg_dct_ctrl <- ddct_filtered_data() %>%
