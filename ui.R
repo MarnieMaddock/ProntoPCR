@@ -262,15 +262,18 @@ ui <- fluidPage(
                   tabPanel("2^-(∆∆Ct)", value = 5,
                            tabsetPanel(
                              id = "subPanel2",
-                             selected = "5.1",
+                             selected = 5.1,
                              tabPanel(
-                               "Graphs", value = 5.1,
+                               "Calculations", value = 5.1,
                                dataTableOutput("ddct_data"),
-                               dataTableOutput("delta_delta_ct_table")),
+                               dataTableOutput("avg_dct")),
                              tabPanel(
-                               "Stats", value = 5.2),
+                               "Graphs", value = 5.2),
                              tabPanel(
-                               "Graphs & Stats", value = 5.3)
+                               "Stats", value = 5.3),
+                             tabPanel(
+                               "Graphs & Stats", value = 5.4
+                             )
                            )
                   )
 

@@ -595,9 +595,45 @@ server <- function(input, output) {
     ddct_filtered_data()
   })
   
-
+  average_dct <- reactive({
+    req(wrangled_data())
+    req(input$select_gene)
+    req(input$select_control)
+    
+    cell_type3 <- input$select_cell_type
+    selected_gene2 <- input$select_gene
+    control2 <- input$select_control
+    
+    # Calculate the average delta ct for the selected gene in the control samples
+    # avg_dct_ctrl <- ddct_filtered_data() %>%
+    #   group_by(cell_line, cell_type) %>%
+    #   summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE),  .groups = "drop") %>%
+    #   mutate(cell_type = cell_type3, cell_line = control2) %>%
+    #   left_join(ddct_filtered_data(), by = c("cell_type", "cell_line"))
+    
+    # Calculate the average delta ct for the selected gene in the control samples
+    avg_dct_ctrl <- ddct_filtered_data() %>%
+      filter(cell_line == control2) %>%
+      group_by(cell_line, cell_type) %>%
+      summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
+    
+    # Left join the original dataframe with the summarised dataframe
+    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
+    
+    # Conditionally assign dct_ctrl_avg values
+    avg_dct_ctrl <- avg_dct_ctrl %>%
+      mutate(dct_ctrl_avg = if_else(is.na(dct_ctrl_avg), NA_real_, dct_ctrl_avg))
+    
+    return(avg_dct_ctrl)
+    
+    
+  })
 
   
+  output$avg_dct <- renderDataTable({
+    req(average_dct())
+    average_dct()
+  })
   
 }
 
