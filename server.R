@@ -1,7 +1,30 @@
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-  
+  theme_Marnie <- theme(axis.line.y = element_line(colour = "black", linewidth = 0.9),
+                        axis.line.x = element_line(colour = "black", linewidth = 0.9),
+                        panel.grid.minor = element_blank(),
+                        panel.background = element_rect(fill = "white"),
+                        panel.border = element_blank(),
+                        axis.title.x = element_text(size = 16, margin = margin(5,0,0,0)),
+                        axis.title.y = element_text(size =16, margin = margin(0,10,0,0)),
+                        axis.text = element_text(size = 16, colour = "black"),
+                        axis.text.x = element_text(margin = margin(t=5), size=14),
+                        axis.text.y = element_text(size=14),
+                        plot.title = element_text(size = 32, hjust = 0), # legend.position = c(0.8, 0.8) 
+                        legend.position  = "right",
+                        legend.key.size = unit(0.4, "cm"),
+                        legend.text = element_text(size = 12),
+                        legend.text.align = 0,
+                        legend.title = element_text(face = "bold", size = 14),
+                        legend.title.align = 0.5,
+                        legend.key.width = unit(0.4,"cm"),
+                        #legend.title = element_blank(),
+                        legend.key = element_rect(fill = NA, colour = NA),
+                        strip.text = element_text(size = 16, face = "bold"),
+                        strip.background = element_rect(colour = "black"),
+                        panel.spacing = unit(0, "lines")
+  )
   # Reactive values to store housekeeper names and numeric input value
   housekeepers_names <- reactiveValues()
   
@@ -595,39 +618,108 @@ server <- function(input, output) {
     ddct_filtered_data()
   })
   
-  average_dct <- reactive({
+#DELTADELTA 
+  #
+  #
+  #
+  output$select_cell_type <- renderUI({
+    req(wrangled_data())
+    selectInput("select_cell_type", "Select Cell Type", choices = unique(wrangled_data()$cell_type))
+  })
+  
+  output$select_control <- renderUI({
+    req(wrangled_data())  # Ensure data is available
+    
+    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$cell_line))
+  })
+  
+  output$select_samples <- renderUI({
+    req(wrangled_data())  # Ensure data is available
+    
+    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell_line), multiple = T)
+  })
+  
+  output$column_selector2 <- renderUI({
+    req(wrangled_data())
+    
+    # Filter column names to include only those starting with "dct"
+    dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
+
+    # Generate selectInput for choosing the column dynamically
+    selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
+  })
+  
+  ddct_filtered_data <- reactive({
     req(wrangled_data())
     req(input$select_gene)
-    req(input$select_control)
     
-    cell_type3 <- input$select_cell_type
-    selected_gene2 <- input$select_gene
-    control2 <- input$select_control
+    cell_type2 <- input$select_cell_type
+    control <- input$select_control
+    samples <- input$select_samples
+    selected_gene <- input$select_gene
     
+    ddct_data <- wrangled_data() %>% 
+      filter((cell_line == control) | (cell_line %in% samples)) %>% 
+      filter(cell_type == cell_type2) %>%
+      select(cell_line, cell_type, all_of(selected_gene))
+
     
+    return(ddct_data)
+  })
+
+  
+
+    
+  mean_value <- reactiveVal(NULL)
     # Calculate the average delta ct for the selected gene in the control samples
-    avg_dct_ctrl <- ddct_filtered_data() %>%
-      filter(cell_line == control2) %>%
-      group_by(cell_line, cell_type) %>%
-      summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
-    
-    # Left join the original dataframe with the summarised dataframe
-    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
-    
-    # Conditionally assign dct_ctrl_avg values
-    avg_dct_ctrl <- avg_dct_ctrl %>%
-      mutate(dct_ctrl_avg = if_else(is.na(dct_ctrl_avg), NA_real_, dct_ctrl_avg))
-    
+    average_dct <- reactive({
+      req(wrangled_data())
+      req(input$select_gene)
+      req(input$select_control)
+      
+      cell_type3 <- input$select_cell_type
+      selected_gene2 <- input$select_gene
+      control2 <- input$select_control
+      
+      
+      # Calculate the average delta ct for the selected gene in the control samples
+      avg_dct_ctrl <- ddct_filtered_data() %>%
+        filter(cell_line == control2) %>%
+        group_by(cell_line, cell_type) %>%
+        summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
+      
+      # Left join the original dataframe with the summarised dataframe
+      avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
+
+      # Calculate the mean value
+      mean_val <- mean(avg_dct_ctrl$dct_ctrl_avg, na.rm = TRUE)
+      
+      # Store the mean value in the reactive value
+      mean_value(mean_val)
+      
+      # Assign the mean value to the entire dct_ctrl_avg column
+      avg_dct_ctrl$dct_ctrl_avg <- mean_val
+      
+      # Create a new column ddct by subtracting selected_gene2 from dct_ctrl_avg
+      avg_dct_ctrl$ddct <- avg_dct_ctrl$dct_ctrl_avg - avg_dct_ctrl[[selected_gene2]]
+
+      # Create a new column fc_ddct containing 2^(-ddct)
+      avg_dct_ctrl$fc_ddct <- 2^(-avg_dct_ctrl$ddct)
+      
     return(avg_dct_ctrl)
     
     
   })
 
   
-  output$avg_dct <- renderDataTable({
+  output$ddct_data <- renderDataTable({
     req(average_dct())
     average_dct()
   })
+  
+  
+  #GRAPH DDCT,
+  
   
 }
 
