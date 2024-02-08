@@ -131,19 +131,19 @@ server <- function(input, output) {
     
     
     
-    # Make a new column that places each sample as the specified cell type
-    df$cell_type <- gsub(".*_(\\w+)$", "\\1", df$Sample)
-    df$cell_type <- as.factor(df$cell_type)
-    #Add cell_line data
-    df$cell_line <- sub("^([A-Za-z0-9]+)_.*", "\\1", df$Sample)
-    df$cell_line <- as.factor(df$cell_line)
+    # Make a new column that places each sample as the specified condition
+    df$condition <- gsub(".*_(\\w+)$", "\\1", df$Sample)
+    df$condition <- as.factor(df$condition)
+    #Add group data
+    df$group <- sub("^([A-Za-z0-9]+)_.*", "\\1", df$Sample)
+    df$group <- as.factor(df$group)
     #add combined
-    df$cell <- paste(df$cell_type, df$cell_line, sep = "_")
+    df$cell <- paste(df$condition, df$group, sep = "_")
     df$cell <- as.factor(df$cell)
     #Move column
-    df <- data_relocate(df, select = "cell_line", after = "Sample")
-    df <- data_relocate(df, select = "cell_type", after = "Sample")
-    df <- data_relocate(df, select = "cell", after = "cell_line")
+    df <- data_relocate(df, select = "group", after = "Sample")
+    df <- data_relocate(df, select = "condition", after = "Sample")
+    df <- data_relocate(df, select = "cell", after = "group")
     
     return(df)
   })
@@ -164,22 +164,22 @@ server <- function(input, output) {
     }
   )
   
-  output$cell_type_filter <- renderUI({
+  output$condition_filter <- renderUI({
     req(wrangled_data())  # Ensure data is available
-    cell_types <- unique(wrangled_data()$cell_type)
+    conditions <- unique(wrangled_data()$condition)
     
-    selectInput("cell_type", "Select Cell Type", choices = cell_types)
+    selectInput("condition", "Select Condition", choices = conditions)
   })
   
   
   
   filtered_data <- reactive({
     req(wrangled_data())
-    cell_types_to_filter <- input$cell_type
+    conditions_to_filter <- input$condition
     
-    if (!is.null(cell_types_to_filter)) {
+    if (!is.null(conditions_to_filter)) {
       filtered_data <- wrangled_data() %>%
-        filter(cell_type %in% cell_types_to_filter)
+        filter(condition %in% conditions_to_filter)
       return(filtered_data)
     } else {
       return(NULL)
@@ -193,9 +193,9 @@ server <- function(input, output) {
   
   output$downloadFilteredData <- downloadHandler(
     filename = function() {
-      cell_type <- input$cell_type
-      if (!is.null(cell_type)) {
-        paste("processed_PCR_data_", cell_type, "_", Sys.Date(), ".csv", sep = "")
+      condition <- input$condition
+      if (!is.null(condition)) {
+        paste("processed_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
       } else {
         paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
       }
@@ -215,9 +215,9 @@ server <- function(input, output) {
     
     # Now, the 'vars' object contains the desired column names
     rep_avg <- wrangled_data() %>%
-      group_by(cell_type, cell_line) %>%
+      group_by(condition, group) %>%
       summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
-      gather(key = "Variable", value = "fc_avg", -cell_type, -cell_line)
+      gather(key = "Variable", value = "fc_avg", -condition, -group)
     
     rep_avg <- rep_avg %>% 
       pivot_wider(names_from = Variable, values_from = fc_avg)
@@ -226,10 +226,10 @@ server <- function(input, output) {
     colnames(rep_avg) <- sub("_fc_avg$", "", colnames(rep_avg))
     
     #add column cell
-    rep_avg$cell <- paste(rep_avg$cell_type, rep_avg$cell_line, sep = "_")
+    rep_avg$cell <- paste(rep_avg$condition, rep_avg$group, sep = "_")
     rep_avg$cell <- as.factor(rep_avg$cell)
     #Move column
-    rep_avg <- data_relocate(rep_avg, select = "cell", after = "cell_line")
+    rep_avg <- data_relocate(rep_avg, select = "cell", after = "group")
     
     return(rep_avg)
   })
@@ -257,11 +257,11 @@ server <- function(input, output) {
   
   filtered_rep_avg_data <- reactive({
     req(rep_avg_data())
-    cell_types_to_filter <- input$cell_type
+    conditions_to_filter <- input$condition
     
-    if (!is.null(cell_types_to_filter)) {
+    if (!is.null(conditions_to_filter)) {
       filtered_data <- rep_avg_data() %>%
-        filter(cell_type %in% cell_types_to_filter)
+        filter(condition %in% conditions_to_filter)
       return(filtered_data)
     } else {
       return(NULL)
@@ -270,9 +270,9 @@ server <- function(input, output) {
   
   output$rep_avg_filtered_download <- downloadHandler(
     filename = function() {
-      cell_type <- input$cell_type
-      if (!is.null(cell_type)) {
-        paste("Replicate_avg_data_", cell_type, "_filtered_", Sys.Date(), ".csv", sep = "")
+      condition <- input$condition
+      if (!is.null(condition)) {
+        paste("Replicate_avg_data_", condition, "_filtered_", Sys.Date(), ".csv", sep = "")
       } else {
         paste("Replicate_avg_data_filtered_", Sys.Date(), ".csv", sep = "")
       }
@@ -284,12 +284,12 @@ server <- function(input, output) {
   
   
   #GRAPHING
-  # Render the dynamic selectInput for choosing cell type
-  output$cell_type_selector <- renderUI({
+  # Render the dynamic selectInput for choosing condition
+  output$condition_selector <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    # Generate selectInput for choosing the cell type dynamically
-    selectInput("selected_cell_type", "Select Cell Type to Graph", choices = unique(wrangled_data()$cell_type),
+    # Generate selectInput for choosing the condition dynamically
+    selectInput("selected_condition", "Select Condition to Graph", choices = unique(wrangled_data()$condition),
                 multiple = TRUE)
   })
   
@@ -399,30 +399,30 @@ server <- function(input, output) {
   
   # Reactive function for ggplot
   output$plot <- renderPlot({
-    req(wrangled_data(), input$column, input$selected_cell_type, input$y_label, input$x_label)
+    req(wrangled_data(), input$column, input$selected_condition, input$y_label, input$x_label)
     set.seed(input$seed_input)
     
     # Specify the y_aes based on user input
     y_aes <- sym(input$column)
     
-    # Filter data based on the selected cell type
+    # Filter data based on the selected condition
     filtered_data2 <- wrangled_data() %>%
-      filter(cell_type %in% input$selected_cell_type)
+      filter(condition %in% input$selected_condition)
     
-    # Filter rep_avg_data based on the selected cell type
+    # Filter rep_avg_data based on the selected condition
     filtered_rep_avg_data2 <- rep_avg_data() %>%
-      filter(cell_type %in% input$selected_cell_type)
+      filter(condition %in% input$selected_condition)
     
-    # Determine the x aesthetic based on the number of selected cell types
-    x_aes <- if (length(input$selected_cell_type) >= 2) {
+    # Determine the x aesthetic based on the number of selected conditions
+    x_aes <- if (length(input$selected_condition) >= 2) {
       sym("cell")
     } else {
-      sym("cell_line")
+      sym("group")
     }
     
     
     
-    positions <- if (length(input$selected_cell_type) >= 2) {
+    positions <- if (length(input$selected_condition) >= 2) {
       # Parse positions if user entered them, or use unique values from "cell" column
       if (!is.null(input$x_axis_positions)) {
         unlist(strsplit(input$x_axis_positions, ","))
@@ -568,21 +568,21 @@ server <- function(input, output) {
   #
   #
   #
-  output$select_cell_type <- renderUI({
+  output$select_condition <- renderUI({
     req(wrangled_data())
-    selectInput("select_cell_type", "Select Cell Type", choices = unique(wrangled_data()$cell_type))
+    selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
   })
   
   output$select_control <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$cell_line))
+    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$group))
   })
   
   output$select_samples <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell_line), multiple = T)
+    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$group), multiple = T)
   })
   
   output$column_selector2 <- renderUI({
@@ -599,15 +599,15 @@ server <- function(input, output) {
     req(wrangled_data())
     req(input$select_gene)
     
-    cell_type2 <- input$select_cell_type
+    condition2 <- input$select_condition
     control <- input$select_control
     samples <- input$select_samples
     selected_gene <- input$select_gene
     
     ddct_data <- wrangled_data() %>% 
-      filter((cell_line == control) | (cell_line %in% samples)) %>% 
-      filter(cell_type == cell_type2) %>%
-      select(cell_line, cell_type, all_of(selected_gene))
+      filter((group == control) | (group %in% samples)) %>% 
+      filter(condition == condition2) %>%
+      select(group, condition, all_of(selected_gene))
     
     
     return(ddct_data)
@@ -622,21 +622,21 @@ server <- function(input, output) {
   #
   #
   #
-  output$select_cell_type <- renderUI({
+  output$select_condition <- renderUI({
     req(wrangled_data())
-    selectInput("select_cell_type", "Select Cell Type", choices = unique(wrangled_data()$cell_type))
+    selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
   })
   
   output$select_control <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$cell_line))
+    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$group))
   })
   
   output$select_samples <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell_line), multiple = T)
+    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$group), multiple = T)
   })
   
   output$column_selector2 <- renderUI({
@@ -653,15 +653,15 @@ server <- function(input, output) {
     req(wrangled_data())
     req(input$select_gene)
     
-    cell_type2 <- input$select_cell_type
+    condition2 <- input$select_condition
     control <- input$select_control
     samples <- input$select_samples
     selected_gene <- input$select_gene
     
     ddct_data <- wrangled_data() %>% 
-      filter((cell_line == control) | (cell_line %in% samples)) %>% 
-      filter(cell_type == cell_type2) %>%
-      select(cell_line, cell_type, all_of(selected_gene))
+      filter((group == control) | (group %in% samples)) %>% 
+      filter(condition == condition2) %>%
+      select(group, condition, all_of(selected_gene))
     
     
     return(ddct_data)
@@ -677,19 +677,19 @@ server <- function(input, output) {
     req(input$select_gene)
     req(input$select_control)
     
-    cell_type3 <- input$select_cell_type
+    condition3 <- input$select_condition
     selected_gene2 <- input$select_gene
     control2 <- input$select_control
     
     
     # Calculate the average delta ct for the selected gene in the control samples
     avg_dct_ctrl <- ddct_filtered_data() %>%
-      filter(cell_line == control2) %>%
-      group_by(cell_line, cell_type) %>%
+      filter(group == control2) %>%
+      group_by(group, condition) %>%
       summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
     
     # Left join the original dataframe with the summarised dataframe
-    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
+    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("group", "condition"))
     
     # Calculate the mean value
     mean_val <- mean(avg_dct_ctrl$dct_ctrl_avg, na.rm = TRUE)

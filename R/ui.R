@@ -46,7 +46,7 @@ ui <- fluidPage(
                        textOutput("text1"), verbatimTextOutput("saved_variables"),
                        tags$br(),
                        textOutput("text2")),
-      conditionalPanel(condition = "input.tabselected==3",
+      conditionalPanel(condition = "input.tabselected== 3 && input.subPanel == 3.1",
                        h6("Note: This step will not work if there is a Sample that has two measurements of the same target. Everything must be unique."),
                        h6("Ensure that each sample has all housekeeper gene measurements (i.e. there are no missing values), or risk plotting the wrong data points."),
                        tags$br(),
@@ -54,30 +54,28 @@ ui <- fluidPage(
                        tags$br(),
                        helpText("dct_genename: Calculates the difference between the Ct value of your gene and the average of your housekeepers i.e. ΔCt = Ct (gene of interest) – Ct (housekeeping gene)."),
                        tags$br(),
-                       helpText("fc_dct_genename: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2^-(ΔCt)."),
+                       helpText(HTML("fc_dct_genename: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2<sup>-(ΔCt)</sup>.")),
                        tags$br(),
-                       helpText("Note: 2^-(∆∆Ct) will be performed in the ∆∆Ct tab upon following the instructions."),
+                       helpText(HTML("Note: 2<sup>-(∆∆Ct)</sup> will be performed in the ∆∆Ct tab upon following the instructions.")),
                        tags$br(),
                        tags$style(HTML(".custom-break { height: 300px; }")),
                        tags$br(),
                        tags$div(class = "custom-break"),
-                       uiOutput("cell_type_filter")
+                       uiOutput("condition_filter")
                        
       ),
-      conditionalPanel(condition = "input.tabselected==5",
-      ),
-      conditionalPanel(condition = "input.tabselected == 4 && input.subPanel == 4.1",
+      conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2",
                        h5(HTML("<b>Create Graph</b>")),
                        fluidRow(
-                         column(width = 6, uiOutput("cell_type_selector")),
+                         column(width = 6, uiOutput("condition_selector")),
                          column(width = 6, uiOutput("column_selector"))
                        ),
                        textInput("x_axis_positions", "Enter the order to display X-Axis categories (comma-separated):", placeholder = "e.g., untreated,treated"),
-                       helpText("Ensure spelling is exactly as it is entered in the cell_line column. Do NOT use spaces."),
+                       helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces."),
                        h5(HTML("<b>Customise Graph</b>")),
                        # Add textInputs for custom Y-axis and X-axis labels
                        textInput("y_label", "Enter Y-axis Label", value = "Relative GENE NAME mRNA (2^-ΔCq)"),
-                       textInput("x_label", "Enter X-axis Label", value = "Cell Line"),
+                       textInput("x_label", "Enter X-axis Label", value = "Group"),
                        selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
                        fluidRow(
                          column(
@@ -127,18 +125,18 @@ ui <- fluidPage(
                                      selected = "fill"))
                        
       ),
-      conditionalPanel(condition = "input.tabselected==4 && input.plot_type == 'dot'",
+      conditionalPanel(condition = "input.tabselected== 3 && input.plot_type == 'dot'",
                        numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1),
                        numericInput("seed_input", "Set Seed:", value = 123),
                        helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
                        tags$br(),
                        tags$br()
       ),
-      conditionalPanel(condition = "input.tabselected==5 && input.subPanel2 == 5.1",
+      conditionalPanel(condition = "input.tabselected== 4 && input.subPanel2 == 4.1",
                        fluidRow(
                          column(width = 6, uiOutput("select_control")),
                          column(width = 6, uiOutput("select_samples")),
-                         column(width = 6, uiOutput("select_cell_type")),
+                         column(width = 6, uiOutput("select_condition")),
                          column(width = 6, uiOutput("column_selector2"))
                        ),
                        
@@ -160,43 +158,42 @@ ui <- fluidPage(
                  tags$br()
         ),
         #Calculations tab
-        tabPanel("Calculations", value = 3,
-                 tabsetPanel(
-                   id = "CalcSubPanel",
-                   selected = 3.1,
-                   tabPanel("All Data", value = 3.1,
-                            h4(HTML("<b>Reformat the data, average the houskeeping genes and perform ∆Ct and 2^-∆Ct</b>")),
-                            tags$br(),
-                            dataTableOutput("calculations_table"),
-                            # Add this inside your UI, preferably in the "Calculations" tabPanel
-                            downloadButton("downloadData", "Download Processed Data"),
-                            tags$br(),
-                            tags$br(),
-                            h4(HTML("<b>Filter by Cell Type</b>")),
-                            dataTableOutput("filtered_table"),
-                            downloadButton("downloadFilteredData", "Download Filtered Data"),
-                            tags$br(),
-                            tags$br(),
-                   ),
-                   tabPanel("Biological Replicate Data", value = 3.2,
-                            h4(HTML("<b>Biological Replicate Average Values</b>")),
-                            tags$br(),
-                            dataTableOutput("rep_avg_table"),
-                            downloadButton("rep_avg_download", "Download Replicate Average Data"),
-                            tags$br(),
-                            h4(HTML("<b>Filter by Cell Type</b>")),
-                            dataTableOutput("rep_avg_filtered_table"),
-                            downloadButton("rep_avg_filtered_download", "Download Filtered Replicate Average Data"),
-                            tags$br(),
-                            tags$br())
-                 )
-        ),
         
-        tabPanel("2^-(∆Ct)", value = 4,
+        tabPanel(HTML("2<sup>-(∆Ct)</sup>"), value = 3,
                  tabsetPanel(
                    id = "subPanel", 
-                   selected = 4.1,
-                   tabPanel("Graphs", value = 4.1,
+                   selected = 3.1,
+                   tabPanel("Calculations", value = 3.1,
+                            tabsetPanel(
+                              id = "CalcSubPanel",
+                              selected = 3.1,
+                              tabPanel("All Data", value = 3.1,
+                                       h4(HTML("<b>Average the houskeeping genes and perform ∆Ct and 2<sup>-∆Ct</sup></b>")),
+                                       tags$br(),
+                                       dataTableOutput("calculations_table"),
+                                       # Add this inside your UI, preferably in the "Calculations" tabPanel
+                                       downloadButton("downloadData", "Download Processed Data"),
+                                       tags$br(),
+                                       tags$br(),
+                                       h4(HTML("<b>Filter by Condition</b>")),
+                                       dataTableOutput("filtered_table"),
+                                       downloadButton("downloadFilteredData", "Download Filtered Data"),
+                                       tags$br(),
+                                       tags$br(),
+                              ),
+                              tabPanel("Biological Replicate Data", value = 3.2,
+                                       h4(HTML("<b>Biological Replicate Average Values</b>")),
+                                       tags$br(),
+                                       dataTableOutput("rep_avg_table"),
+                                       downloadButton("rep_avg_download", "Download Replicate Average Data"),
+                                       tags$br(),
+                                       h4(HTML("<b>Filter by Condition</b>")),
+                                       dataTableOutput("rep_avg_filtered_table"),
+                                       downloadButton("rep_avg_filtered_download", "Download Filtered Replicate Average Data"),
+                                       tags$br(),
+                                       tags$br())
+                            )),
+                   tabPanel("Graphs", value = 3.2,
                             div(
                               # Add a plot
                               plotOutput("plot"),
@@ -230,25 +227,25 @@ ui <- fluidPage(
                             ),
                             tags$br(),
                             tags$br()),
-                   tabPanel("Stats", value = 4.2),
-                   tabPanel("Graphs & Stats", value = 4.3)
+                   tabPanel("Stats", value = 3.3),
+                   tabPanel("Graphs & Stats", value = 3.4)
                  )
         ),
         
-        tabPanel("2^-(∆∆Ct)", value = 5,
+        tabPanel(HTML("2<sup>-(∆∆Ct)</sup>"), value = 4,
                  tabsetPanel(
                    id = "subPanel2",
-                   selected = 5.1,
+                   selected = 4.1,
                    tabPanel(
-                     "Calculations", value = 5.1,
+                     "Calculations", value = 4.1,
                      dataTableOutput("ddct_data")
                    ),
                    tabPanel(
-                     "Graphs", value = 5.2),
+                     "Graphs", value = 4.2),
                    tabPanel(
-                     "Stats", value = 5.3),
+                     "Stats", value = 4.3),
                    tabPanel(
-                     "Graphs & Stats", value = 5.4
+                     "Graphs & Stats", value = 4.4
                    )
                  )
         )
