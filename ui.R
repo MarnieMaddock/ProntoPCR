@@ -154,29 +154,29 @@ ui <- fluidPage(
         selected = 1, # Default tab selected is 1
         tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1),
         tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table.png", height = 400, width = 600),
-                           # Display uploaded data using DataTable
-                           dataTableOutput("table"),
-                           tags$br(),
-                           tags$br()
-                  ),
-                  #Calculations tab
+                 # Display uploaded data using DataTable
+                 dataTableOutput("table"),
+                 tags$br(),
+                 tags$br()
+        ),
+        #Calculations tab
         tabPanel("Calculations", value = 3,
                  tabsetPanel(
                    id = "CalcSubPanel",
                    selected = 3.1,
                    tabPanel("All Data", value = 3.1,
-                     h4(HTML("<b>Reformat the data, average the houskeeping genes and perform ∆Ct and 2^-∆Ct</b>")),
-                     tags$br(),
-                     dataTableOutput("calculations_table"),
-                     # Add this inside your UI, preferably in the "Calculations" tabPanel
-                     downloadButton("downloadData", "Download Processed Data"),
-                     tags$br(),
-                     tags$br(),
-                     h4(HTML("<b>Filter by Cell Type</b>")),
-                     dataTableOutput("filtered_table"),
-                     downloadButton("downloadFilteredData", "Download Filtered Data"),
-                     tags$br(),
-                     tags$br(),
+                            h4(HTML("<b>Reformat the data, average the houskeeping genes and perform ∆Ct and 2^-∆Ct</b>")),
+                            tags$br(),
+                            dataTableOutput("calculations_table"),
+                            # Add this inside your UI, preferably in the "Calculations" tabPanel
+                            downloadButton("downloadData", "Download Processed Data"),
+                            tags$br(),
+                            tags$br(),
+                            h4(HTML("<b>Filter by Cell Type</b>")),
+                            dataTableOutput("filtered_table"),
+                            downloadButton("downloadFilteredData", "Download Filtered Data"),
+                            tags$br(),
+                            tags$br(),
                    ),
                    tabPanel("Biological Replicate Data", value = 3.2,
                             h4(HTML("<b>Biological Replicate Average Values</b>")),
@@ -190,69 +190,69 @@ ui <- fluidPage(
                             tags$br(),
                             tags$br())
                  )
-                 ),
-                           
+        ),
+        
         tabPanel("2^-(∆Ct)", value = 4,
-         tabsetPanel(
-           id = "subPanel", 
-           selected = 4.1,
-           tabPanel("Graphs", value = 4.1,
-                                      div(
-                                        # Add a plot
-                                        plotOutput("plot"),
-                                        tags$br(),
-                                        tags$br(),
-                                        tags$br(),
-                                        tags$br(),
-                                        tags$br(),
-                                        h4(HTML("Download Graph")),
-                                        h6("SVG graphs are editable in illustrator, inkscape etc."),
-                                        fluidRow(
-                                          column(4,
-                                                 selectInput("file_format", "Choose File Format:",
-                                                             choices = c("svg", "png", "jpeg", "tiff"),
-                                                             selected = "svg")
-                                          ),
-                                          column(4,
-                                                 numericInput("dpi", "DPI:", 500)
-                                          ),
-                                          column(2, 
-                                                 numericInput("width", "Width (inches):", 8)
-                                          ),
-                                          column(2,
-                                                 numericInput("height", "Height (inches):", 5)
-                                          ),
-                                          column(12,
-                                                 # Add a download button
-                                                 downloadButton("downloadGraph", "Download Graph")
-                                          )
-                                        )
-                                      ),
-                                      tags$br(),
-                                      tags$br()),
-          tabPanel("Stats", value = 4.2),
-          tabPanel("Graphs & Stats", value = 4.3)
-                           )
-                  ),
-                  
-                  tabPanel("2^-(∆∆Ct)", value = 5,
-                           tabsetPanel(
-                             id = "subPanel2",
-                             selected = 5.1,
-                             tabPanel(
-                               "Calculations", value = 5.1,
-                               dataTableOutput("ddct_data")
-                             ),
-                             tabPanel(
-                               "Graphs", value = 5.2),
-                             tabPanel(
-                               "Stats", value = 5.3),
-                             tabPanel(
-                               "Graphs & Stats", value = 5.4
-                             )
-                           )
-                  )
-
+                 tabsetPanel(
+                   id = "subPanel", 
+                   selected = 4.1,
+                   tabPanel("Graphs", value = 4.1,
+                            div(
+                              # Add a plot
+                              plotOutput("plot"),
+                              tags$br(),
+                              tags$br(),
+                              tags$br(),
+                              tags$br(),
+                              tags$br(),
+                              h4(HTML("Download Graph")),
+                              h6("SVG graphs are editable in illustrator, inkscape etc."),
+                              fluidRow(
+                                column(4,
+                                       selectInput("file_format", "Choose File Format:",
+                                                   choices = c("svg", "png", "jpeg", "tiff"),
+                                                   selected = "svg")
+                                ),
+                                column(4,
+                                       numericInput("dpi", "DPI:", 500)
+                                ),
+                                column(2, 
+                                       numericInput("width", "Width (inches):", 8)
+                                ),
+                                column(2,
+                                       numericInput("height", "Height (inches):", 5)
+                                ),
+                                column(12,
+                                       # Add a download button
+                                       downloadButton("downloadGraph", "Download Graph")
+                                )
+                              )
+                            ),
+                            tags$br(),
+                            tags$br()),
+                   tabPanel("Stats", value = 4.2),
+                   tabPanel("Graphs & Stats", value = 4.3)
+                 )
+        ),
+        
+        tabPanel("2^-(∆∆Ct)", value = 5,
+                 tabsetPanel(
+                   id = "subPanel2",
+                   selected = 5.1,
+                   tabPanel(
+                     "Calculations", value = 5.1,
+                     dataTableOutput("ddct_data")
+                   ),
+                   tabPanel(
+                     "Graphs", value = 5.2),
+                   tabPanel(
+                     "Stats", value = 5.3),
+                   tabPanel(
+                     "Graphs & Stats", value = 5.4
+                   )
+                 )
+        )
+        
       )
     )
   )

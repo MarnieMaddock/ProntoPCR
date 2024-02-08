@@ -129,7 +129,7 @@ server <- function(input, output) {
         .names = "{.fn}_{.col}"
       ))
     
-
+    
     
     # Make a new column that places each sample as the specified cell type
     df$cell_type <- gsub(".*_(\\w+)$", "\\1", df$Sample)
@@ -240,7 +240,7 @@ server <- function(input, output) {
     rep_avg_data()
   })
   
-
+  
   output$rep_avg_download <- downloadHandler(
     filename = function() {
       paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
@@ -590,7 +590,7 @@ server <- function(input, output) {
     
     # Filter column names to include only those starting with "dct"
     dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
-
+    
     # Generate selectInput for choosing the column dynamically
     selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
   })
@@ -608,7 +608,7 @@ server <- function(input, output) {
       filter((cell_line == control) | (cell_line %in% samples)) %>% 
       filter(cell_type == cell_type2) %>%
       select(cell_line, cell_type, all_of(selected_gene))
-
+    
     
     return(ddct_data)
   })
@@ -618,7 +618,7 @@ server <- function(input, output) {
     ddct_filtered_data()
   })
   
-#DELTADELTA 
+  #DELTADELTA 
   #
   #
   #
@@ -644,7 +644,7 @@ server <- function(input, output) {
     
     # Filter column names to include only those starting with "dct"
     dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
-
+    
     # Generate selectInput for choosing the column dynamically
     selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
   })
@@ -662,55 +662,55 @@ server <- function(input, output) {
       filter((cell_line == control) | (cell_line %in% samples)) %>% 
       filter(cell_type == cell_type2) %>%
       select(cell_line, cell_type, all_of(selected_gene))
-
+    
     
     return(ddct_data)
   })
-
   
-
-    
+  
+  
+  
   mean_value <- reactiveVal(NULL)
+  # Calculate the average delta ct for the selected gene in the control samples
+  average_dct <- reactive({
+    req(wrangled_data())
+    req(input$select_gene)
+    req(input$select_control)
+    
+    cell_type3 <- input$select_cell_type
+    selected_gene2 <- input$select_gene
+    control2 <- input$select_control
+    
+    
     # Calculate the average delta ct for the selected gene in the control samples
-    average_dct <- reactive({
-      req(wrangled_data())
-      req(input$select_gene)
-      req(input$select_control)
-      
-      cell_type3 <- input$select_cell_type
-      selected_gene2 <- input$select_gene
-      control2 <- input$select_control
-      
-      
-      # Calculate the average delta ct for the selected gene in the control samples
-      avg_dct_ctrl <- ddct_filtered_data() %>%
-        filter(cell_line == control2) %>%
-        group_by(cell_line, cell_type) %>%
-        summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
-      
-      # Left join the original dataframe with the summarised dataframe
-      avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
-
-      # Calculate the mean value
-      mean_val <- mean(avg_dct_ctrl$dct_ctrl_avg, na.rm = TRUE)
-      
-      # Store the mean value in the reactive value
-      mean_value(mean_val)
-      
-      # Assign the mean value to the entire dct_ctrl_avg column
-      avg_dct_ctrl$dct_ctrl_avg <- mean_val
-      
-      # Create a new column ddct by subtracting selected_gene2 from dct_ctrl_avg
-      avg_dct_ctrl$ddct <- avg_dct_ctrl$dct_ctrl_avg - avg_dct_ctrl[[selected_gene2]]
-
-      # Create a new column fc_ddct containing 2^(-ddct)
-      avg_dct_ctrl$fc_ddct <- 2^(-avg_dct_ctrl$ddct)
-      
+    avg_dct_ctrl <- ddct_filtered_data() %>%
+      filter(cell_line == control2) %>%
+      group_by(cell_line, cell_type) %>%
+      summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
+    
+    # Left join the original dataframe with the summarised dataframe
+    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("cell_line", "cell_type"))
+    
+    # Calculate the mean value
+    mean_val <- mean(avg_dct_ctrl$dct_ctrl_avg, na.rm = TRUE)
+    
+    # Store the mean value in the reactive value
+    mean_value(mean_val)
+    
+    # Assign the mean value to the entire dct_ctrl_avg column
+    avg_dct_ctrl$dct_ctrl_avg <- mean_val
+    
+    # Create a new column ddct by subtracting selected_gene2 from dct_ctrl_avg
+    avg_dct_ctrl$ddct <- avg_dct_ctrl$dct_ctrl_avg - avg_dct_ctrl[[selected_gene2]]
+    
+    # Create a new column fc_ddct containing 2^(-ddct)
+    avg_dct_ctrl$fc_ddct <- 2^(-avg_dct_ctrl$ddct)
+    
     return(avg_dct_ctrl)
     
     
   })
-
+  
   
   output$ddct_data <- renderDataTable({
     req(average_dct())
@@ -724,4 +724,3 @@ server <- function(input, output) {
 }
 
 # Run the application 
-
