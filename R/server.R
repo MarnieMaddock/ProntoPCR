@@ -1,6 +1,11 @@
 
-# Define server logic required to draw a histogram
+
+source("download_module.R")
+
+
 server <- function(input, output) {
+
+  
   theme_Marnie <- theme(axis.line.y = element_line(colour = "black", linewidth = 0.9),
                         axis.line.x = element_line(colour = "black", linewidth = 0.9),
                         panel.grid.minor = element_blank(),
@@ -148,21 +153,15 @@ server <- function(input, output) {
     return(df)
   })
   
+  # Call the server function corresponding to the UI element you want to include
+  downloadDataServer("downloads_data")
+  
   # Display the table using DataTable in "Calculations" tab
   output$calculations_table <- renderDataTable({
     req(wrangled_data())
     wrangled_data()
   })
   
-  # Add this inside your server function
-  output$downloadData <- downloadHandler(
-    filename = function() {
-      paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
-    },
-    content = function(file) {
-      write.csv(wrangled_data(), file, row.names = FALSE)
-    }
-  )
   
   output$condition_filter <- renderUI({
     req(wrangled_data())  # Ensure data is available
@@ -191,19 +190,10 @@ server <- function(input, output) {
     filtered_data()
   })
   
-  output$downloadFilteredData <- downloadHandler(
-    filename = function() {
-      condition <- input$condition
-      if (!is.null(condition)) {
-        paste("processed_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
-      } else {
-        paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
-      }
-    },
-    content = function(file) {
-      write.csv(filtered_data(), file, row.names = FALSE)
-    }
-  )
+  # Call the server function corresponding to the UI element you want to include
+  
+  downloadFilteredDataServer("downloads_filtered_data")
+
   
   # Calculate replicate averages when data is loaded
   
@@ -240,15 +230,9 @@ server <- function(input, output) {
     rep_avg_data()
   })
   
+  downloadRepAvgDataServer("downloads_rep_avg_data")
+ 
   
-  output$rep_avg_download <- downloadHandler(
-    filename = function() {
-      paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
-    },
-    content = function(file) {
-      write.csv(rep_avg_data(), file, row.names = FALSE)
-    }
-  )
   
   output$rep_avg_filtered_table <- renderDataTable({
     req(filtered_rep_avg_data())
@@ -268,19 +252,8 @@ server <- function(input, output) {
     }
   })
   
-  output$rep_avg_filtered_download <- downloadHandler(
-    filename = function() {
-      condition <- input$condition
-      if (!is.null(condition)) {
-        paste("Replicate_avg_data_", condition, "_filtered_", Sys.Date(), ".csv", sep = "")
-      } else {
-        paste("Replicate_avg_data_filtered_", Sys.Date(), ".csv", sep = "")
-      }
-    },
-    content = function(file) {
-      write.csv(filtered_rep_avg_data(), file, row.names = FALSE)
-    }
-  )
+  downloadRepAvgFilteredDataServer("downloads_rep_avg_filtered_data")
+
   
   
   #GRAPHING
@@ -288,11 +261,13 @@ server <- function(input, output) {
   output$condition_selector <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
+    
     # Generate selectInput for choosing the condition dynamically
-    selectInput("selected_condition", "Select Condition to Graph", choices = unique(wrangled_data()$condition),
+    selectInput("selected_condition", "Select Condition", choices = unique(wrangled_data()$condition),
                 multiple = TRUE)
   })
   
+
   output$column_selector <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
@@ -300,7 +275,7 @@ server <- function(input, output) {
     fc_dct_columns <- grep("^fc_dct", colnames(wrangled_data()), value = TRUE)
     
     # Generate selectInput for choosing the column dynamically
-    selectInput("column", "Select Gene to Graph", choices = fc_dct_columns)
+    selectInput("column", "Select Gene", choices = fc_dct_columns)
   })
   
   
@@ -333,6 +308,9 @@ server <- function(input, output) {
     peace = c("#2e58a4ff", "#b69e71ff", "#e3ded4ff", "#71aec7ff","#4f5357ff"),
     peace2 = c("#797d62", "#9b9b7a", "#d9ae94", "#f1dca7", "#ffcb69","#d08c60", "#997b66") ,
     ireland = c("#ff9f1c", "#ffbf69", "#ffffff", "#cbf3f0", "#2ec4b6"),
+    twotone1 = c("#023e8a", "#0077b6", "#ff7900","#ff9e00"),
+    twotone2 = c("#90b5daff", "#91b5daff", "#e47076ff", "#e46f74ff"),
+    twotone3 = c("#447db3ff", "#e7953fff"),
     pastels = c("#ddfff7", "#93e1d8", "#ffa69e"),
     pastels2 = c("#90f1ef", "#ffd6e0", "#ffef9f"),
     pastels3 = c("#ffffff", "#ffcad4", "#b0d0d3" ),
@@ -354,6 +332,7 @@ server <- function(input, output) {
       NULL
     }
     
+
     if (!is.null(positions) && length(positions) > 0) {
       lapply(positions, function(pos) {
         textInput(inputId = paste0("label_", pos),
@@ -362,6 +341,7 @@ server <- function(input, output) {
       })
     }
   })
+  
   
   # Reactive function to get user-entered labels
   user_labels <- reactive({
@@ -400,6 +380,14 @@ server <- function(input, output) {
   # Reactive function for ggplot
   output$plot <- renderPlot({
     req(wrangled_data(), input$column, input$selected_condition, input$y_label, input$x_label)
+    
+    # Check if x-axis categories are available
+    if (is.null(input$x_axis_positions) || input$x_axis_positions == "") {
+      validate(
+        need(FALSE, "Please enter x-axis categories to build the graph.")
+      )
+    }
+    
     set.seed(input$seed_input)
     
     # Specify the y_aes based on user input
@@ -433,7 +421,8 @@ server <- function(input, output) {
       unlist(strsplit(input$x_axis_positions, ","))
     }
     
-    
+
+  
     
     # Get the color scheme based on user input
     color_scheme <- input$color_scheme_select
@@ -449,7 +438,12 @@ server <- function(input, output) {
     }
     
     
-    
+    # Check if the colour palette is smaller than the number of positions entered by the user
+    if (length(colors) < length(positions)) {
+      validate(
+        need(FALSE, "The selected colour palette is smaller than the number of x-axis groups.")
+      )
+    }
     # Define x-axis theme based on checkbox
     x_axis_theme <- if (input$rotate_labels) {
       theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -506,6 +500,7 @@ server <- function(input, output) {
         x_axis_theme
     }     
     
+    downloadGraphServer("downloads_graph")
     
     # Set font based on user selection
     font_family <- input$font_selector
@@ -553,16 +548,7 @@ server <- function(input, output) {
     
   })
   
-  # Add a download handler for the graph
-  output$downloadGraph <- downloadHandler(
-    filename = function() {
-      paste("your_graph_filename", ".", input$file_format, sep = "")
-    },
-    content = function(file) {
-      # Use the `ggsave` function to save the plot as an SVG file
-      ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
-    }
-  )
+
   
   #DELTADELTA 
   #
