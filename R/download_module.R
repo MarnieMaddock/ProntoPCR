@@ -39,40 +39,39 @@ downloadGraphUI <- function(id) {
   
 
     
-downloadDataServer <- function(id) {
+downloadDataServer <- function(id, df) {
   moduleServer(id, function(input, output, session) {
     output$downloadData <- downloadHandler(
       filename = function() {
         paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
       },
       content = function(file) {
-        # Ensure that you're explicitly specifying the file extension as .csv
-        write.csv(wrangled_data(), file, row.names = FALSE)
+        write.csv(df, file, row.names = FALSE)
       }
     )
   })
 }
 
-downloadFilteredDataServer <- function(id) {
+downloadFilteredDataServer <- function(id, df) {
   moduleServer(id, function(input, output, session) {
     # Add download handler for filtered data
     output$downloadFilteredData <- downloadHandler(
       filename = function() {
         condition <- input$condition
         if (!is.null(condition)) {
-          paste("processed_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
+          paste("filtered_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
         } else {
-          paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
+          paste("filtered_PCR_data_", Sys.Date(), ".csv", sep = "")
         }
       },
       content = function(file) {
-        write.csv(filtered_data(), file, row.names = FALSE)
+        write.csv(df, file, row.names = FALSE)
       }
     )
   })
 }
 
-downloadRepAvgDataServer <- function(id){
+downloadRepAvgDataServer <- function(id, df){
   moduleServer(id, function(input, output, session){
     # Add download handler for replicate average data
     output$rep_avg_download <- downloadHandler(
@@ -80,13 +79,13 @@ downloadRepAvgDataServer <- function(id){
         paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
       },
       content = function(file) {
-        write.csv(rep_avg_data(), file, row.names = FALSE)
+        write.csv(df, file, row.names = FALSE)
       }
     )
   })
 }
 
-downloadRepAvgFilteredDataServer <- function(id){
+downloadRepAvgFilteredDataServer <- function(id, df){
   moduleServer(id, function(input, output, session){
     # Add download handler for filtered replicate average data
     output$rep_avg_filtered_download <- downloadHandler(
@@ -99,7 +98,7 @@ downloadRepAvgFilteredDataServer <- function(id){
         }
       },
       content = function(file) {
-        write.csv(filtered_rep_avg_data(), file, row.names = FALSE)
+        write.csv(df, file, row.names = FALSE)
       }
     )
   })

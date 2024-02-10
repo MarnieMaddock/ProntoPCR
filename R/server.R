@@ -152,6 +152,9 @@ server <- function(input, output) {
     
     return(df)
   })
+  observe({
+    downloadDataServer("downloads_data", wrangled_data())
+  })
   
   # Call the server function corresponding to the UI element you want to include
   downloadDataServer("downloads_data")
@@ -190,6 +193,9 @@ server <- function(input, output) {
     filtered_data()
   })
   
+  observe({
+    downloadFilteredDataServer("downloads_filtered_data", filtered_data())
+  })
   # Call the server function corresponding to the UI element you want to include
   
   downloadFilteredDataServer("downloads_filtered_data")
@@ -230,6 +236,10 @@ server <- function(input, output) {
     rep_avg_data()
   })
   
+  observe({
+    downloadRepAvgDataServer("downloads_rep_avg_data", rep_avg_data())
+  })
+  
   downloadRepAvgDataServer("downloads_rep_avg_data")
  
   
@@ -250,6 +260,10 @@ server <- function(input, output) {
     } else {
       return(NULL)
     }
+  })
+  
+  observe({
+    downloadRepAvgFilteredDataServer("downloads_rep_avg_filtered_data", filtered_rep_avg_data())
   })
   
   downloadRepAvgFilteredDataServer("downloads_rep_avg_filtered_data")
@@ -376,7 +390,8 @@ server <- function(input, output) {
       label_textboxes
     })
   })
-  
+ 
+
   # Reactive function for ggplot
   output$plot <- renderPlot({
     req(wrangled_data(), input$column, input$selected_condition, input$y_label, input$x_label)
@@ -408,8 +423,6 @@ server <- function(input, output) {
       sym("group")
     }
     
-    
-    
     positions <- if (length(input$selected_condition) >= 2) {
       # Parse positions if user entered them, or use unique values from "cell" column
       if (!is.null(input$x_axis_positions)) {
@@ -420,9 +433,6 @@ server <- function(input, output) {
     } else {
       unlist(strsplit(input$x_axis_positions, ","))
     }
-    
-
-  
     
     # Get the color scheme based on user input
     color_scheme <- input$color_scheme_select
@@ -499,8 +509,7 @@ server <- function(input, output) {
         scale_x_discrete(limits = positions, labels = user_labels()) +
         x_axis_theme
     }     
-    
-    downloadGraphServer("downloads_graph")
+
     
     # Set font based on user selection
     font_family <- input$font_selector
@@ -539,6 +548,7 @@ server <- function(input, output) {
     shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
     # Print the plot
     print(plot)
+
   }, 
   width = function() {
     input$width * 100  # Adjust the multiplier as needed
@@ -547,65 +557,13 @@ server <- function(input, output) {
     input$height * 100  # Adjust the multiplier as needed
     
   })
-  
 
+  observe({
+    downloadGraphServer("downloads_graph")
+  })
+  downloadGraphServer("downloads_graph")
   
   #DELTADELTA 
-  #
-  #
-  #
-  output$select_condition <- renderUI({
-    req(wrangled_data())
-    selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
-  })
-  
-  output$select_control <- renderUI({
-    req(wrangled_data())  # Ensure data is available
-    
-    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$group))
-  })
-  
-  output$select_samples <- renderUI({
-    req(wrangled_data())  # Ensure data is available
-    
-    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$group), multiple = T)
-  })
-  
-  output$column_selector2 <- renderUI({
-    req(wrangled_data())
-    
-    # Filter column names to include only those starting with "dct"
-    dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
-    
-    # Generate selectInput for choosing the column dynamically
-    selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
-  })
-  
-  ddct_filtered_data <- reactive({
-    req(wrangled_data())
-    req(input$select_gene)
-    
-    condition2 <- input$select_condition
-    control <- input$select_control
-    samples <- input$select_samples
-    selected_gene <- input$select_gene
-    
-    ddct_data <- wrangled_data() %>% 
-      filter((group == control) | (group %in% samples)) %>% 
-      filter(condition == condition2) %>%
-      select(group, condition, all_of(selected_gene))
-    
-    
-    return(ddct_data)
-  })
-  
-  output$ddct_data <- renderDataTable({
-    req(ddct_filtered_data())
-    ddct_filtered_data()
-  })
-  
-  #DELTADELTA 
-  #
   #
   #
   output$select_condition <- renderUI({

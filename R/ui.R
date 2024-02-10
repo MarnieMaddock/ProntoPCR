@@ -18,7 +18,7 @@ ui <- fluidPage(
   shinyjs::useShinyjs(),
   # Application title
   titlePanel("STATqPCR"),
-  tags$h6("For when you want your PCR data graphed and analysed STAT"),
+
   
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
@@ -70,8 +70,12 @@ ui <- fluidPage(
                          column(width = 6, uiOutput("condition_selector")),
                          column(width = 6, uiOutput("column_selector"))
                        ),
-                       textInput("x_axis_positions", "Enter the order to display x-axis groups (comma-separated):", placeholder = "e.g., untreated,treated"),
-                       helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces."),
+                       textInput("x_axis_positions", 
+                                 tagList(
+                                   tags$label("Enter the order to display x-axis groups (comma-separated):"),
+                                    helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces. e.g., untreated,treated")
+                                  )
+                       ),
                        h5(HTML("<b>Customise Graph</b>")),
                        # Add textInputs for custom Y-axis and X-axis labels
                        textInput("y_label", "Enter Y-axis Label", value = "Relative *GENE NAME* mRNA (2^-ΔCq)"),
@@ -132,9 +136,9 @@ ui <- fluidPage(
       ),
       conditionalPanel(condition = "input.tabselected== 4 && input.subPanel2 == 4.1",
                        fluidRow(
-                         column(width = 6, uiOutput("select_control")),
+                         column(width = 4, uiOutput("select_control")),
                          column(width = 6, uiOutput("select_samples")),
-                         column(width = 6, uiOutput("select_condition")),
+                         column(width = 4, uiOutput("select_condition")),
                          column(width = 6, uiOutput("column_selector2"))
                        ),
                        
@@ -182,11 +186,11 @@ ui <- fluidPage(
                                        h4(HTML("<b>Biological Replicate Average Values</b>")),
                                        tags$br(),
                                        dataTableOutput("rep_avg_table"),
-                                       downloadRepAvgDataUI("downloads"),
+                                       downloadRepAvgDataUI("downloads_rep_avg_data"),
                                        tags$br(),
                                        h4(HTML("<b>Filter by Condition</b>")),
                                        dataTableOutput("rep_avg_filtered_table"),
-                                       downloadRepAvgFilteredDataUI("downloads"),
+                                       downloadRepAvgFilteredDataUI("downloads_rep_avg_filtered_data"),
                                        tags$br(),
                                        tags$br())
                             )),
@@ -218,7 +222,7 @@ ui <- fluidPage(
                                 ),
                                 column(12,
                                        # Add a download button
-                                       downloadGraphUI("downloads")
+                                       downloadGraphUI("downloads_graph")
                                 )
                               )
                             ),
