@@ -1,7 +1,9 @@
 
 
-source("download_module.R")
+source("module_download.R")
+source("utils_downloadGraphHandler.R")
 
+#source("graphing_module.R")
 
 server <- function(input, output) {
 
@@ -271,6 +273,7 @@ server <- function(input, output) {
   
   
   #GRAPHING
+  #GRAPHING
   # Render the dynamic selectInput for choosing condition
   output$condition_selector <- renderUI({
     req(wrangled_data())  # Ensure data is available
@@ -281,7 +284,7 @@ server <- function(input, output) {
                 multiple = TRUE)
   })
   
-
+  
   output$column_selector <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
@@ -346,7 +349,7 @@ server <- function(input, output) {
       NULL
     }
     
-
+    
     if (!is.null(positions) && length(positions) > 0) {
       lapply(positions, function(pos) {
         textInput(inputId = paste0("label_", pos),
@@ -390,8 +393,8 @@ server <- function(input, output) {
       label_textboxes
     })
   })
- 
-
+  
+  
   # Reactive function for ggplot
   output$plot <- renderPlot({
     req(wrangled_data(), input$column, input$selected_condition, input$y_label, input$x_label)
@@ -509,7 +512,7 @@ server <- function(input, output) {
         scale_x_discrete(limits = positions, labels = user_labels()) +
         x_axis_theme
     }     
-
+    
     
     # Set font based on user selection
     font_family <- input$font_selector
@@ -548,7 +551,7 @@ server <- function(input, output) {
     shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
     # Print the plot
     print(plot)
-
+    
   }, 
   width = function() {
     input$width * 100  # Adjust the multiplier as needed
@@ -557,11 +560,16 @@ server <- function(input, output) {
     input$height * 100  # Adjust the multiplier as needed
     
   })
+  
 
-  observe({
-    downloadGraphServer("downloads_graph")
-  })
-  downloadGraphServer("downloads_graph")
+  output$downloadGraph <- downloadHandler(
+    filename = function() {
+      paste("your_graph_filename", ".", input$file_format, sep = "")
+    },
+    content = function(file) {
+      # Use the `ggsave` function to save the plot as an SVG file
+      ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
+    })
   
   #DELTADELTA 
   #

@@ -104,18 +104,4 @@ downloadRepAvgFilteredDataServer <- function(id, df){
   })
 }
 
-# Include server functions for downloading graphs
-downloadGraphServer <- function(id) {
-  moduleServer(id, function(input, output, session) {
-    # Add a download handler for the graph
-    output$downloadGraph <- downloadHandler(
-      filename = function() {
-        paste("your_graph_filename", ".", input$file_format, sep = "")
-      },
-      content = function(file) {
-        # Use the `ggsave` function to save the plot as an SVG file
-        ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
-      }
-    )
-  })
-}
+
