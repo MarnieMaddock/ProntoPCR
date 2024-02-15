@@ -1,0 +1,10 @@
+#logo img {
+  border-radius: 50%; /* Makes the image circular */
+  width: 70px; /* Adjust as needed */
+  height: 70px; /* Adjust as needed */
+  object-fit: cover; /* Ensures the image covers the area without losing its aspect ratio */
+  /* Additional styles for positioning, if needed */
+  position: absolute;
+  top: 5px; /* Adjust the value to position the logo */
+  left: 5px; /* Adjust the value to position the logo */
+}

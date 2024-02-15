@@ -21,14 +21,20 @@ source("utils_downloadGraphHandler.R")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = bs_theme(version = 4, bootswatch = "pulse"),
+  tags$head(
+    # Link to the CSS file
+    tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+  ),
+  # Use div to place the logo
+  div(id = "logo", tags$img(src = "dottori_lab_circle.svg")),
   #shinyjs::useShinyjs(),
   # Application title
-  titlePanel("STATqPCR"),
+  div(tags$h1("STATqPCR", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
       # About tab
-      conditionalPanel(condition = "input.tabselected==1", tags$img(src = "Dottori_lab.svg", height = 300, width = 350)),
+      conditionalPanel(condition = "input.tabselected==1", tags$img(src = "dottori_lab.svg", height = 600, width = 400)),
       # Input Data Tab
       conditionalPanel(condition = "input.tabselected==2",
                        fileInput("file", "Choose CSV File", accept = c(".csv")),
@@ -142,7 +148,10 @@ ui <- fluidPage(
               helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
               tags$br(),
               tags$br()
-            )
+            ),
+      conditionalPanel(condition = "input.tabselected == 5",
+                       h5(HTML("<b>Statistics</b>")),
+                       selectInput("selectedColumn", "Select a Column", choices = NULL))
     ),
  
     
@@ -236,7 +245,8 @@ ui <- fluidPage(
                             downloadButton("downloadGraph", "Download Graph")
                      )
                    )),
-        tabPanel("Stats", value = 5),
+        tabPanel("Stats", value = 5,
+                 tableOutput("statsOutput")),
         tabPanel("Graphs & Stats", value = 6),
         )
     )

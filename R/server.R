@@ -455,7 +455,7 @@ server <- function(input, output, session) {
     }
     
     # Generate the text input with the dynamic placeholder
-    textInput("y_label", "Enter Y-axis Label", value = placeholder_text)
+    textInput("y_label", "Enter Y-axis Label. Markup is accepted.", value = placeholder_text)
   })
   
 
@@ -749,6 +749,32 @@ server <- function(input, output, session) {
     })
   
   #Stats
+  data_stats <- reactive({
+    # Assuming wrangled_data() fetches or generates your dataset dynamically
+    wrangled_data()
+  })
+  
+  # Update the column choices based on the dataset
+  observe({
+    updateSelectInput(session, "selectedColumn",
+                      choices = names(data_stats)[grepl("^fc_dct_", names(data_stats))])
+  })
+  
+  # Calculate and display statistics
+  output$statsOutput <- renderTable({
+    # Ensure a column is selected
+    if (is.null(input$selectedColumn)) return()
+    
+    # Filter the dataset to include only the selected column and the 'cell' column
+    selectedData <- data_stats[c("cell", input$selectedColumn)]
+    
+    # Calculate 'n' for each group in 'cell' for the selected column
+    stats <- aggregate(. ~ cell, data_stats = selectedData, function(x) length(x[!is.na(x)]))
+    colnames(stats)[2] <- "n"
+    
+    # Return the calculated stats
+    stats
+  })
   
 }
 
