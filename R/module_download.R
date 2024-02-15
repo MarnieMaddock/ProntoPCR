@@ -1,107 +1,24 @@
-# download_module.R
+# # download_module.R
 
-downloadDataUI <- function(id) {
+downloadUI <- function(id, label = "Download Data") {
   ns <- NS(id)
   tagList(
-    downloadButton(ns("downloadData"), "Download Processed Data")
-  )
-}
-
-downloadFilteredDataUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    downloadButton(ns("downloadFilteredData"), "Download Filtered Data")
-  )
-}
-
-downloadRepAvgDataUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    downloadButton(ns("rep_avg_download"), "Download Replicate Average Data")
-  )
-}
-
-downloadRepAvgFilteredDataUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    downloadButton(ns("rep_avg_filtered_download"), "Download Filtered Replicate Average Data")
-  )
-}
-
-downloadGraphUI <- function(id) {
-  ns <- NS(id)
-  tagList(
-    downloadButton(ns("downloadGraph"), "Download Graph")
+    downloadButton(ns("download"), label)
   )
 }
 
 
-  
-
-    
-downloadDataServer <- function(id, df) {
+# Unified server function for download handlers
+downloadServer <- function(id, df, filenameFunc) {
   moduleServer(id, function(input, output, session) {
-    output$downloadData <- downloadHandler(
+    output$download <- downloadHandler(
       filename = function() {
-        paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
+        filenameFunc(input, session)  # Generate filename dynamically
       },
       content = function(file) {
-        write.csv(df, file, row.names = FALSE)
+        write.csv(df(), file, row.names = FALSE)  # Assuming df is a reactive expression
       }
     )
   })
 }
-
-downloadFilteredDataServer <- function(id, df) {
-  moduleServer(id, function(input, output, session) {
-    # Add download handler for filtered data
-    output$downloadFilteredData <- downloadHandler(
-      filename = function() {
-        condition <- input$condition
-        if (!is.null(condition)) {
-          paste("filtered_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
-        } else {
-          paste("filtered_PCR_data_", Sys.Date(), ".csv", sep = "")
-        }
-      },
-      content = function(file) {
-        write.csv(df, file, row.names = FALSE)
-      }
-    )
-  })
-}
-
-downloadRepAvgDataServer <- function(id, df){
-  moduleServer(id, function(input, output, session){
-    # Add download handler for replicate average data
-    output$rep_avg_download <- downloadHandler(
-      filename = function() {
-        paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
-      },
-      content = function(file) {
-        write.csv(df, file, row.names = FALSE)
-      }
-    )
-  })
-}
-
-downloadRepAvgFilteredDataServer <- function(id, df){
-  moduleServer(id, function(input, output, session){
-    # Add download handler for filtered replicate average data
-    output$rep_avg_filtered_download <- downloadHandler(
-      filename = function() {
-        condition <- input$condition
-        if (!is.null(condition)) {
-          paste("Replicate_avg_data_", condition, "_filtered_", Sys.Date(), ".csv", sep = "")
-        } else {
-          paste("Replicate_avg_data_filtered_", Sys.Date(), ".csv", sep = "")
-        }
-      },
-      content = function(file) {
-        write.csv(df, file, row.names = FALSE)
-      }
-    )
-  })
-}
-
 
