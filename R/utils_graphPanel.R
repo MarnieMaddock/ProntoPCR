@@ -1,5 +1,6 @@
 #utils_graphPanel.R
-graphPanel <- function() {
+
+graphPanel <- function(id) {
   tagList(
     h5(HTML("<b>Create Graph</b>")),
     fluidRow(
@@ -53,11 +54,20 @@ graphPanel <- function() {
                 selected = "custom"),
     numericInput("dot_size", "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5),
     # Add a dropdown menu for font selection
-    conditionalPanel(
-      condition = "input.plot_type == 'column'",
+    conditionalPanel(condition = "input.plot_type == 'column'",
       # Choose fill or colour
       selectInput("fill_color_toggle", "Choose Fill or Border:",
                   choices = c("Fill" = "fill", "Border" = "color"),
-                  selected = "fill"))
+                  selected = "fill")),
+    tags$br(),
+    tags$br(),
+    conditionalPanel(
+      condition = "input.plot_type == 'dot'",
+      numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1),
+      numericInput("seed_input", "Set Seed:", value = 123),
+      helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
+      tags$br(),
+      tags$br()
+    )
   )
 }

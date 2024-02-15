@@ -8,6 +8,7 @@ library(ggplot2)
 library(ggbeeswarm)
 library(ggpubr)
 library(bslib)
+library(ggtext)
 #library(shinyjs)
 
 source("module_download.R")
@@ -23,9 +24,6 @@ ui <- fluidPage(
   #shinyjs::useShinyjs(),
   # Application title
   titlePanel("STATqPCR"),
-
-  
-  # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
@@ -79,7 +77,10 @@ ui <- fluidPage(
       conditionalPanel(condition = "input.tabselected == 4",
         #graphing_sidebarUI("sidebar"),
             h5(HTML("<b>Create Graph</b>")),
-          selectInput("select_dct_or_ddct", "Select whether to graph dct or ddct", choices = c("dct", "ddct")),
+            radioButtons("select_dct_or_ddct", "Select whether to graph dct or ddct:",
+                     choices = c("DCT Data" = "dct", "DDCT Data" = "ddct"),
+                     selected = "dct"),
+          uiOutput("selected_gene_ui"),
           tags$br(),
             fluidRow(
               column(width = 6, uiOutput("condition_selector")),
@@ -89,7 +90,7 @@ ui <- fluidPage(
             helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces. e.g., untreated,treated"),
             h5(HTML("<b>Customise Graph</b>")),
             # Add textInputs for custom Y-axis and X-axis labels
-            textInput("y_label", "Enter Y-axis Label", value = "Relative *GENE NAME* mRNA (2^-ΔCq)"),
+            uiOutput("dynamic_y_label_input"),
             textInput("x_label", "Enter X-axis Label", value = "Group"),
             selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
             fluidRow(
@@ -169,23 +170,23 @@ ui <- fluidPage(
                                             tags$br(),
                                             dataTableOutput("calculations_table"),
                                             # Add this inside your UI, preferably in the "Calculations" tabPanel
-                                            downloadDataUI("downloads_data"),
+                                            downloadUI("download_processed_data", "Download Processed Data"),
                                             tags$br(),
                                             tags$br(),
                                             h4(HTML("<b>Filter by Condition</b>")),
                                             dataTableOutput("filtered_table"),
-                                            downloadFilteredDataUI("downloads_filtered_data"),
+                                            downloadUI("download_filtered_data", "Download Filtered Data"),
                                             tags$br(),
                                             tags$br()),
                                   tabPanel("Biological Replicate", value = 2,
                                             h4(HTML("<b>Biological Replicate Average Values</b>")),
                                             tags$br(),
                                             dataTableOutput("rep_avg_table"),
-                                            downloadRepAvgDataUI("downloads_rep_avg_data"),
+                                            downloadUI("download_rep_avg_data", "Download Replicate Average Data"),
                                             tags$br(),
                                             h4(HTML("<b>Filter by Condition</b>")),
                                             dataTableOutput("rep_avg_filtered_table"),
-                                            downloadRepAvgFilteredDataUI("downloads_rep_avg_filtered_data"),
+                                            downloadUI("download_rep_avg_filtered_data", "Download Filtered Replicate Average Data"),
                                             tags$br(),
                                             tags$br())
                                 )
@@ -238,53 +239,6 @@ ui <- fluidPage(
         tabPanel("Stats", value = 5),
         tabPanel("Graphs & Stats", value = 6),
         )
-
-      
     )
-    
   )        
 )        
-        
-        
-        # tabPanel(HTML("2<sup>-(∆Ct)</sup>"), value = 3,
-        #          tabsetPanel(
-        #            id = "subPanel", 
-        #            selected = 3.1,
-        #            tabPanel("Calculations", value = 3.1,
-        #                     tabsetPanel(
-        #                       id = "CalcSubPanel",
-        #                       selected = "A",
-        #                       tabPanel("All Data", value = "A",
-
-        #                       ),
-        #                       tabPanel("Biological Replicate Data", value = "B",
-
-        #                     )),
-        #            tabPanel("Graphs", value = 3.2,
-
-        #                       ),
-        #            tabPanel("Stats", value = 3.3),
-        #            tabPanel("Graphs & Stats", value = 3.4)
-        #          )
-        # ),
-        # 
-        # tabPanel(HTML("2<sup>-(∆∆Ct)</sup>"), value = 4,
-        #          tabsetPanel(
-        #            type = "tabs",
-        #            id = "subPanel2",
-        #            selected = 4.1,
-        #            tabPanel(
-        #              "Calculations", value = 4.1,
-
-        #            ),
-        #            tabPanel(
-        #              "Graphs", value = 4.2,
-        #              h4(HTML("Download Graph")),
-        #              h6("SVG graphs are editable in illustrator, inkscape etc.")
-        #            ),
-        #            tabPanel(
-        #              "Stats", value = 4.3),
-        #            tabPanel(
-        #              "Graphs & Stats", value = 4.4)
-        #          )
-        # )
