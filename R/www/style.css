@@ -1,10 +1,57 @@
 #logo img {
   border-radius: 50%; /* Makes the image circular */
-  width: 70px; /* Adjust as needed */
-  height: 70px; /* Adjust as needed */
+  width: 70px; 
+  height: 70px; 
   object-fit: cover; /* Ensures the image covers the area without losing its aspect ratio */
-  /* Additional styles for positioning, if needed */
+  /* Additional styles for positioning*/
   position: absolute;
-  top: 5px; /* Adjust the value to position the logo */
-  left: 5px; /* Adjust the value to position the logo */
+  top: 1px; 
+  left: 5px; 
 }
+
+#logo2 img {
+  width: 220px; 
+  height: 70px; 
+  object-fit: cover; /* Ensures the image covers the area without losing its aspect ratio */
+  /* Additional styles for positioning*/
+  position: absolute;
+  top: 1px; 
+  right: 1px; 
+}
+
+h1 {
+  color: black;
+  font-size: 2.5rem;
+}
+
+
+body {
+  background-color: white; /* Light gray background */
+  color: black;
+}
+
+.nav-tabs .nav-link{
+  color: #00359bff;
+  border-bottom: 1.5px solid #00359bff;
+}
+
+.nav-tabs .nav-link:hover{
+  color: #00359bff;
+  border-bottom: 1.5px solid white;
+}
+
+.nav-tabs{
+  background-color: white;
+}
+
+.nav-tabs .nav-link.active:focus {
+    border-bottom: 1.5px solid #00359bff;
+}
+
+.nav-tabs .nav-link.active {
+    color: white;
+    background-color: #00359bff;
+    border-bottom: 1.5px solid #00359bff;
+}
+
+

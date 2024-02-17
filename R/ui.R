@@ -9,7 +9,7 @@ library(ggbeeswarm)
 library(ggpubr)
 library(bslib)
 library(ggtext)
-#library(shinyjs)
+library(shinyjs)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
@@ -21,12 +21,14 @@ source("utils_downloadGraphHandler.R")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = bs_theme(version = 4, bootswatch = "pulse"),
-  tags$head(
-    # Link to the CSS file
-    tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
-  ),
+  includeCSS("www/style.css"),
+  # tags$head(
+  #   # Link to the CSS file
+  #   tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
+  # ),
   # Use div to place the logo
   div(id = "logo", tags$img(src = "dottori_lab_circle2.svg")),
+  div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
   div(tags$h1("STATqPCR", style = "margin-left: 65px;")),
@@ -60,17 +62,16 @@ ui <- fluidPage(
                        h6("Note: This step will not work if there is a Sample that has two measurements of the same target. Everything must be unique."),
                        h6("Ensure that each sample has all housekeeper gene measurements (i.e. there are no missing values), or risk plotting the wrong data points."),
                        tags$br(),
-                       helpText("mean_hk: Calculates the mean of the houskeepers you insterted in the input data tab."),
+                       helpText("mean_hk: Calculates the mean of the houskeepers you specified in the input data tab."),
                        tags$br(),
-                       helpText("dct_genename: Calculates the difference between the Ct value of your gene and the average of your housekeepers i.e. ΔCt = Ct (gene of interest) – Ct (housekeeping gene)."),
+                       helpText("dct_gene: Calculates the difference between the Ct value of your gene and the average of your housekeepers i.e. ΔCt = Ct (gene of interest) – Ct (housekeeping gene)."),
                        tags$br(),
-                       helpText(HTML("fc_dct_genename: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2<sup>-(ΔCt)</sup>.")),
+                       helpText(HTML("fc_dct_gene: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2<sup>-(ΔCt)</sup>.")),
                        tags$br(),
-                       helpText(HTML("Note: 2<sup>-(∆∆Ct)</sup> will be performed in the ∆∆Ct tab upon following the instructions.")),
+                       helpText(HTML("dct_ctrl_avg: Calculates the average of the control group for the selected gene.")),
+                       helpText(HTML("ddct_gene: Calculates the difference between the ΔCt of your gene and the average of the control group i.e. ΔΔCt = ΔCt (gene of interest) – ΔCt (control group).")),
                        tags$br(),
-                       tags$style(HTML(".custom-break { height: 300px; }")),
-                       tags$br(),
-                       tags$div(class = "custom-break"),
+                       helpText(HTML("fc_ddct: Fold change of the ΔΔCt value i.e. 2<sup>-(ΔΔCt)</sup>.")),
                        uiOutput("condition_filter")),
       conditionalPanel(
         condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
@@ -84,7 +85,7 @@ ui <- fluidPage(
         #graphing_sidebarUI("sidebar"),
             h5(HTML("<b>Create Graph</b>")),
             radioButtons("select_dct_or_ddct", "Select whether to graph dct or ddct:",
-                     choices = c("DCT Data" = "dct", "DDCT Data" = "ddct"),
+                     choices = c("ΔCt Data" = "dct", "∆ΔCt Data" = "ddct"),
                      selected = "dct"),
           uiOutput("selected_gene_ui"),
           tags$br(),
@@ -149,9 +150,27 @@ ui <- fluidPage(
               tags$br(),
               tags$br()
             ),
-      conditionalPanel(condition = "input.tabselected == 5",
+      conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 1",
+                       h3(HTML("<b>Statistical Flowchart</b>")),
+                       h6("This is the suggested workflow for statistical analysis of PCR data.")),
+      conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
-                       selectInput("selectedColumn", "Select a Column", choices = NULL))
+                       h6("Select the samples and gene to perform statistics on."),
+                       selectInput("sampleInput", "Select Sample:", choices = NULL, multiple = TRUE),
+                       selectInput("columnInput", "Select Gene:", choices = NULL),
+                       tags$br(),
+                       h5(HTML("<b>Select the statistical tests to perform.</b>")),
+                       h6(HTML("<b>1. Sample Size</b>")),
+                       checkboxInput("sample_size", "Calculate sample size", value = FALSE),
+                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n < 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks"),
+                                          selected = "shapiro"),
+                       h6(HTML("<b>3. Homogeneity of Variance</b>")),
+                       checkboxInput("variance", "Check for equal variance (Levene's test).", value = FALSE),
+                       checkboxGroupInput("log_transform", HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>"), choices = c("Log10", "No transformation"), selected = "Log10"),
+                       helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
+                       checkboxGroupInput("group_comparison", HTML("<b>Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
+                                          selected = "non_parametric"),
+                       verbatimTextOutput("shapiroOutput"))
     ),
  
     
@@ -193,6 +212,7 @@ ui <- fluidPage(
                                             dataTableOutput("rep_avg_table"),
                                             downloadUI("download_rep_avg_data", "Download Replicate Average Data"),
                                             tags$br(),
+                                            tags$br(),
                                             h4(HTML("<b>Filter by Condition</b>")),
                                             dataTableOutput("rep_avg_filtered_table"),
                                             downloadUI("download_rep_avg_filtered_data", "Download Filtered Replicate Average Data"),
@@ -205,12 +225,14 @@ ui <- fluidPage(
                                id = "subCalc2",
                                selected = 3,
                                   tabPanel("All Data", value = 3,
-                                            h4(HTML("<b>Average ∆Ct for control and perform 2<sup>-∆Ct</sup></b>")),
+                                            h4(HTML("<b>Average ∆Ct for control and perform 2<sup>-∆ΔCt</sup></b>")),
                                             dataTableOutput("ddct_data"),
+                                            downloadUI("download_ddct_data", "Download Processed Data"),
                                             tags$br()),
                                   tabPanel("Biological Replicate", value = 4,
                                            h4(HTML("<b>Biological Replicate Average Values</b>")),
-                                           dataTableOutput("rep_avg_table_ddct")),
+                                           dataTableOutput("rep_avg_table_ddct"),
+                                           downloadUI("download_ddct_avg_data", "Download Replicate Data"))
                              )
                           ),
                     ),
@@ -246,7 +268,25 @@ ui <- fluidPage(
                      )
                    )),
         tabPanel("Stats", value = 5,
-                 tableOutput("statsOutput")),
+                 tabsetPanel(
+                   id = "subStats",
+                   selected = 1,
+                   tabPanel("Flowchart", value = 1,
+                            h4(HTML("<b>Statistical Flowchart</b>")),
+                            tags$img(src = "stats_flowchart.svg", height = 400, width = 600),
+                            tags$br(),
+                            tags$br(),
+                            tags$br()),
+                  tabPanel("Statistics", value = 2,
+                    h4(HTML("<b>Sample Size</b>")),
+                    dataTableOutput("nTable"),
+                    tags$br(),
+                    h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
+                    h4(HTML("<b>Normality Test</b>")),
+                    dataTableOutput("normalityTable")
+                  )
+                   )
+                 ),
         tabPanel("Graphs & Stats", value = 6),
         )
     )

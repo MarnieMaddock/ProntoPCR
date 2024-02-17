@@ -3,6 +3,7 @@
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("utils_graphTheme.R")
+#source("utils_shapiro.R")
 #source("graphing_module.R")
 
 server <- function(input, output, session) {
@@ -23,7 +24,7 @@ server <- function(input, output, session) {
   # Display the table using DataTable
   output$table <- renderDataTable({
     data()
-  })
+  }, options = list(pageLength = 5))
   
   # Generate dynamic text input fields based on the number of groups
   output$groups <- renderUI({
@@ -141,7 +142,8 @@ server <- function(input, output, session) {
   output$calculations_table <- renderDataTable({
     req(wrangled_data())
     wrangled_data()
-  })
+  }, options = list(pageLength = 5))
+  
   
   
   output$condition_filter <- renderUI({
@@ -168,7 +170,7 @@ server <- function(input, output, session) {
   output$filtered_table <- renderDataTable({
     req(filtered_data())
     filtered_data()
-  })
+  }, options = list(pageLength = 5))
   
   downloadServer("download_filtered_data", filtered_data, function(input, session) {
     condition <- input$condition  
@@ -211,7 +213,7 @@ server <- function(input, output, session) {
   # Display the replicate averages table in "Calculations" tab
   output$rep_avg_table <- renderDataTable({
     rep_avg_data()
-  })
+  }, options = list(pageLength = 5))
   
   downloadServer("download_rep_avg_data", rep_avg_data, function(input, session) {
     paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
@@ -222,7 +224,7 @@ server <- function(input, output, session) {
   output$rep_avg_filtered_table <- renderDataTable({
     req(filtered_rep_avg_data())
     filtered_rep_avg_data()
-  })
+  }, options = list(pageLength = 5))
   
   filtered_rep_avg_data <- reactive({
     req(rep_avg_data())
@@ -343,8 +345,11 @@ server <- function(input, output, session) {
   output$ddct_data <- renderDataTable({
     req(average_dct())
     average_dct()
-  })
+  }, options = list(pageLength = 5))
   
+  downloadServer("download_ddct_data", ddct_data, function(input, session) {
+    paste("DDCT_processed_data_", Sys.Date(), ".csv", sep = "")
+  })
 
   # Calculate replicate averages when data is loaded
   
@@ -366,9 +371,11 @@ server <- function(input, output, session) {
   # Display the replicate averages table in "Calculations" tab
   output$rep_avg_table_ddct <- renderDataTable({
     rep_avg_data_ddct()
+  }, options = list(pageLength = 5))
+  
+  downloadServer("download_ddct_avg_data", rep_avg_table_ddct, function(input, session) {
+    paste("DDCT_processed_replicate_data_", Sys.Date(), ".csv", sep = "")
   })
-  
-  
 # Graphing dct or ddct  
   # Define a reactive expression to switch between datasets
   dct_or_ddct <- reactive({
@@ -749,32 +756,56 @@ server <- function(input, output, session) {
     })
   
   #Stats
-  data_stats <- reactive({
-    # Assuming wrangled_data() fetches or generates your dataset dynamically
-    wrangled_data()
-  })
-  
-  # Update the column choices based on the dataset
+  # Populate the sample and column choices based on the available data
   observe({
-    updateSelectInput(session, "selectedColumn",
-                      choices = names(data_stats)[grepl("^fc_dct_", names(data_stats))])
+    updateSelectInput(session, "sampleInput", choices = unique(wrangled_data()$cell))
+    updateSelectInput(session, "columnInput", choices = grep("^fc_dct_", names(wrangled_data()), value = TRUE))
   })
   
-  # Calculate and display statistics
-  output$statsOutput <- renderTable({
-    # Ensure a column is selected
-    if (is.null(input$selectedColumn)) return()
-    
-    # Filter the dataset to include only the selected column and the 'cell' column
-    selectedData <- data_stats[c("cell", input$selectedColumn)]
-    
-    # Calculate 'n' for each group in 'cell' for the selected column
-    stats <- aggregate(. ~ cell, data_stats = selectedData, function(x) length(x[!is.na(x)]))
-    colnames(stats)[2] <- "n"
-    
-    # Return the calculated stats
-    stats
+  # Reactive expression to calculate the count of non-NA values for each sample
+  sampleCounts <- reactive({
+    req(input$sampleInput, input$columnInput)  # Ensure the inputs are not NULL
+    # Filter the data based on selected samples
+    selected_data <- wrangled_data()[wrangled_data()$cell %in% input$sampleInput, ]
+    # Calculate the count of non-NA entries for the selected fc_dct_ column for each sample
+    counts <- tapply(selected_data[[input$columnInput]], selected_data$cell, function(x) sum(!is.na(x)))
+    # Return only the counts for the samples selected by the user
+    counts[names(counts) %in% input$sampleInput]
   })
+  
+  # Reactive expression to create a table with sample sizes
+  sampleSizeTable <- reactive({
+    counts <- sampleCounts()  # Get the sample counts
+    if (is.null(counts) || length(counts) == 0) {
+      return(data.frame(Sample = character(0), N = integer(0)))  # Return an empty dataframe if there are no counts
+    }
+    # Create the dataframe with the sample names and their corresponding counts
+    data.frame(Sample = names(counts), N = counts, stringsAsFactors = FALSE, row.names = NULL)
+  })
+  
+  # Render the table output using the sample size table
+  output$nTable <- renderDataTable({
+    datatable <- sampleSizeTable()  # Get the sample size table
+    if (nrow(datatable) == 0) {
+      return(data.frame(Sample = "No data available", N = NA))  # Display message if no data
+    }
+    datatable  # Render the datatable
+  }, options = list(pageLength = 5))
+  
+  
+  #SW
+  # output$shapiroOutput <- renderPrint({
+  #   req(input$sampleInput, input$columnInput)
+  #   
+  #   print(input$sampleInput)
+  #   print(input$columnInput)
+  #   # Filter data based on selected samples
+  #   shapiro_filter <- wrangled_data() %>%
+  #     filter(sample %in% input$sampleInput)
+  #   
+  #   # Call perform_group_analysis function
+  #   perform_shapiro(shapiro_filter, input$columnInput, "cell")
+  # })
   
 }
 
