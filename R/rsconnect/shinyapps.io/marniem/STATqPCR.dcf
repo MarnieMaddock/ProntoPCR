@@ -1,0 +1,13 @@
+name: STATqPCR
+title: STATqPCR
+username: marniem
+account: marniem
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11254602
+bundleId: 8270682
+url: https://marniem.shinyapps.io/STATqPCR/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: graphing_module.R|module_color_scheme.R|module_graph.R|utils_graphDisplay.R|utils_shapiro.R

@@ -21,6 +21,7 @@ source("utils_downloadGraphHandler.R")
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   theme = bs_theme(version = 4, bootswatch = "pulse"),
+  tags$head(includeHTML("analytics.html")),
   includeCSS("www/style.css"),
   # tags$head(
   #   # Link to the CSS file
@@ -31,7 +32,7 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v0.0.0.10", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
@@ -152,7 +153,11 @@ ui <- fluidPage(
             ),
       conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 1",
                        h3(HTML("<b>Statistical Flowchart</b>")),
-                       h6("This is the suggested workflow for statistical analysis of PCR data.")),
+                       h6("This is the suggested workflow for statistical analysis of PCR data. This is a guide only and should be used in conjunction with your own knowledge of statistics for your own applications."),
+                       tags$br(),
+                       tags$br(),
+                       tags$br(),
+                       h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question to determine what constitutes a small sample size.")),
       conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
                        h6("Select the samples and gene to perform statistics on."),

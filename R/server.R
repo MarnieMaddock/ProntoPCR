@@ -4,6 +4,7 @@ source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("utils_graphTheme.R")
 #source("utils_shapiro.R")
+#source("utils_shapiro.R")
 #source("graphing_module.R")
 
 server <- function(input, output, session) {
@@ -783,14 +784,19 @@ server <- function(input, output, session) {
     data.frame(Sample = names(counts), N = counts, stringsAsFactors = FALSE, row.names = NULL)
   })
   
-  # Render the table output using the sample size table
+  # Render the table output using the sample size table, only when checkbox is selected
   output$nTable <- renderDataTable({
-    datatable <- sampleSizeTable()  # Get the sample size table
-    if (nrow(datatable) == 0) {
-      return(data.frame(Sample = "No data available", N = NA))  # Display message if no data
+    if (input$sample_size) {  # Check if the checkbox is selected
+      datatable <- sampleSizeTable()  # Get the sample size table
+      if (nrow(datatable) == 0) {
+        return(data.frame(Sample = "No data available", N = NA))  # Display message if no data
+      }
+      datatable  # Render the datatable
+    } else {
+      return(NULL)  # If checkbox is not selected, return NULL (don't render the table)
     }
-    datatable  # Render the datatable
   }, options = list(pageLength = 5))
+  
   
   
   #SW
@@ -800,11 +806,33 @@ server <- function(input, output, session) {
   #   print(input$sampleInput)
   #   print(input$columnInput)
   #   # Filter data based on selected samples
-  #   shapiro_filter <- wrangled_data() %>%
-  #     filter(sample %in% input$sampleInput)
+    # shapiro_filter <- wrangled_data() %>%
+    #   filter(sample %in% input$sampleInput)
   #   
   #   # Call perform_group_analysis function
   #   perform_shapiro(shapiro_filter, input$columnInput, "cell")
+  # })
+  
+  # norm_results <- reactive({
+  #   req(input$sampleInput, input$columnInput) # Ensure these inputs are not NULL
+  #   selectedGroupVar <- input$sampleInput
+  #   selectedResponseVar <- input$columnInput
+  #   testsSelected <- input$normality_test
+  #   
+  #   if ("shapiro" %in% testsSelected) {
+  #     shapiro_filter <- wrangled_data() %>%
+  #       filter(sample %in% input$sampleInput)
+  #     # Call your modified perform_shapiro function
+  #     shapiroTestResults <- perform_shapiro(shapiro_filter, selectedResponseVar, "cell")
+  #     return(shapiroTestResults)
+  #   } else {
+  #     return(data.frame()) # Return an empty data frame if no test is selected
+  #   }
+  # })
+  # 
+  # 
+  # output$normalityTable <- renderTable({
+  #   norm_results()
   # })
   
 }
