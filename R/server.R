@@ -654,6 +654,15 @@ server <- function(input, output, session) {
           theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
         }
 
+        shapes_reactive <- reactive({
+          if (input$change_shapes) {
+            # New order when checkbox is selected
+            setNames(c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)
+          } else {
+            # Default order
+            setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)
+          }
+        })
  #if(input$select_dct_or_ddct == "dct"){      
     #Create your plot using ggplot2 with the selected dataset
       if (input$plot_type == "column"){
@@ -684,13 +693,14 @@ server <- function(input, output, session) {
         # Dot plot
         plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
           geom_point(size = input$dot_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
-                     show.legend = FALSE, position = position_jitter(width = input$jitter_amount)) +
+                     show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
           stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, colour = "black", linewidth = 1.5, na.rm = TRUE,  show.legend = FALSE) +
           stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,
                        fun = mean, geom = "crossbar", width = 0.15, linewidth = 1, show.legend = FALSE, colour = "black") +  # Add average line for each column x
           labs(y = input$y_label, x = input$x_label) +
           scale_color_manual(values = setNames(colors, positions)) +
-          scale_shape_manual(values = setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23), positions)) +
+          #scale_shape_manual(values = setNames(c(16, 17, 15, 18, 21, 22, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)) +
+          scale_shape_manual(values = shapes_reactive()) +
           theme_Marnie +
           scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA)) +
           scale_x_discrete(limits = positions, labels = user_labels()) +
@@ -761,6 +771,13 @@ server <- function(input, output, session) {
   observe({
     updateSelectInput(session, "sampleInput", choices = unique(wrangled_data()$cell))
     updateSelectInput(session, "columnInput", choices = grep("^fc_dct_", names(wrangled_data()), value = TRUE))
+  })
+  
+  # Dynamically render the heading based on the checkbox
+  output$sampleSizeHeading <- renderUI({
+    if (input$sample_size) {  # Check if the checkbox is ticked
+      h4(HTML("<b>Sample Size</b>"))  # Display the heading
+    }
   })
   
   # Reactive expression to calculate the count of non-NA values for each sample

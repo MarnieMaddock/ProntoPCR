@@ -145,7 +145,12 @@ ui <- fluidPage(
                                          selected = "fill")),
       conditionalPanel(
               condition = "input.tabselected == 4 && input.plot_type == 'dot'",
-              numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1),
+              tags$br(),
+              checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
+              fluidRow(
+                column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.1)),
+                column(width = 6, numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1)),
+                       ),
               numericInput("seed_input", "Set Seed:", value = 123),
               helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
               tags$br(),
@@ -283,7 +288,7 @@ ui <- fluidPage(
                             tags$br(),
                             tags$br()),
                   tabPanel("Statistics", value = 2,
-                    h4(HTML("<b>Sample Size</b>")),
+                    uiOutput("sampleSizeHeading"),
                     dataTableOutput("nTable"),
                     tags$br(),
                     h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
