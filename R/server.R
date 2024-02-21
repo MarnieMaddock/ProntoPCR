@@ -3,8 +3,6 @@
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("utils_graphTheme.R")
-#source("utils_shapiro.R")
-#source("utils_shapiro.R")
 #source("graphing_module.R")
 
 server <- function(input, output, session) {
@@ -814,43 +812,90 @@ server <- function(input, output, session) {
     }
   }, options = list(pageLength = 5))
   
+  #shapiro-wilk
+  # Dynamically render the heading based on the checkbox
+  output$normalityHeading <- renderUI({
+    if (!is.null(input$normality_test) && any(input$normality_test %in% c("shapiro", "ks"))) {      
+      h4(HTML("<b>Normality Test</b>"))  # Display the heading
+    }
+  })
   
+  shapiro_data_reactive <- reactive({
+    req(input$sampleInput) # Ensure at least one sample is selected
+    req(input$columnInput) # Ensure a column is selected
+    
+    wrangled_data() %>%
+      filter(cell %in% input$sampleInput) %>%
+      select(cell, !!as.symbol(input$columnInput)) %>%
+      filter(!is.na(!!as.symbol(input$columnInput))) %>%
+      droplevels()
+  })
   
-  #SW
-  # output$shapiroOutput <- renderPrint({
-  #   req(input$sampleInput, input$columnInput)
-  #   
-  #   print(input$sampleInput)
-  #   print(input$columnInput)
-  #   # Filter data based on selected samples
-    # shapiro_filter <- wrangled_data() %>%
-    #   filter(sample %in% input$sampleInput)
-  #   
-  #   # Call perform_group_analysis function
-  #   perform_shapiro(shapiro_filter, input$columnInput, "cell")
-  # })
+  # Reactive expression for performing the Shapiro-Wilk test
+  test_results_shapiro <- reactive({
+    req(input$normality_test == "shapiro") # Proceed only if Shapiro-Wilk is selected
+    data_for_shapiro <- shapiro_data_reactive() # Use the reactive filtered data
+    
+    # Split the data by the 'cell' factor and perform Shapiro-Wilk test for each group
+    shapiro_col <- input$columnInput
+    grouped_data <- split(data_for_shapiro[[shapiro_col]], data_for_shapiro$cell)
+    
+    # Initialize an empty data frame to store the results
+    results_df <- data.frame(
+      Group = character(),
+      W = numeric(),
+      P_value = numeric(),
+      Passed_normality_test = logical(),
+      P_value_summary = character(),
+      stringsAsFactors = FALSE
+    )
+    
+    # Loop through the list of groups and perform the Shapiro-Wilk test
+    for (group_name in names(grouped_data)) {
+      test_result <- tryCatch({
+        shapiro.test(grouped_data[[group_name]])
+      }, error = function(e) {
+        return(list(statistic = NA, p.value = NA))
+      })
+      
+      # Determine if the group passes the normality test based on the p-value
+      passed_test <- test_result$p.value > 0.05
+      # Determine the p-value summary
+      p_value_summary <- ifelse(test_result$p.value > 0.05, "ns", ifelse(test_result$p.value < 0.01, "**", "*"))
+      
+      # Add the results to the data frame
+      results_df <- rbind(results_df, data.frame(
+        Group = group_name,
+        W = test_result$statistic,
+        P_value = test_result$p.value,
+        Passed_normality_test = ifelse(passed_test, "Yes", "No"),
+        P_value_summary = p_value_summary,
+        stringsAsFactors = FALSE
+      ))
+    }
+    rownames(results_df) <- NULL
+    # Return the results data frame
+    return(results_df)
+  })
   
-  # norm_results <- reactive({
-  #   req(input$sampleInput, input$columnInput) # Ensure these inputs are not NULL
-  #   selectedGroupVar <- input$sampleInput
-  #   selectedResponseVar <- input$columnInput
-  #   testsSelected <- input$normality_test
-  #   
-  #   if ("shapiro" %in% testsSelected) {
-  #     shapiro_filter <- wrangled_data() %>%
-  #       filter(sample %in% input$sampleInput)
-  #     # Call your modified perform_shapiro function
-  #     shapiroTestResults <- perform_shapiro(shapiro_filter, selectedResponseVar, "cell")
-  #     return(shapiroTestResults)
-  #   } else {
-  #     return(data.frame()) # Return an empty data frame if no test is selected
-  #   }
-  # })
-  # 
-  # 
-  # output$normalityTable <- renderTable({
-  #   norm_results()
-  # })
+  # Observe changes in test_results and update the output
+  observe({
+    results_shapiro <- test_results_shapiro() # This will re-run whenever input$sampleInput or input$columnInput changes
+    
+    if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
+      # Output the error message if present
+      output$testResults <- renderTable({
+        matrix(results_shapiro$error, nrow = 1)
+      })
+    } else {
+      #Construct and render the results table
+        # Output the results dataframe
+        output$normalityTable <- renderDataTable({
+          results_shapiro
+        })
+    }
+  })
+  
   
 }
 

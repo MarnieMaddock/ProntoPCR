@@ -172,8 +172,9 @@ ui <- fluidPage(
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
                        h6(HTML("<b>1. Sample Size</b>")),
                        checkboxInput("sample_size", "Calculate sample size", value = FALSE),
-                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n < 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks"),
-                                          selected = "shapiro"),
+                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n = 3 -> 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks"),
+                                          selected = NULL),
+                       #verbatimTextOutput("testResults"),
                        h6(HTML("<b>3. Homogeneity of Variance</b>")),
                        checkboxInput("variance", "Check for equal variance (Levene's test).", value = FALSE),
                        checkboxGroupInput("log_transform", HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>"), choices = c("Log10", "No transformation"), selected = "Log10"),
@@ -292,7 +293,7 @@ ui <- fluidPage(
                     dataTableOutput("nTable"),
                     tags$br(),
                     h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
-                    h4(HTML("<b>Normality Test</b>")),
+                    uiOutput("normalityHeading"),
                     dataTableOutput("normalityTable")
                   )
                    )

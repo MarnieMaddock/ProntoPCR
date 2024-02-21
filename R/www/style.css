@@ -53,3 +53,40 @@ body {
     background-color: #00359bff;
     border-bottom: 1.5px solid #00359bff;
 }
+
+.progress-bar {
+  background-color: #00359bff;
+}
+
+a.page-link {
+    color: #00359bff;
+    background-color: white;
+    border-color: #fff;
+}
+
+a.page-link:hover {
+  
+    color: #fff;
+    background-color: #00359bff;
+    border-color: #00359bff;
+}
+
+
+
+.nav-pagination .page-item.active .page-link,
+.page-item.active > .page-link,
+.page-item.active > a.page-link {
+    z-index: 3;
+    color: #fff;
+    background-color: #00359bff; 
+    border-color: #00359bff; 
+}
+
+input[type='text']:hover,
+textarea:hover {
+  border-color: #00359bff;
+}
+
+.shiny-input-number.form-control.shiny-bound-input:focus {
+  border-color: #00359bff;
+}
