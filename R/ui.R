@@ -13,10 +13,7 @@ library(shinyjs)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
-#source("module_graph.R")
-#source("utils_graphPanel.R")
-#source("utils_graphDisplay.R")
-#source("graphing_module.R")
+
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -32,7 +29,7 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR v0.0.0.10", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v0.0.0.20", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",

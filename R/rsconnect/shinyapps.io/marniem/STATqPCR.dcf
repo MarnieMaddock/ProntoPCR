@@ -5,9 +5,9 @@ account: marniem
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11254602
-bundleId: 8270682
+bundleId: 8279260
 url: https://marniem.shinyapps.io/STATqPCR/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: graphing_module.R|module_color_scheme.R|module_graph.R|utils_graphDisplay.R|utils_shapiro.R
+ignoredFiles: graphing_module.R|module_color_scheme.R|module_graph.R|module_sampleSize.R|utils_graphDisplay.R|utils_graphPanel.R|utils_shapiro.R
