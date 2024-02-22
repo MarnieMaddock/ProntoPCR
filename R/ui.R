@@ -97,6 +97,11 @@ ui <- fluidPage(
             # Add textInputs for custom Y-axis and X-axis labels
             uiOutput("dynamic_y_label_input"),
             textInput("x_label", "Enter X-axis Label", value = "Group"),
+            checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
+            radioButtons("error_type", "Choose Error Bar Type:",
+                     choices = list("Standard Deviation" = "sd", 
+                                    "Standard Error" = "se"),
+                     selected = "se"),
             selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
             fluidRow(
               column(

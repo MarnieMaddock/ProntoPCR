@@ -563,7 +563,28 @@ server <- function(input, output, session) {
     })
   })
   
-    
+  mean_sd <- function(x) {
+    n <- sum(!is.na(x)) # Number of non-NA values
+    if (n > 1) { # Can only calculate sd if n > 1
+      sd_x <- sd(x, na.rm = TRUE)
+      mean_x <- mean(x, na.rm = TRUE)
+      return(data.frame(y = mean_x, ymin = mean_x - sd_x, ymax = mean_x + sd_x))
+    } else {
+      return(data.frame(y = NA, ymin = NA, ymax = NA)) # Return NA if not enough data
+    }
+  }
+  
+  se <- function(x) {
+    n <- sum(!is.na(x))
+    if (n > 1) {
+      sd_x <- sd(x, na.rm = TRUE) / sqrt(n)
+      mean_x <- mean(x, na.rm = TRUE)
+      return(data.frame(y = mean_x, ymin = mean_x - sd_x, ymax = mean_x + sd_x))
+    } else {
+      return(data.frame(y = NA, ymin = NA, ymax = NA))
+    }
+  }
+  
   output$plot <- renderPlot({
       req(input$select_dct_or_ddct, input$y_label, input$x_label)
       set.seed(input$seed_input)
@@ -661,29 +682,52 @@ server <- function(input, output, session) {
             setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)
           }
         })
+        
+        
+
+          # Determine which function to use based on user input
+          error_fun <- if(input$error_type == "sd") {
+            mean_sd
+          } else {
+            mean_se # Assuming mean_se is defined or available
+          }
+          
+          # Calculate the y-limits based on the error function
+          summary_stats <- error_fun(filtered_data2[[y_aes]])
+          print(summary_stats)
+          min_ymin <- min(summary_stats$ymin, na.rm = TRUE)
+          print(min_ymin)
+          max_ymax <- max(summary_stats$ymax, na.rm = TRUE)
+          print(max_ymax)
+              
+          # Check if ymin is below 0 and adjust y_limits accordingly
+          y_limits <- if (min_ymin < 0) {
+            lower_limit <- min_ymin * 1.1 # Give a 10% buffer below the minimum ymin
+            c(lower_limit, NA)
+          } else {
+            c(0, NA) # If ymin is not below 0, start the y-axis at 0
+          }
  #if(input$select_dct_or_ddct == "dct"){      
     #Create your plot using ggplot2 with the selected dataset
       if (input$plot_type == "column"){
         if (input$fill_color_toggle == "color"){
           plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
             geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
-            stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, aes(color = !!x_aes), linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
+            stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, aes(color = !!x_aes), linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
             geom_beeswarm(size = input$dot_size, method = "hex", cex = 2.7, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
             labs(y = input$y_label, x = input$x_label) +
             scale_color_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
             theme_Marnie +
-            scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA)) +
             scale_x_discrete(limits = positions, labels = user_labels()) +
             x_axis_theme 
         }else if (input$fill_color_toggle == "fill"){
           plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
             geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
-            stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, color = "black", linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
+            stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, color = "black", linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
             geom_beeswarm(size = input$dot_size, method = "hex", cex = 2.7, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
             labs(y = input$y_label, x = input$x_label) +
             scale_fill_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
             theme_Marnie +
-            scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA)) +
             scale_x_discrete(limits = positions, labels = user_labels()) +
             x_axis_theme
         }
@@ -692,19 +736,21 @@ server <- function(input, output, session) {
         plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
           geom_point(size = input$dot_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
                      show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
-          stat_summary(fun.data = mean_se, geom = "errorbar", width = 0.2, colour = "black", linewidth = 1.5, na.rm = TRUE,  show.legend = FALSE) +
+          stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, colour = "black", linewidth = 1.5, na.rm = TRUE,  show.legend = FALSE) +
           stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,
                        fun = mean, geom = "crossbar", width = 0.15, linewidth = 1, show.legend = FALSE, colour = "black") +  # Add average line for each column x
           labs(y = input$y_label, x = input$x_label) +
           scale_color_manual(values = setNames(colors, positions)) +
-          #scale_shape_manual(values = setNames(c(16, 17, 15, 18, 21, 22, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)) +
           scale_shape_manual(values = shapes_reactive()) +
           theme_Marnie +
-          scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA)) +
           scale_x_discrete(limits = positions, labels = user_labels()) +
           x_axis_theme
       }
-
+          
+          if (input$start_at_zero) {
+            plot <- plot +
+              scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
+          }
       # Set font based on user selection
       font_family <- input$font_selector
       plot <- plot + theme(text = element_text(family = font_family))
