@@ -6,7 +6,7 @@ source("utils_graphTheme.R")
 
 
 server <- function(input, output, session) {
-
+  
   # Reactive values to store housekeeper names and numeric input value
   housekeepers_names <- reactiveValues()
   
@@ -152,7 +152,7 @@ server <- function(input, output, session) {
     selectInput("condition", "Select Condition", choices = conditions)
   })
   
-
+  
   filtered_data <- reactive({
     req(wrangled_data())
     conditions_to_filter <- input$condition
@@ -217,7 +217,7 @@ server <- function(input, output, session) {
   downloadServer("download_rep_avg_data", rep_avg_data, function(input, session) {
     paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
   })
-
+  
   
   
   output$rep_avg_filtered_table <- renderDataTable({
@@ -297,7 +297,7 @@ server <- function(input, output, session) {
     ddct_data$condition <- factor(ddct_data$condition, levels = condition2)
     return(ddct_data)
   })
-
+  
   mean_value <- reactiveVal(NULL)
   # Calculate the average delta ct for the selected gene in the control samples
   average_dct <- reactive({
@@ -349,7 +349,7 @@ server <- function(input, output, session) {
   downloadServer("download_ddct_data", ddct_data, function(input, session) {
     paste("DDCT_processed_data_", Sys.Date(), ".csv", sep = "")
   })
-
+  
   # Calculate replicate averages when data is loaded
   
   rep_avg_data_ddct <- reactive({
@@ -375,12 +375,12 @@ server <- function(input, output, session) {
   downloadServer("download_ddct_avg_data", rep_avg_table_ddct, function(input, session) {
     paste("DDCT_processed_replicate_data_", Sys.Date(), ".csv", sep = "")
   })
-# Graphing dct or ddct  
+  # Graphing dct or ddct  
   # Define a reactive expression to switch between datasets
   dct_or_ddct <- reactive({
     if (input$select_dct_or_ddct == "dct") {
-          # If 'dct' is selected, return wrangled_data()
-          return(wrangled_data())
+      # If 'dct' is selected, return wrangled_data()
+      return(wrangled_data())
     } else {
       # If 'ddct' is selected, return average_dct()
       return(average_dct())
@@ -407,6 +407,7 @@ server <- function(input, output, session) {
         
         # Generate selectInput for choosing the column dynamically
         selectInput("fc_dct_column", "Select Gene", choices = fc_dct_columns)
+        
       })
     } else {
       # Hide the UI elements if ddct is selected
@@ -414,6 +415,8 @@ server <- function(input, output, session) {
       output$column_selector <- renderUI(NULL)
     }
   })
+  
+  
   
   observeEvent(input$select_dct_or_ddct, {
     # Check if 'ddct' is selected
@@ -435,7 +438,7 @@ server <- function(input, output, session) {
     selected_gene_cleaned <- gsub("^dct_", "", input$select_gene)
     paste("You are currently graphing gene:", selected_gene_cleaned)
   })
-
+  
   output$dynamic_y_label_input <- renderUI({
     # Initialize variable to store cleaned gene name
     selected_gene_cleaned <- ""
@@ -464,7 +467,7 @@ server <- function(input, output, session) {
     textInput("y_label", "Enter Y-axis Label. Markup is accepted.", value = placeholder_text)
   })
   
-
+  
   # Get the color scheme based on user input
   color_schemes <- reactiveValues(
     colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
@@ -509,7 +512,7 @@ server <- function(input, output, session) {
     vibrant3 = c("#ff00c1", "#9600ff", "#4900ff", "#00b8ff", "#00fff9"),
     custom = c("#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de", "#56cfe1","#64dfdf", "#72efdd", "#80ffdb", "#B7D7B9", "#D2C3A8", "#E0B9A0","#EDAF97","#C49792", "#AD91A3", "#9D91A3")
   )
-
+  
   # Dynamic generation of text inputs based on positions
   output$x_axis_labels <- renderUI({
     positions <- if (!is.null(input$x_axis_positions)) {
@@ -517,8 +520,8 @@ server <- function(input, output, session) {
     } else {
       NULL
     }
-
-
+    
+    
     if (!is.null(positions) && length(positions) > 0) {
       lapply(positions, function(pos) {
         textInput(inputId = paste0("label_", pos),
@@ -527,8 +530,8 @@ server <- function(input, output, session) {
       })
     }
   })
-
-
+  
+  
   # Reactive function to get user-entered labels
   user_labels <- reactive({
     positions <- if (!is.null(input$x_axis_positions)) {
@@ -536,14 +539,14 @@ server <- function(input, output, session) {
     } else {
       NULL
     }
-
+    
     if (!is.null(positions) && length(positions) > 0) {
       sapply(positions, function(pos) {
         input[[paste0("label_", pos)]]
       })
     }
   })
-
+  
   observeEvent(input$labels_positions, {
     # Parse labels if user entered them
     filtered_labels <- if (!is.null(input$labels_positions)) {
@@ -551,12 +554,12 @@ server <- function(input, output, session) {
     } else {
       NULL
     }
-
+    
     # Update the UI with text boxes for custom labels
     label_textboxes <- lapply(filtered_labels, function(label) {
       textInput(paste0("label_", label), label, label)
     })
-
+    
     # Render UI for text boxes
     output$labels_textboxes <- renderUI({
       label_textboxes
@@ -586,219 +589,224 @@ server <- function(input, output, session) {
   }
   
   output$plot <- renderPlot({
-      req(input$select_dct_or_ddct, input$y_label, input$x_label)
-      set.seed(input$seed_input)
+    req(input$select_dct_or_ddct, input$y_label, input$x_label)
+    set.seed(input$seed_input)
+    
+    if(input$select_dct_or_ddct == "dct"){
+      filtered_data2 <- dct_or_ddct() %>%
+        filter(condition %in% input$selected_condition)
+      filtered_rep_avg_data2 <- rep_avg_data() %>%
+        filter(condition %in% input$selected_condition)
       
-      if(input$select_dct_or_ddct == "dct"){
-        filtered_data2 <- dct_or_ddct() %>%
-          filter(condition %in% input$selected_condition)
-        filtered_rep_avg_data2 <- rep_avg_data() %>%
-          filter(condition %in% input$selected_condition)
-
-        # Determine the x aesthetic based on the number of selected conditions
-        x_aes <- if (length(input$selected_condition) >= 2) {
-          sym("cell")
+      # Determine the x aesthetic based on the number of selected conditions
+      x_aes <- if (length(input$selected_condition) >= 2) {
+        sym("cell")
+      } else {
+        sym("group")
+      }
+      
+      # Specify the y_aes based on user input
+      y_aes <- sym(input$fc_dct_column)
+      y_aes_avg <- sym(input$fc_dct_column)
+      
+      positions <- if (length(input$selected_condition) >= 2) {
+        # Parse positions if user entered them, or use unique values from "cell" column
+        if (!is.null(input$x_axis_positions)) {
+          unlist(strsplit(input$x_axis_positions, ","))
         } else {
-          sym("group")
+          unique(filtered_data2$cell)
         }
-
-        # Specify the y_aes based on user input
-        y_aes <- sym(input$fc_dct_column)
-        y_aes_avg <- sym(input$fc_dct_column)
-
-            positions <- if (length(input$selected_condition) >= 2) {
-              # Parse positions if user entered them, or use unique values from "cell" column
-              if (!is.null(input$x_axis_positions)) {
-                unlist(strsplit(input$x_axis_positions, ","))
-              } else {
-                unique(filtered_data2$cell)
-              }
-            } else {
-              unlist(strsplit(input$x_axis_positions, ","))
-            }
-        
-          }else if(input$select_dct_or_ddct == "ddct"){
-        filtered_data2 <- dct_or_ddct()
-        filtered_rep_avg_data2 <- rep_avg_data_ddct()
-        # Determine the x aesthetic based on the number of selected conditions
-        x_aes <- sym("group")
-        # Specify the y_aes based on user input
-        y_aes <- sym("fc_ddct")
-        y_aes_avg <- sym("mean_fc_ddct")
-
-            positions <- if (length(input$select_samples) >= 2) {
-              # Parse positions if user entered them, or use unique values from "cell" column
-              if (!is.null(input$x_axis_positions)) {
-                unlist(strsplit(input$x_axis_positions, ","))
-              } else {
-                unique(filtered_data2$group)
-              }
-            } else {
-              unlist(strsplit(input$x_axis_positions, ","))
-            }
-          }
+      } else {
+        unlist(strsplit(input$x_axis_positions, ","))
+      }
       
+    }else if(input$select_dct_or_ddct == "ddct"){
+      filtered_data2 <- dct_or_ddct()
+      filtered_rep_avg_data2 <- rep_avg_data_ddct()
+      # Determine the x aesthetic based on the number of selected conditions
+      x_aes <- sym("group")
+      # Specify the y_aes based on user input
+      y_aes <- sym("fc_ddct")
+      y_aes_avg <- sym("mean_fc_ddct")
       
-        # Check if x-axis categories are available
-        if (is.null(input$x_axis_positions) || input$x_axis_positions == "") {
-          validate(
-            need(FALSE, "Please enter x-axis categories to build the graph.")
-          )
-        }
-      
-        # Get the color scheme based on user input
-        color_scheme <- input$color_scheme_select
-        colors <- if (color_scheme == "custom") {
-          # If the user selects "Custom," use the custom colors defined earlier
-          color_schemes$custom
-        } else if (color_scheme %in% names(color_schemes)) {
-          # If the user selects one of the predefined schemes, use the corresponding colors
-          color_schemes[[color_scheme]]
+      positions <- if (length(input$select_samples) >= 2) {
+        # Parse positions if user entered them, or use unique values from "cell" column
+        if (!is.null(input$x_axis_positions)) {
+          unlist(strsplit(input$x_axis_positions, ","))
         } else {
-          # If none of the above, use a default set of colors
-          c("#ffb000", "#648fff", "#dc267f", "#785ef0", "#00359c", "#fe6100")
+          unique(filtered_data2$group)
         }
-
-
-        # Check if the colour palette is smaller than the number of positions entered by the user
-        if (length(colors) < length(positions)) {
-          validate(
-            need(FALSE, "The selected colour palette is smaller than the number of x-axis groups.")
-          )
-        }
-        # Define x-axis theme based on checkbox
-        x_axis_theme <- if (input$rotate_labels) {
-          theme(axis.text.x = element_text(angle = 45, hjust = 1))
-        } else {
-          theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
-        }
-
-        shapes_reactive <- reactive({
-          if (input$change_shapes) {
-            # New order when checkbox is selected
-            setNames(c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)
-          } else {
-            # Default order
-            setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)
-          }
-        })
-        
-        
-
-          # Determine which function to use based on user input
-          error_fun <- if(input$error_type == "sd") {
-            mean_sd
-          } else {
-            mean_se # Assuming mean_se is defined or available
-          }
-          
-          # Calculate the y-limits based on the error function
-          summary_stats <- error_fun(filtered_data2[[y_aes]])
-          print(summary_stats)
-          min_ymin <- min(summary_stats$ymin, na.rm = TRUE)
-          print(min_ymin)
-          max_ymax <- max(summary_stats$ymax, na.rm = TRUE)
-          print(max_ymax)
-              
-          # Check if ymin is below 0 and adjust y_limits accordingly
-          y_limits <- if (min_ymin < 0) {
-            lower_limit <- min_ymin * 1.1 # Give a 10% buffer below the minimum ymin
-            c(lower_limit, NA)
-          } else {
-            c(0, NA) # If ymin is not below 0, start the y-axis at 0
-          }
- #if(input$select_dct_or_ddct == "dct"){      
+      } else {
+        unlist(strsplit(input$x_axis_positions, ","))
+      }
+    }
+    
+    
+    # Check if x-axis categories are available
+    if (is.null(input$x_axis_positions) || input$x_axis_positions == "") {
+      validate(
+        need(FALSE, "Please enter x-axis categories to build the graph.")
+      )
+    }
+    
+    # if(output$column_selector == ) {
+    #   validate(
+    #     need(FALSE, "Please select another gene that has values for the selected groups/conditions.")
+    #   )
+    # }
+    # Get the color scheme based on user input
+    color_scheme <- input$color_scheme_select
+    colors <- if (color_scheme == "custom") {
+      # If the user selects "Custom," use the custom colors defined earlier
+      color_schemes$custom
+    } else if (color_scheme %in% names(color_schemes)) {
+      # If the user selects one of the predefined schemes, use the corresponding colors
+      color_schemes[[color_scheme]]
+    } else {
+      # If none of the above, use a default set of colors
+      c("#ffb000", "#648fff", "#dc267f", "#785ef0", "#00359c", "#fe6100")
+    }
+    
+    
+    # Check if the colour palette is smaller than the number of positions entered by the user
+    if (length(colors) < length(positions)) {
+      validate(
+        need(FALSE, "The selected colour palette is smaller than the number of x-axis groups.")
+      )
+    }
+    # Define x-axis theme based on checkbox
+    x_axis_theme <- if (input$rotate_labels) {
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    } else {
+      theme(axis.text.x = element_text(angle = 0, hjust = 0.5))
+    }
+    
+    shapes_reactive <- reactive({
+      if (input$change_shapes) {
+        # New order when checkbox is selected
+        setNames(c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)
+      } else {
+        # Default order
+        setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)
+      }
+    })
+    
+    
+    
+    # Determine which function to use based on user input
+    error_fun <- if(input$error_type == "sd") {
+      mean_sd
+    } else {
+      mean_se # Assuming mean_se is defined or available
+    }
+    
+    # Calculate the y-limits based on the error function
+    summary_stats <- error_fun(filtered_data2[[y_aes]])
+    print(summary_stats)
+    min_ymin <- min(summary_stats$ymin, na.rm = TRUE)
+    print(min_ymin)
+    max_ymax <- max(summary_stats$ymax, na.rm = TRUE)
+    print(max_ymax)
+    
+    # Check if ymin is below 0 and adjust y_limits accordingly
+    y_limits <- if (min_ymin < 0) {
+      lower_limit <- min_ymin * 1.1 # Give a 10% buffer below the minimum ymin
+      c(lower_limit, NA)
+    } else {
+      c(0, NA) # If ymin is not below 0, start the y-axis at 0
+    }
+    #if(input$select_dct_or_ddct == "dct"){      
     #Create your plot using ggplot2 with the selected dataset
-      if (input$plot_type == "column"){
-        if (input$fill_color_toggle == "color"){
-          plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-            geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
-            stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, aes(color = !!x_aes), linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
-            geom_beeswarm(size = input$dot_size, method = "hex", cex = 2.7, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
-            labs(y = input$y_label, x = input$x_label) +
-            scale_color_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
-            theme_Marnie +
-            scale_x_discrete(limits = positions, labels = user_labels()) +
-            x_axis_theme 
-        }else if (input$fill_color_toggle == "fill"){
-          plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-            geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
-            stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, color = "black", linewidth = 0.7, na.rm = TRUE,  show.legend = FALSE) +
-            geom_beeswarm(size = input$dot_size, method = "hex", cex = 2.7, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
-            labs(y = input$y_label, x = input$x_label) +
-            scale_fill_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
-            theme_Marnie +
-            scale_x_discrete(limits = positions, labels = user_labels()) +
-            x_axis_theme
-        }
-      }else if (input$plot_type == "dot") {
-        # Dot plot
+    if (input$plot_type == "column"){
+      if (input$fill_color_toggle == "color"){
         plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-          geom_point(size = input$dot_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
-                     show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
-          stat_summary(fun.data = error_fun, geom = "errorbar", width = 0.2, colour = "black", linewidth = 1.5, na.rm = TRUE,  show.legend = FALSE) +
-          stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,
-                       fun = mean, geom = "crossbar", width = 0.15, linewidth = 1, show.legend = FALSE, colour = "black") +  # Add average line for each column x
+          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+          stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, aes(color = !!x_aes), linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
+          geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
           labs(y = input$y_label, x = input$x_label) +
-          scale_color_manual(values = setNames(colors, positions)) +
-          scale_shape_manual(values = shapes_reactive()) +
+          scale_color_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
+          theme_Marnie +
+          scale_x_discrete(limits = positions, labels = user_labels()) +
+          x_axis_theme 
+      }else if (input$fill_color_toggle == "fill"){
+        plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
+          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+          stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, color = "black", linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
+          geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
+          labs(y = input$y_label, x = input$x_label) +
+          scale_fill_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
           theme_Marnie +
           scale_x_discrete(limits = positions, labels = user_labels()) +
           x_axis_theme
       }
-          
-          if (input$start_at_zero) {
-            plot <- plot +
-              scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
-          }
-      # Set font based on user selection
-      font_family <- input$font_selector
-      plot <- plot + theme(text = element_text(family = font_family))
-      plot <- plot + theme(axis.title.y = element_markdown())
-
-
-      # Customize x-axis and y-axis label font size using numeric input
-      axis_label_theme <- theme()
-
-      if (input$x_axis_title_font_size != 14) {
-        axis_label_theme <- axis_label_theme + theme(axis.title.x = element_text(size = input$x_axis_title_font_size))
-      }
-
-      if (input$y_axis_title_font_size != 14) {
-        axis_label_theme <- axis_label_theme + theme(axis.title.y = element_text(size = input$y_axis_title_font_size))
-      }
-
-      # Apply axis label theme to the plot
-      plot <- plot + axis_label_theme
-
-
-
-      # Customize x-axis and y-axis label font size using numeric input
-      axis_label_theme2 <- theme()
-
-      if (input$x_axis_label_font_size != 12) {
-        axis_label_theme2 <- axis_label_theme2 + theme(axis.text.x = element_text(size = input$x_axis_label_font_size))
-      }
-
-      if (input$y_axis_label_font_size != 12) {
-        axis_label_theme2 <- axis_label_theme2 + theme(axis.text.y = element_text(size = input$y_axis_label_font_size))
-      }
-
-      # Apply axis label theme to the plot
-      plot <- plot + axis_label_theme2
-      shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
-      # Print the plot
-      print(plot)
-
-    },
-    width = function() {
-      input$width * 100  # Adjust the multiplier as needed
-    },
-    height = function() {
-      input$height * 100  # Adjust the multiplier as needed
-
-    })
-    # Add more layers or customization as needed
+    }else if (input$plot_type == "dot") {
+      # Dot plot
+      plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
+        geom_point(size = input$dot_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
+                   show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
+        stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width, colour = "black", linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
+        stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,
+                     fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE, colour = "black") +  # Add average line for each column x
+        labs(y = input$y_label, x = input$x_label) +
+        scale_color_manual(values = setNames(colors, positions)) +
+        scale_shape_manual(values = shapes_reactive()) +
+        theme_Marnie +
+        scale_x_discrete(limits = positions, labels = user_labels()) +
+        x_axis_theme
+    }
+    
+    if (input$start_at_zero) {
+      plot <- plot +
+        scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
+    }
+    # Set font based on user selection
+    font_family <- input$font_selector
+    plot <- plot + theme(text = element_text(family = font_family))
+    plot <- plot + theme(axis.title.y = element_markdown())
+    
+    
+    # Customize x-axis and y-axis label font size using numeric input
+    axis_label_theme <- theme()
+    
+    if (input$x_axis_title_font_size != 14) {
+      axis_label_theme <- axis_label_theme + theme(axis.title.x = element_text(size = input$x_axis_title_font_size))
+    }
+    
+    if (input$y_axis_title_font_size != 14) {
+      axis_label_theme <- axis_label_theme + theme(axis.title.y = element_text(size = input$y_axis_title_font_size))
+    }
+    
+    # Apply axis label theme to the plot
+    plot <- plot + axis_label_theme
+    
+    
+    
+    # Customize x-axis and y-axis label font size using numeric input
+    axis_label_theme2 <- theme()
+    
+    if (input$x_axis_label_font_size != 12) {
+      axis_label_theme2 <- axis_label_theme2 + theme(axis.text.x = element_text(size = input$x_axis_label_font_size))
+    }
+    
+    if (input$y_axis_label_font_size != 12) {
+      axis_label_theme2 <- axis_label_theme2 + theme(axis.text.y = element_text(size = input$y_axis_label_font_size))
+    }
+    
+    # Apply axis label theme to the plot
+    plot <- plot + axis_label_theme2
+    shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
+    # Print the plot
+    print(plot)
+    
+  },
+  width = function() {
+    input$width * 100  # Adjust the multiplier as needed
+  },
+  height = function() {
+    input$height * 100  # Adjust the multiplier as needed
+    
+  })
+  # Add more layers or customization as needed
   
   
   output$downloadGraph <- downloadHandler(
@@ -935,10 +943,10 @@ server <- function(input, output, session) {
       })
     } else {
       #Construct and render the results table
-        # Output the results dataframe
-        output$normalityTable <- renderDataTable({
-          results_shapiro
-        })
+      # Output the results dataframe
+      output$normalityTable <- renderDataTable({
+        results_shapiro
+      })
     }
   })
   

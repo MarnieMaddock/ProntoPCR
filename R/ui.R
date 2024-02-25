@@ -80,84 +80,99 @@ ui <- fluidPage(
           column(width = 5, uiOutput("column_selector2")))
       ),
       conditionalPanel(condition = "input.tabselected == 4",
-        #graphing_sidebarUI("sidebar"),
-            h5(HTML("<b>Create Graph</b>")),
-            radioButtons("select_dct_or_ddct", "Select whether to graph dct or ddct:",
-                     choices = c("ΔCt Data" = "dct", "∆ΔCt Data" = "ddct"),
-                     selected = "dct"),
-          uiOutput("selected_gene_ui"),
-          tags$br(),
-            fluidRow(
-              column(width = 6, uiOutput("condition_selector")),
-              column(width = 6, uiOutput("column_selector"))
-            ),
-            textInput("x_axis_positions", "Enter the order to display x-axis groups (comma-separated):", placeholder = "e.g., treated,untreated"),
-            helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces. e.g., untreated,treated"),
-            h5(HTML("<b>Customise Graph</b>")),
-            # Add textInputs for custom Y-axis and X-axis labels
-            uiOutput("dynamic_y_label_input"),
-            textInput("x_label", "Enter X-axis Label", value = "Group"),
-            checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
-            radioButtons("error_type", "Choose Error Bar Type:",
-                     choices = list("Standard Deviation" = "sd", 
-                                    "Standard Error" = "se"),
-                     selected = "se"),
-            selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
-            fluidRow(
-              column(
-                width = 6,
-                numericInput("x_axis_title_font_size", "X-axis Title Font Size:", value = 14, min = 1, max = 50),
-                numericInput("x_axis_label_font_size", "X-axis Text Font Size:", value = 12, min = 1, max = 50)
-              ),
-              column(
-                width = 6,
-                numericInput("y_axis_title_font_size", "Y-axis Title Font Size:", value = 14, min = 1, max = 50),
-                numericInput("y_axis_label_font_size", "Y-axis Text Font Size:", value = 12, min = 1, max = 50)
-              )
-            ),
-            tags$br(),
-            uiOutput("x_axis_labels"),
-            # Checkbox for label rotation
-            checkboxInput("rotate_labels", "Rotate x-axis labels", value = FALSE),
-            selectInput("plot_type", "Choose Plot Type:",
-                        choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
-                        selected = "column"),
-            selectInput("color_scheme_select", "Choose Colour Scheme:",
-                        choices = c("Custom" = "custom", "Colourblind friendly 1" = "colourblind1",
-                                    "Colourblind friendly 2" = "colourblind2", "Colourblind friendly 3" = "colourblind3",
-                                    "Colourblind friendly 4" = "colourblind4", "Grays 1" = "grays", "Grays 2" = "grays2",
-                                    "Grays 3" = "grays3", "ElectraGray" = "electraGray", "Bones" = "bones",
-                                    "Oranges 1" = "oranges", "Oranges 2" = "oranges2", "Pinks 1" = "pinks",
-                                    "Pinks 2" = "pinks2", "Blues 1" = "blues", "Blues 2" = "blues2", "Greens 1" = "greens",
-                                    "Greens 2" = "greens2", "Greens 3" = "greens3", "Green to Purple" = "green2purple",
-                                    "Purples 1" = "purples", "Purples 2" = "purples3", "Purple to Orange" = "purple2orange",
-                                    "Blaze" = "blaze", "Blaze 2" = "blaze2", "Peace 1" = "peace", "Peace 2" = "peace2", "Ireland" = "ireland",
-                                    "Two-tone 1" = "twotone1", "Two-tone 2" = "twotone2", "Two-tone 3" = "twotone3",
-                                    "Pastels 1" = "pastels", "Pastels 2" = "pastels2", "Pastels 3" = "pastels3", "Pastels 4" = "pastels4",
-                                    "Pastels 5" = "pastels5", "Pastels 6" = "pastels6", "Pastels 7" = "pastels7", "Vibrant 1" = "vibrant",
-                                    "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3"),
-                        selected = "custom"),
-            numericInput("dot_size", "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5)
-      ),
-            # Add a dropdown menu for font selection
-            conditionalPanel(condition = "input.tabselected == 4 && input.plot_type == 'column'",
-                             # Choose fill or colour
-                             selectInput("fill_color_toggle", "Choose Fill or Border:",
-                                         choices = c("Fill" = "fill", "Border" = "color"),
-                                         selected = "fill")),
-      conditionalPanel(
-              condition = "input.tabselected == 4 && input.plot_type == 'dot'",
-              tags$br(),
-              checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
-              fluidRow(
-                column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.1)),
-                column(width = 6, numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1)),
+                       #graphing_sidebarUI("sidebar"),
+                       h5(HTML("<b>Create Graph</b>")),
+                       radioButtons("select_dct_or_ddct", "Select whether to graph dct or ddct:",
+                                    choices = c("ΔCt Data" = "dct", "∆ΔCt Data" = "ddct"),
+                                    selected = "dct"),
+                       uiOutput("selected_gene_ui"),
+                       tags$br(),
+                       fluidRow(
+                         column(width = 6, uiOutput("condition_selector")),
+                         column(width = 6, uiOutput("column_selector"))
                        ),
-              numericInput("seed_input", "Set Seed:", value = 123),
-              helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
-              tags$br(),
-              tags$br()
-            ),
+                       textInput("x_axis_positions", "Enter the order to display x-axis groups (comma-separated):", placeholder = "e.g., treated,untreated"),
+                       helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces. e.g., untreated,treated"),
+                       h5(HTML("<b>Customise Graph</b>")),
+                       # Add textInputs for custom Y-axis and X-axis labels
+                       uiOutput("dynamic_y_label_input"),
+                       textInput("x_label", "Enter X-axis Label", value = "Group"),
+                       checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
+                       radioButtons("error_type", "Choose Error Bar Type:",
+                                    choices = list("Standard Deviation" = "sd", 
+                                                   "Standard Error" = "se"),
+                                    selected = "se"),
+                       selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
+                       fluidRow(
+                         column(
+                           width = 6,
+                           numericInput("x_axis_title_font_size", "X-axis Title Font Size:", value = 14, min = 1, max = 50),
+                           numericInput("x_axis_label_font_size", "X-axis Text Font Size:", value = 12, min = 1, max = 50)
+                         ),
+                         column(
+                           width = 6,
+                           numericInput("y_axis_title_font_size", "Y-axis Title Font Size:", value = 14, min = 1, max = 50),
+                           numericInput("y_axis_label_font_size", "Y-axis Text Font Size:", value = 12, min = 1, max = 50)
+                         )
+                       ),
+                       tags$br(),
+                       uiOutput("x_axis_labels"),
+                       # Checkbox for label rotation
+                       checkboxInput("rotate_labels", "Rotate x-axis labels", value = FALSE),
+                       selectInput("plot_type", "Choose Plot Type:",
+                                   choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
+                                   selected = "column"),
+                       selectInput("color_scheme_select", "Choose Colour Scheme:",
+                                   choices = c("Custom" = "custom", "Colourblind friendly 1" = "colourblind1",
+                                               "Colourblind friendly 2" = "colourblind2", "Colourblind friendly 3" = "colourblind3",
+                                               "Colourblind friendly 4" = "colourblind4", "Grays 1" = "grays", "Grays 2" = "grays2",
+                                               "Grays 3" = "grays3", "ElectraGray" = "electraGray", "Bones" = "bones",
+                                               "Oranges 1" = "oranges", "Oranges 2" = "oranges2", "Pinks 1" = "pinks",
+                                               "Pinks 2" = "pinks2", "Blues 1" = "blues", "Blues 2" = "blues2", "Greens 1" = "greens",
+                                               "Greens 2" = "greens2", "Greens 3" = "greens3", "Green to Purple" = "green2purple",
+                                               "Purples 1" = "purples", "Purples 2" = "purples3", "Purple to Orange" = "purple2orange",
+                                               "Blaze" = "blaze", "Blaze 2" = "blaze2", "Peace 1" = "peace", "Peace 2" = "peace2", "Ireland" = "ireland",
+                                               "Two-tone 1" = "twotone1", "Two-tone 2" = "twotone2", "Two-tone 3" = "twotone3",
+                                               "Pastels 1" = "pastels", "Pastels 2" = "pastels2", "Pastels 3" = "pastels3", "Pastels 4" = "pastels4",
+                                               "Pastels 5" = "pastels5", "Pastels 6" = "pastels6", "Pastels 7" = "pastels7", "Vibrant 1" = "vibrant",
+                                               "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3"),
+                                   selected = "custom"),
+                       numericInput("dot_size", "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5)
+      ),
+      # Add a dropdown menu for font selection
+      conditionalPanel(condition = "input.tabselected == 4 && input.plot_type == 'column'",
+                       # Choose fill or colour
+                       selectInput("fill_color_toggle", "Choose Fill or Border:",
+                                   choices = c("Fill" = "fill", "Border" = "color"),
+                                   selected = "fill"),
+                       numericInput("dot_spacing", "Point Spacing:", value = 2.7, min = 0.1, max = 5, step = 0.1),
+                       fluidRow(
+                         column(width = 6, numericInput("errorbar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1)),
+                         column(width = 6, numericInput("errorbar_thickness", "Error Bar Thickness:", value = 0.7, min = 0.05, step = 0.2)),
+                       )
+      ),
+      conditionalPanel(
+        condition = "input.tabselected == 4 && input.plot_type == 'dot'",
+        tags$br(),
+        checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
+        fluidRow(
+          column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
+          column(width = 6, numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1)),
+        ),
+        numericInput("seed_input", "Set Seed:", value = 123),
+        helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
+        tags$br(),
+        fluidRow(
+          column(width = 6, 
+                 numericInput("error_bar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1),
+                 numericInput("average_line_width", "Average Line Width:", value = 0.15, min = 0.01, step = 0.05)),
+          column(width = 6, 
+                 numericInput("error_bar_thickness", "Error Bar Thickness:", value = 1.5, min = 0.05, step = 0.2),
+                 numericInput("average_line_thickness", "Average Line Thickness:", value = 1, min = 0.05, step = 0.1))
+        ),
+        tags$br(),
+        tags$br(),
+      ),
       conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 1",
                        h3(HTML("<b>Statistical Flowchart</b>")),
                        h6("This is the suggested workflow for statistical analysis of PCR data. This is a guide only and should be used in conjunction with your own knowledge of statistics for your own applications."),
@@ -185,7 +200,7 @@ ui <- fluidPage(
                                           selected = "non_parametric"),
                        verbatimTextOutput("shapiroOutput"))
     ),
- 
+    
     
     mainPanel(
       tabsetPanel(
@@ -202,84 +217,84 @@ ui <- fluidPage(
                  tabsetPanel(
                    id = "subPanel",
                    selected = 3.1,
-                    tabPanel(HTML("2<sup>-(∆Ct)</sup>"), value = 3.1,
-                             tabsetPanel(
-                               id = "subCalc",
-                               selected = 1,
-                                  tabPanel("All Data", value = 1,
-                                            h4(HTML("<b>Average the houskeeping genes and perform ∆Ct and 2<sup>-∆Ct</sup></b>")),
-                                            tags$br(),
-                                            dataTableOutput("calculations_table"),
-                                            # Add this inside your UI, preferably in the "Calculations" tabPanel
-                                            downloadUI("download_processed_data", "Download Processed Data"),
-                                            tags$br(),
-                                            tags$br(),
-                                            h4(HTML("<b>Filter by Condition</b>")),
-                                            dataTableOutput("filtered_table"),
-                                            downloadUI("download_filtered_data", "Download Filtered Data"),
-                                            tags$br(),
-                                            tags$br()),
-                                  tabPanel("Biological Replicate", value = 2,
-                                            h4(HTML("<b>Biological Replicate Average Values</b>")),
-                                            tags$br(),
-                                            dataTableOutput("rep_avg_table"),
-                                            downloadUI("download_rep_avg_data", "Download Replicate Average Data"),
-                                            tags$br(),
-                                            tags$br(),
-                                            h4(HTML("<b>Filter by Condition</b>")),
-                                            dataTableOutput("rep_avg_filtered_table"),
-                                            downloadUI("download_rep_avg_filtered_data", "Download Filtered Replicate Average Data"),
-                                            tags$br(),
-                                            tags$br())
-                                )
-                            ),
-                    tabPanel(HTML("2<sup>-(∆∆Ct)</sup>"), value = 3.2,
-                             tabsetPanel(
-                               id = "subCalc2",
-                               selected = 3,
-                                  tabPanel("All Data", value = 3,
-                                            h4(HTML("<b>Average ∆Ct for control and perform 2<sup>-∆ΔCt</sup></b>")),
-                                            dataTableOutput("ddct_data"),
-                                            downloadUI("download_ddct_data", "Download Processed Data"),
-                                            tags$br()),
-                                  tabPanel("Biological Replicate", value = 4,
-                                           h4(HTML("<b>Biological Replicate Average Values</b>")),
-                                           dataTableOutput("rep_avg_table_ddct"),
-                                           downloadUI("download_ddct_avg_data", "Download Replicate Data"))
-                             )
-                          ),
-                    ),
+                   tabPanel(HTML("2<sup>-(∆Ct)</sup>"), value = 3.1,
+                            tabsetPanel(
+                              id = "subCalc",
+                              selected = 1,
+                              tabPanel("All Data", value = 1,
+                                       h4(HTML("<b>Average the houskeeping genes and perform ∆Ct and 2<sup>-∆Ct</sup></b>")),
+                                       tags$br(),
+                                       dataTableOutput("calculations_table"),
+                                       # Add this inside your UI, preferably in the "Calculations" tabPanel
+                                       downloadUI("download_processed_data", "Download Processed Data"),
+                                       tags$br(),
+                                       tags$br(),
+                                       h4(HTML("<b>Filter by Condition</b>")),
+                                       dataTableOutput("filtered_table"),
+                                       downloadUI("download_filtered_data", "Download Filtered Data"),
+                                       tags$br(),
+                                       tags$br()),
+                              tabPanel("Biological Replicate", value = 2,
+                                       h4(HTML("<b>Biological Replicate Average Values</b>")),
+                                       tags$br(),
+                                       dataTableOutput("rep_avg_table"),
+                                       downloadUI("download_rep_avg_data", "Download Replicate Average Data"),
+                                       tags$br(),
+                                       tags$br(),
+                                       h4(HTML("<b>Filter by Condition</b>")),
+                                       dataTableOutput("rep_avg_filtered_table"),
+                                       downloadUI("download_rep_avg_filtered_data", "Download Filtered Replicate Average Data"),
+                                       tags$br(),
+                                       tags$br())
+                            )
+                   ),
+                   tabPanel(HTML("2<sup>-(∆∆Ct)</sup>"), value = 3.2,
+                            tabsetPanel(
+                              id = "subCalc2",
+                              selected = 3,
+                              tabPanel("All Data", value = 3,
+                                       h4(HTML("<b>Average ∆Ct for control and perform 2<sup>-∆ΔCt</sup></b>")),
+                                       dataTableOutput("ddct_data"),
+                                       downloadUI("download_ddct_data", "Download Processed Data"),
+                                       tags$br()),
+                              tabPanel("Biological Replicate", value = 4,
+                                       h4(HTML("<b>Biological Replicate Average Values</b>")),
+                                       dataTableOutput("rep_avg_table_ddct"),
+                                       downloadUI("download_ddct_avg_data", "Download Replicate Data"))
+                            )
+                   ),
+                 ),
         ),
         tabPanel("Graphs", value = 4,
-               #graphing_mainUI("main"),
-                   # Add a plot
-                   plotOutput("plot"),
-                   tags$br(),
-                   tags$br(),
-                   tags$br(),
-                   tags$br(),
-                   h4(HTML("Download Graph")),
-                   h6("SVG graphs are editable in illustrator, inkscape etc."),
-                   fluidRow(
-                     column(4,
-                            selectInput("file_format", "Choose File Format:",
-                                        choices = c("svg", "png", "jpeg", "tiff"),
-                                        selected = "svg")
-                     ),
-                     column(4,
-                            numericInput("dpi", "DPI:", 500)
-                     ),
-                     column(2,
-                            numericInput("width", "Width (inches):", 8)
-                     ),
-                     column(2,
-                            numericInput("height", "Height (inches):", 5)
-                     ),
-                     column(12,
-                            # Add a download button
-                            downloadButton("downloadGraph", "Download Graph")
-                     )
-                   )),
+                 #graphing_mainUI("main"),
+                 # Add a plot
+                 plotOutput("plot"),
+                 tags$br(),
+                 tags$br(),
+                 tags$br(),
+                 tags$br(),
+                 h4(HTML("Download Graph")),
+                 h6("SVG graphs are editable in illustrator, inkscape etc."),
+                 fluidRow(
+                   column(4,
+                          selectInput("file_format", "Choose File Format:",
+                                      choices = c("svg", "png", "jpeg", "tiff"),
+                                      selected = "svg")
+                   ),
+                   column(4,
+                          numericInput("dpi", "DPI:", 500)
+                   ),
+                   column(2,
+                          numericInput("width", "Width (inches):", 8)
+                   ),
+                   column(2,
+                          numericInput("height", "Height (inches):", 5)
+                   ),
+                   column(12,
+                          # Add a download button
+                          downloadButton("downloadGraph", "Download Graph")
+                   )
+                 )),
         tabPanel("Stats", value = 5,
                  tabsetPanel(
                    id = "subStats",
@@ -290,18 +305,18 @@ ui <- fluidPage(
                             tags$br(),
                             tags$br(),
                             tags$br()),
-                  tabPanel("Statistics", value = 2,
-                    uiOutput("sampleSizeHeading"),
-                    dataTableOutput("nTable"),
-                    tags$br(),
-                    h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
-                    uiOutput("normalityHeading"),
-                    dataTableOutput("normalityTable")
-                  )
+                   tabPanel("Statistics", value = 2,
+                            uiOutput("sampleSizeHeading"),
+                            dataTableOutput("nTable"),
+                            tags$br(),
+                            h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
+                            uiOutput("normalityHeading"),
+                            dataTableOutput("normalityTable")
                    )
-                 ),
+                 )
+        ),
         tabPanel("Graphs & Stats", value = 6),
-        )
+      )
     )
   )        
 )        
