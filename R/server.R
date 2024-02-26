@@ -702,12 +702,10 @@ server <- function(input, output, session) {
     
     # Calculate the y-limits based on the error function
     summary_stats <- error_fun(filtered_data2[[y_aes]])
-    print(summary_stats)
     min_ymin <- min(summary_stats$ymin, na.rm = TRUE)
-    print(min_ymin)
     max_ymax <- max(summary_stats$ymax, na.rm = TRUE)
-    print(max_ymax)
-    
+
+
     # Check if ymin is below 0 and adjust y_limits accordingly
     y_limits <- if (min_ymin < 0) {
       lower_limit <- min_ymin * 1.1 # Give a 10% buffer below the minimum ymin
@@ -742,7 +740,7 @@ server <- function(input, output, session) {
     }else if (input$plot_type == "dot") {
       # Dot plot
       plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-        geom_point(size = input$dot_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
+        geom_point(size = input$point_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
                    show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
         stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width, colour = "black", linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
         stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,

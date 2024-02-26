@@ -81,9 +81,9 @@ ui <- fluidPage(
       ),
       conditionalPanel(condition = "input.tabselected == 4",
                        #graphing_sidebarUI("sidebar"),
-                       h5(HTML("<b>Create Graph</b>")),
-                       radioButtons("select_dct_or_ddct", "Select whether to graph dct or ddct:",
-                                    choices = c("ΔCt Data" = "dct", "∆ΔCt Data" = "ddct"),
+                       h4(HTML("<b>Create Graph</b>")),
+                       radioButtons("select_dct_or_ddct", HTML("Select whether to graph 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup>:"),
+                                    choices = c("ΔCt" = "dct", "∆ΔCt" = "ddct"),
                                     selected = "dct"),
                        uiOutput("selected_gene_ui"),
                        tags$br(),
@@ -93,15 +93,13 @@ ui <- fluidPage(
                        ),
                        textInput("x_axis_positions", "Enter the order to display x-axis groups (comma-separated):", placeholder = "e.g., treated,untreated"),
                        helpText("Ensure spelling is exactly as it is entered in the Group column. Do NOT use spaces. e.g., untreated,treated"),
-                       h5(HTML("<b>Customise Graph</b>")),
-                       # Add textInputs for custom Y-axis and X-axis labels
+                       h4(HTML("<b>Customise Graph</b>")),
+                       h5(HTML("<b>Labels</b>")),
+                       uiOutput("x_axis_labels"),
+                       # Checkbox for label rotation
+                       checkboxInput("rotate_labels", "Rotate x-axis labels", value = FALSE),
                        uiOutput("dynamic_y_label_input"),
                        textInput("x_label", "Enter X-axis Label", value = "Group"),
-                       checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
-                       radioButtons("error_type", "Choose Error Bar Type:",
-                                    choices = list("Standard Deviation" = "sd", 
-                                                   "Standard Error" = "se"),
-                                    selected = "se"),
                        selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
                        fluidRow(
                          column(
@@ -115,13 +113,8 @@ ui <- fluidPage(
                            numericInput("y_axis_label_font_size", "Y-axis Text Font Size:", value = 12, min = 1, max = 50)
                          )
                        ),
-                       tags$br(),
-                       uiOutput("x_axis_labels"),
-                       # Checkbox for label rotation
-                       checkboxInput("rotate_labels", "Rotate x-axis labels", value = FALSE),
-                       selectInput("plot_type", "Choose Plot Type:",
-                                   choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
-                                   selected = "column"),
+                       
+                       h5(HTML("<b>Graph Design</b>")),
                        selectInput("color_scheme_select", "Choose Colour Scheme:",
                                    choices = c("Custom" = "custom", "Colourblind friendly 1" = "colourblind1",
                                                "Colourblind friendly 2" = "colourblind2", "Colourblind friendly 3" = "colourblind3",
@@ -137,31 +130,33 @@ ui <- fluidPage(
                                                "Pastels 5" = "pastels5", "Pastels 6" = "pastels6", "Pastels 7" = "pastels7", "Vibrant 1" = "vibrant",
                                                "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3"),
                                    selected = "custom"),
-                       numericInput("dot_size", "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5)
+                       selectInput("plot_type", "Choose Plot Type:",
+                                   choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
+                                   selected = "column"),
+                       radioButtons("error_type", "Choose Error Bar Type:",
+                                    choices = list("Standard Deviation" = "sd", 
+                                                   "Standard Error" = "se"),
+                                    selected = "se"),
+                       # Add textInputs for custom Y-axis and X-axis labels
+                       checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
+                       
       ),
       # Add a dropdown menu for font selection
       conditionalPanel(condition = "input.tabselected == 4 && input.plot_type == 'column'",
+                       fluidRow(
+                         column(width = 6, numericInput("errorbar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1)),
+                         column(width = 6, numericInput("errorbar_thickness", "Error Bar Thickness:", value = 1, min = 0.05, step = 0.2)),
+                       ),
                        # Choose fill or colour
                        selectInput("fill_color_toggle", "Choose Fill or Border:",
                                    choices = c("Fill" = "fill", "Border" = "color"),
                                    selected = "fill"),
+                       numericInput("dot_size", "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5),
                        numericInput("dot_spacing", "Point Spacing:", value = 2.7, min = 0.1, max = 5, step = 0.1),
-                       fluidRow(
-                         column(width = 6, numericInput("errorbar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1)),
-                         column(width = 6, numericInput("errorbar_thickness", "Error Bar Thickness:", value = 0.7, min = 0.05, step = 0.2)),
-                       )
+
       ),
       conditionalPanel(
         condition = "input.tabselected == 4 && input.plot_type == 'dot'",
-        tags$br(),
-        checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
-        fluidRow(
-          column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
-          column(width = 6, numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1)),
-        ),
-        numericInput("seed_input", "Set Seed:", value = 123),
-        helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
-        tags$br(),
         fluidRow(
           column(width = 6, 
                  numericInput("error_bar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1),
@@ -170,6 +165,15 @@ ui <- fluidPage(
                  numericInput("error_bar_thickness", "Error Bar Thickness:", value = 1.5, min = 0.05, step = 0.2),
                  numericInput("average_line_thickness", "Average Line Thickness:", value = 1, min = 0.05, step = 0.1))
         ),
+        numericInput("point_size", "Point Size:", value = 3, min = 1, max = 10, step = 0.5),
+        checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
+        fluidRow(
+          column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
+          column(width = 6, numericInput("jitter_amount", "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1)),
+        ),
+        numericInput("seed_input", "Set Seed:", value = 123),
+        helpText("This is a random value that allows you to change the order of the points on your graph. Change the number if points overlap for example."),
+
         tags$br(),
         tags$br(),
       ),
