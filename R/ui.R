@@ -48,6 +48,7 @@ ui <- fluidPage(
                          min = 1,
                          max = 10),
                        uiOutput("groups"),
+                       helpText("Ensure that genes are entered exactly as they appear in the Target column."),
                        actionButton("save_btn", "Save housekeeper names"),
                        tags$br(),
                        tags$br(),

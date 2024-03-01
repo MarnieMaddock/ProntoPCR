@@ -117,8 +117,9 @@ server <- function(input, output, session) {
     df$condition <- gsub(".*_(\\w+)$", "\\1", df$Sample)
     df$condition <- as.factor(df$condition)
     #Add group data
-    df$group <- sub("^([A-Za-z0-9]+)_.*", "\\1", df$Sample)
+    df$group <- gsub("^([^_]+)_.*$", "\\1", df$Sample)
     df$group <- as.factor(df$group)
+    print(df$group)
     #add combined
     df$cell <- paste(df$condition, df$group, sep = "_")
     df$cell <- as.factor(df$cell)
@@ -126,7 +127,7 @@ server <- function(input, output, session) {
     df <- data_relocate(df, select = "group", after = "Sample")
     df <- data_relocate(df, select = "condition", after = "Sample")
     df <- data_relocate(df, select = "cell", after = "group")
-    
+    print(df)
     return(df)
   })
   
@@ -588,8 +589,17 @@ server <- function(input, output, session) {
     }
   }
   
+  fc_dct_columns_reactive <- reactive({
+    req(wrangled_data())  # Ensure data is available
+    grep("^fc_dct", colnames(wrangled_data()), value = TRUE)
+  })
+  
+  # Now, you can access `fc_dct_columns_reactive()` as a reactive value.
+  
+  
   output$plot <- renderPlot({
-    req(input$select_dct_or_ddct, input$y_label, input$x_label)
+    req(input$select_dct_or_ddct, input$y_label, input$x_label, input$fc_dct_column)
+    print(input$fc_dct_column)
     set.seed(input$seed_input)
     
     if(input$select_dct_or_ddct == "dct"){
@@ -604,7 +614,7 @@ server <- function(input, output, session) {
       } else {
         sym("group")
       }
-      
+
       # Specify the y_aes based on user input
       y_aes <- sym(input$fc_dct_column)
       y_aes_avg <- sym(input$fc_dct_column)
