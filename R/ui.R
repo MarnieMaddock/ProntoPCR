@@ -213,7 +213,7 @@ ui <- fluidPage(
         id = "tabselected", 
         selected = 1, # Default tab selected is 1
         tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1),
-        tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table.png", height = 400, width = 600),
+        tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table2.png", height = 400, width = 680),
                  # Display uploaded data using DataTable
                  dataTableOutput("table"),
                  tags$br(),
