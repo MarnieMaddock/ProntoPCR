@@ -194,7 +194,7 @@ ui <- fluidPage(
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
                        h6(HTML("<b>1. Sample Size</b>")),
                        checkboxInput("sample_size", "Calculate sample size", value = FALSE),
-                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n = 3 -> 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks"),
+                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n = 3 -> 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks", "QQ-Plot" = "qqplot", "Density Plot" = "density"),
                                           selected = NULL),
                        #verbatimTextOutput("testResults"),
                        h6(HTML("<b>3. Homogeneity of Variance</b>")),
@@ -316,7 +316,9 @@ ui <- fluidPage(
                             tags$br(),
                             h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
                             uiOutput("normalityHeading"),
-                            dataTableOutput("normalityTable")
+                            dataTableOutput("normalityTable"),
+                            plotOutput("qqPlot"),
+                            plotOutput("densityPlot")
                    )
                  )
         ),

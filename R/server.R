@@ -119,7 +119,7 @@ server <- function(input, output, session) {
     #Add group data
     df$group <- gsub("^([^_]+)_.*$", "\\1", df$Sample)
     df$group <- as.factor(df$group)
-    print(df$group)
+    
     #add combined
     df$cell <- paste(df$condition, df$group, sep = "_")
     df$cell <- as.factor(df$cell)
@@ -127,7 +127,7 @@ server <- function(input, output, session) {
     df <- data_relocate(df, select = "group", after = "Sample")
     df <- data_relocate(df, select = "condition", after = "Sample")
     df <- data_relocate(df, select = "cell", after = "group")
-    print(df)
+    
     return(df)
   })
   
@@ -249,7 +249,7 @@ server <- function(input, output, session) {
   })
   
   
-  #DELTADELTA 
+  # DELTADELTA 
   #
   #
   output$select_condition <- renderUI({
@@ -599,7 +599,6 @@ server <- function(input, output, session) {
   
   output$plot <- renderPlot({
     req(input$select_dct_or_ddct, input$y_label, input$x_label, input$fc_dct_column)
-    print(input$fc_dct_column)
     set.seed(input$seed_input)
     
     if(input$select_dct_or_ddct == "dct"){
@@ -877,7 +876,7 @@ server <- function(input, output, session) {
   #shapiro-wilk
   # Dynamically render the heading based on the checkbox
   output$normalityHeading <- renderUI({
-    if (!is.null(input$normality_test) && any(input$normality_test %in% c("shapiro", "ks"))) {      
+    if (!is.null(input$normality_test) && any(input$normality_test %in% c("shapiro", "ks", "qqplot", "density"))) {      
       h4(HTML("<b>Normality Test</b>"))  # Display the heading
     }
   })
@@ -958,6 +957,47 @@ server <- function(input, output, session) {
     }
   })
   
+  
+  shapiro_data_reactive <- reactive({
+    req(input$sampleInput) # Ensure at least one sample is selected
+    req(input$columnInput) # Ensure a column is selected
+    
+    wrangled_data() %>%
+      filter(cell %in% input$sampleInput) %>%
+      select(cell, !!as.symbol(input$columnInput)) %>%
+      filter(!is.na(!!as.symbol(input$columnInput))) %>%
+      droplevels()
+  })
+  
+
+  
+  output$qqPlot <- renderPlot({
+    # Ensure "qqplot" is selected, otherwise don't render the plot
+    req(input$normality_test == "qqplot", input$columnInput)
+    qqplot_data <- shapiro_data_reactive()
+    #print(qqplot_data)
+    p <- qqplot_data %>% 
+        ggplot(aes(sample = !!as.symbol(input$columnInput))) +
+        geom_qq() + geom_qq_line() +
+        facet_wrap(~cell, scales = "free_y") +
+      labs(title = "QQ Plot", x = "Theoretical Quantiles", y = "Sample Quantiles") +
+      theme_Marnie
+  
+    return(p)
+  })
+  
+  output$densityPlot <- renderPlot({
+    req(input$normality_test == "density", input$columnInput)
+    density_data <- shapiro_data_reactive()
+    p <- density_data %>% 
+      ggplot(aes(x = !!as.symbol(input$columnInput))) +
+      geom_density() +
+      facet_wrap(~cell, scales = "free_y") +
+      labs(title = "Density Plot", x = "Value", y = "Density") +
+      theme_Marnie
+    return(p)
+  })
+
   
 }
 
