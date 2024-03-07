@@ -939,23 +939,6 @@ server <- function(input, output, session) {
     return(results_df)
   })
   
-  # # Observe changes in test_results and update the output
-  # observe({
-  #   results_shapiro <- test_results_shapiro() # This will re-run whenever input$sampleInput or input$columnInput changes
-  #   
-  #   if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
-  #     # Output the error message if present
-  #     output$testResults <- renderTable({
-  #       matrix(results_shapiro$error, nrow = 1)
-  #     })
-  #   } else {
-  #     #Construct and render the results table
-  #     # Output the results dataframe
-  #     output$normalityTable <- renderDataTable({
-  #       results_shapiro
-  #     })
-  #   }
-  # })
   observe({
     results_shapiro <- test_results_shapiro() # Assumes this reactive expression exists
     
@@ -1073,6 +1056,134 @@ server <- function(input, output, session) {
       dataTableOutput("levene")
     }
   })
+  
+  
+  shapiro_data_reactive <- reactive({
+    req(input$sampleInput) # Ensure at least one sample is selected
+    req(input$columnInput) # Ensure a column is selected
+    
+    # Initial data filtering and selection
+    data <- wrangled_data() %>%
+      filter(cell %in% input$sampleInput) %>%
+      select(cell, !!as.symbol(input$columnInput)) %>%
+      filter(!is.na(!!as.symbol(input$columnInput))) %>%
+      droplevels()
+    
+    # Apply log10 transformation if the checkbox is checked
+    if (input$log_transform == TRUE) {
+      data <- data %>%
+        mutate(!!as.symbol(input$columnInput) := log10(!!as.symbol(input$columnInput)))
+    }
+    
+    data
+  }) 
+  
+  
+  # output$comparisonResults <- reactive({
+  #   req(input$columnInput) # Ensure a column is selected
+  #   data <- shapiro_data_reactive() # Assuming this reactive expression returns your dataset
+  #   
+  #   # Identify the number of unique groups
+  #   num_groups <- length(unique(data$cell))
+  #   print(num_groups)
+  #   # Select and perform the appropriate test
+  #   test_result <- if (num_groups == 2) {
+  #     if (input$group_comparison == "parametric") {
+  #       # Perform t-test
+  #       grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
+  #       grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
+  #       t.test(grp1, grp2, var.equal  = TRUE)
+  #     } else {
+  #       # Perform Mann-Whitney U test
+  #       grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
+  #       grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
+  #       wilcox.test(grp1, grp2)
+  #     }
+  #   } else if (num_groups > 2) {
+  #     if (input$group_comparison == "parametric") {
+  #       # Perform one-way ANOVA
+  #       aov_result <- aov(!!as.symbol(input$columnInput) ~ cell, data = data)
+  #       summary(aov_result)
+  #     } else {
+  #       # Perform Kruskal-Wallis test
+  #       kruskal.test(!!as.symbol(input$columnInput) ~ cell, data = data)
+  #     }
+  #   } else {
+  #     return(NULL) # Handle the case where there are not enough groups
+  #   }
+  #   
+  #   # Return the test result for rendering
+  #   test_result
+  # })
+  # 
+  
+  
+  # Server-side
+  comparisonResults <- reactive({
+    # Ensure necessary inputs are available
+    req(input$sampleInput, input$columnInput)
+    data <- shapiro_data_reactive() # Assuming this returns your dataset
+    
+    num_groups <- length(unique(data$cell))
+    
+    if (num_groups == 2) {
+      if (input$group_comparison == "parametric") {
+        # Perform t-test
+        grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
+        print(grp1)
+        grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
+        print(grp2)
+        TTEST <- t.test(grp1, grp2, var.equal = TRUE)
+        t_value <- TTEST$statistic
+        df <- TTEST$parameter
+        p_value <- TTEST$p.value
+        significant <- ifelse(p_value < 0.05, "Yes", "No")
+        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        # Create the dataframe
+        test_result_df <- data.frame(
+          t = t_value,
+          df = df,
+          P.value_Two.Tailed = p_value,
+          Significant = significant,
+          P_value_summary = p_value_summary
+        )
+        
+        test_result_df
+      } else {
+        # Perform Mann-Whitney U test
+        # Placeholder for actual Mann-Whitney U test result
+        "Result of Mann-Whitney U test"
+      }
+    } else if (num_groups > 2) {
+      if (input$group_comparison == "parametric") {
+        # Perform one-way ANOVA
+        # Placeholder for actual one-way ANOVA test result
+        "Result of ANOVA test"
+      } else {
+        # Perform Kruskal-Wallis test
+        # Placeholder for actual Kruskal-Wallis test result
+        "Result of Kruskal-Wallis test"
+      }
+    } else {
+      return(NULL) # Handle the case where there are not enough groups
+    }
+  })
+  
+    
+  # Use renderUI to dynamically generate dataTableOutput
+  output$testResultTable <- renderUI({
+    # Dynamically create a dataTableOutput element
+    dataTableOutput("dataTable")
+  })
+  # Render the dataframe using DT::renderDataTable
+  output$dataTable <- renderDataTable({
+    req(comparisonResults()) # Ensure the dataframe is ready
+    datatable(comparisonResults() , options = list(pageLength = 5, autoWidth = TRUE)) 
+  })
+  
+  
+
+  
 }
 
 # Run the application 

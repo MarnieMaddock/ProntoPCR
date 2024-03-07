@@ -184,7 +184,7 @@ ui <- fluidPage(
                        tags$br(),
                        tags$br(),
                        tags$br(),
-                       h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question to determine what constitutes a small sample size.")),
+                       h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question and your field of study to determine what constitutes a small sample size.")),
       conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
                        h6("Select the samples and gene to perform statistics on."),
@@ -194,15 +194,16 @@ ui <- fluidPage(
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
                        h6(HTML("<b>1. Sample Size</b>")),
                        checkboxInput("sample_size", "Calculate sample size", value = FALSE),
-                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk (Recommended for n = 3 -> 50)" = "shapiro", "Kolmogorov-Smirnov" = "ks", "QQ-Plot" = "qqplot", "Density Plot" = "density"),
+                       checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk" = "shapiro", "QQ-Plot" = "qqplot", "Density Plot" = "density"),
                                           selected = NULL),
                        #verbatimTextOutput("testResults"),
                        h6(HTML("<b>3. Homogeneity of Variance</b>")),
                        checkboxInput("variance", "Check for equal variance (Levene's test).", value = FALSE),
-                       checkboxGroupInput("log_transform", HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>"), choices = c("Log10", "No transformation"), selected = "Log10"),
+                       h6(HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>")),
+                       checkboxInput("log_transform", "Log10", value = FALSE),
                        helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
                        checkboxGroupInput("group_comparison", HTML("<b>Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
-                                          selected = "non_parametric"),
+                                          selected = NULL),
                        verbatimTextOutput("shapiroOutput"))
     ),
     
@@ -321,6 +322,7 @@ ui <- fluidPage(
                             uiOutput("densityPlotUI"),
                             uiOutput("leveneHeading"),
                             uiOutput("leveneUI"),
+                            uiOutput("testResultTable")
                    )
                  )
         ),
