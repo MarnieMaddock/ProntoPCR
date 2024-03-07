@@ -939,22 +939,52 @@ server <- function(input, output, session) {
     return(results_df)
   })
   
-  # Observe changes in test_results and update the output
+  # # Observe changes in test_results and update the output
+  # observe({
+  #   results_shapiro <- test_results_shapiro() # This will re-run whenever input$sampleInput or input$columnInput changes
+  #   
+  #   if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
+  #     # Output the error message if present
+  #     output$testResults <- renderTable({
+  #       matrix(results_shapiro$error, nrow = 1)
+  #     })
+  #   } else {
+  #     #Construct and render the results table
+  #     # Output the results dataframe
+  #     output$normalityTable <- renderDataTable({
+  #       results_shapiro
+  #     })
+  #   }
+  # })
   observe({
-    results_shapiro <- test_results_shapiro() # This will re-run whenever input$sampleInput or input$columnInput changes
+    results_shapiro <- test_results_shapiro() # Assumes this reactive expression exists
     
-    if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
-      # Output the error message if present
-      output$testResults <- renderTable({
+    # Dynamically create or remove the table based on selection
+    output$normalityTableUI <- renderUI({
+      if("shapiro" %in% input$normality_test) {
+        # Check if there's an error in the results and display it, otherwise display the table
+        if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
+          # Output the error message if present
+          tableOutput("shapiroError")
+        } else {
+          #Construct and render the results table
+          dataTableOutput("normalityTable")
+        }
+      }
+    })
+    
+    # Conditionally render the error message or the results table
+    output$shapiroError <- renderTable({
+      if(is.list(results_shapiro) && !is.null(results_shapiro$error)) {
         matrix(results_shapiro$error, nrow = 1)
-      })
-    } else {
-      #Construct and render the results table
-      # Output the results dataframe
-      output$normalityTable <- renderDataTable({
+      }
+    })
+    
+    output$normalityTable <- renderDataTable({
+      if(!is.null(results_shapiro) && is.list(results_shapiro) && is.null(results_shapiro$error)) {
         results_shapiro
-      })
-    }
+      }
+    })
   })
   
   
@@ -970,21 +1000,19 @@ server <- function(input, output, session) {
   })
   
 
+
   
   output$qqPlot <- renderPlot({
-    # Ensure "qqplot" is selected, otherwise don't render the plot
-    req(input$normality_test == "qqplot", input$columnInput)
+    req("qqplot" %in% input$normality_test, !is.null(input$columnInput))
     qqplot_data <- shapiro_data_reactive()
-    #print(qqplot_data)
-    p <- qqplot_data %>% 
-        ggplot(aes(sample = !!as.symbol(input$columnInput))) +
-        geom_qq() + geom_qq_line() +
-        facet_wrap(~cell, scales = "free_y") +
+    # Generate the plot
+    ggplot(qqplot_data, aes(sample = !!as.symbol(input$columnInput))) +
+      geom_qq() + geom_qq_line() +
+      facet_wrap(~cell, scales = "free_y") +
       labs(title = "QQ Plot", x = "Theoretical Quantiles", y = "Sample Quantiles") +
       theme_Marnie
-  
-    return(p)
   })
+
   
   output$densityPlot <- renderPlot({
     req(input$normality_test == "density", input$columnInput)
@@ -998,7 +1026,53 @@ server <- function(input, output, session) {
     return(p)
   })
 
+  output$qqPlotUI <- renderUI({
+    if (!is.null(input$normality_test) && length(input$normality_test) > 0 && "qqplot" %in% input$normality_test) {
+      plotOutput("qqPlot")
+    }
+  })
   
+  output$densityPlotUI <- renderUI({
+    if (!is.null(input$normality_test) && length(input$normality_test) > 0 && "density" %in% input$normality_test) {
+      plotOutput("densityPlot")
+    }
+  })
+  
+  
+  output$leveneHeading <- renderUI({
+    if (input$variance == TRUE ) {      
+      h4(HTML("<b>Homogeneity of Variance Test</b>"))  # Display the heading
+    }
+  })
+ library(car) 
+  output$levene <- renderDataTable({
+    req(input$variance == TRUE, input$columnInput)
+    levene_test_data <- shapiro_data_reactive()
+    test_result <- leveneTest(levene_test_data[[input$columnInput]] ~ levene_test_data$cell)
+    # Extracting values from the test_result
+    df_group <- test_result$Df[1] # Degrees of freedom for group
+    df_error <- test_result$Df[2] # Degrees of freedom for error/residuals
+    f_value <- test_result$`F value`[1] # Correct access for F value
+    p_value <- test_result$`Pr(>F)`[1]
+    # Construct summary data frame
+    summary_df <- data.frame(
+      DF_Group = df_group,
+      DF_Error = df_error,
+      F_Value = f_value,
+      P_Value = p_value,
+      Passed_variance_test = ifelse(p_value > 0.05, "Yes", "No"),
+      P_value_summary = ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+    )
+    # Return the new summary data frame
+    summary_df
+  })
+  
+  
+  output$leveneUI <- renderUI({
+    if(input$variance == TRUE) { # Check if the user wants to see the Levene's test results
+      dataTableOutput("levene")
+    }
+  })
 }
 
 # Run the application 

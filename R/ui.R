@@ -316,9 +316,11 @@ ui <- fluidPage(
                             tags$br(),
                             h6("Note for small sample sizes, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
                             uiOutput("normalityHeading"),
-                            dataTableOutput("normalityTable"),
-                            plotOutput("qqPlot"),
-                            plotOutput("densityPlot")
+                            uiOutput("normalityTableUI"),
+                            uiOutput("qqPlotUI"),
+                            uiOutput("densityPlotUI"),
+                            uiOutput("leveneHeading"),
+                            uiOutput("leveneUI"),
                    )
                  )
         ),
