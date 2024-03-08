@@ -887,7 +887,7 @@ server <- function(input, output, session) {
     
     wrangled_data() %>%
       filter(cell %in% input$sampleInput) %>%
-      select(cell, !!as.symbol(input$columnInput)) %>%
+      dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
       filter(!is.na(!!as.symbol(input$columnInput))) %>%
       droplevels()
   })
@@ -970,18 +970,7 @@ server <- function(input, output, session) {
     })
   })
   
-  
-  shapiro_data_reactive <- reactive({
-    req(input$sampleInput) # Ensure at least one sample is selected
-    req(input$columnInput) # Ensure a column is selected
-    
-    wrangled_data() %>%
-      filter(cell %in% input$sampleInput) %>%
-      select(cell, !!as.symbol(input$columnInput)) %>%
-      filter(!is.na(!!as.symbol(input$columnInput))) %>%
-      droplevels()
-  })
-  
+
 
 
   
@@ -1027,7 +1016,7 @@ server <- function(input, output, session) {
       h4(HTML("<b>Homogeneity of Variance Test</b>"))  # Display the heading
     }
   })
- library(car) 
+
   output$levene <- renderDataTable({
     req(input$variance == TRUE, input$columnInput)
     levene_test_data <- shapiro_data_reactive()
@@ -1065,7 +1054,7 @@ server <- function(input, output, session) {
     # Initial data filtering and selection
     data <- wrangled_data() %>%
       filter(cell %in% input$sampleInput) %>%
-      select(cell, !!as.symbol(input$columnInput)) %>%
+      dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
       filter(!is.na(!!as.symbol(input$columnInput))) %>%
       droplevels()
     
@@ -1078,50 +1067,11 @@ server <- function(input, output, session) {
     data
   }) 
   
+
   
-  # output$comparisonResults <- reactive({
-  #   req(input$columnInput) # Ensure a column is selected
-  #   data <- shapiro_data_reactive() # Assuming this reactive expression returns your dataset
-  #   
-  #   # Identify the number of unique groups
-  #   num_groups <- length(unique(data$cell))
-  #   print(num_groups)
-  #   # Select and perform the appropriate test
-  #   test_result <- if (num_groups == 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       # Perform t-test
-  #       grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
-  #       grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
-  #       t.test(grp1, grp2, var.equal  = TRUE)
-  #     } else {
-  #       # Perform Mann-Whitney U test
-  #       grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
-  #       grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
-  #       wilcox.test(grp1, grp2)
-  #     }
-  #   } else if (num_groups > 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       # Perform one-way ANOVA
-  #       aov_result <- aov(!!as.symbol(input$columnInput) ~ cell, data = data)
-  #       summary(aov_result)
-  #     } else {
-  #       # Perform Kruskal-Wallis test
-  #       kruskal.test(!!as.symbol(input$columnInput) ~ cell, data = data)
-  #     }
-  #   } else {
-  #     return(NULL) # Handle the case where there are not enough groups
-  #   }
-  #   
-  #   # Return the test result for rendering
-  #   test_result
-  # })
-  # 
-  
-  
-  # Server-side
   comparisonResults <- reactive({
     # Ensure necessary inputs are available
-    req(input$sampleInput, input$columnInput)
+    req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive() # Assuming this returns your dataset
     
     num_groups <- length(unique(data$cell))
@@ -1129,12 +1079,10 @@ server <- function(input, output, session) {
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
         # Perform t-test
-        grp1 <- data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
-        print(grp1)
-        grp2 <- data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
-        print(grp2)
+        grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
+        grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
         TTEST <- t.test(grp1, grp2, var.equal = TRUE)
-        t_value <- TTEST$statistic
+        t_value <- abs(TTEST$statistic)
         df <- TTEST$parameter
         p_value <- TTEST$p.value
         significant <- ifelse(p_value < 0.05, "Yes", "No")
@@ -1147,23 +1095,87 @@ server <- function(input, output, session) {
           Significant = significant,
           P_value_summary = p_value_summary
         )
-        
-        test_result_df
+        rownames(test_result_df) <- ""
+        test_result_df <- test_result_df %>% 
+          rename("P Value (Two-Tailed)" = P.value_Two.Tailed, "Significant?" = Significant, "P Value Summary" = P_value_summary)
       } else {
         # Perform Mann-Whitney U test
-        # Placeholder for actual Mann-Whitney U test result
-        "Result of Mann-Whitney U test"
+        grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
+        grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
+        mwu <- wilcox.test(grp1, grp2)
+
+        w_value <- mwu$statistic
+        p_value <- mwu$p.value
+        significant <- ifelse(p_value < 0.05, "Yes", "No")
+        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        
+        test_result_df <- data.frame(
+          W = w_value,
+          P.value = p_value,
+          Significant = significant,
+          P_value_summary = p_value_summary
+        )
+        #remove rowname of test_result_df
+        rownames(test_result_df) <- ""
+        test_result_df <- test_result_df %>% 
+          rename("P Value" = P.value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
       }
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
         # Perform one-way ANOVA
-        # Placeholder for actual one-way ANOVA test result
-        "Result of ANOVA test"
+        df <- shapiro_data_reactive()
+        # Construct the formula as a string
+        formula_str <- paste(input$columnInput, "~ cell")
+        # Convert the string to a formula object
+        aov_formula <- as.formula(formula_str)
+        # Perform the ANOVA
+        aov_result <- aov(aov_formula, data = df)
+        summary_aov <- summary(aov_result) # Storing the summary for potential display
+        test_result_df <- as.data.frame(summary_aov[[1]])
+        test_result_df$Significant <- ifelse(test_result_df$`Pr(>F)` < 0.05, "Yes", "No")
+        test_result_df$P_value_summary <- ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", ifelse(test_result_df$`Pr(>F)` < 0.01, "**", "*"))
+        test_result_df <- test_result_df %>% 
+          rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
+        
+        post_hoc_df <- NULL
+            if(input$postHocTest == "tukey"){
+              post_hoc_result <- TukeyHSD(aov_result)
+              post_hoc_df <- as.data.frame(post_hoc_result$cell)
+              
+            }else if (input$postHocTest == "bonferroni"){
+              post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Bonferroni"))
+              # Example placeholder:
+              post_hoc_df <- summary(post_hoc_result)$test$coefficients
+            }else if (input$postHocTest == "scheffe"){
+              post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Scheffe"))
+              post_hoc_df <- summary(post_hoc_result)$test$coefficients
+            }
+
       } else {
-        # Perform Kruskal-Wallis test
-        # Placeholder for actual Kruskal-Wallis test result
-        "Result of Kruskal-Wallis test"
+        formula_str_kt <- paste(input$columnInput, "~ cell")
+        kt_formula <- as.formula(formula_str_kt)
+        KT <- kruskal.test(kt_formula, data = shapiro_data_reactive())
+        H_value <- KT$statistic
+        degf <- KT$parameter
+        p_value <- KT$p.value
+
+        # Determine significance and p-value summary
+        significant <- ifelse(p_value < 0.05, "Yes", "No")
+        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        
+        test_result_df <- data.frame(
+          H = H_value,
+          df = degf,
+          P_value = p_value,
+          Significant = significant,
+          P_value_summary = p_value_summary
+        )
+        test_result_df <- test_result_df %>% 
+          rename("P Value" = P_value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
       }
+      print(test_result_df)
+      print(post_hoc_df)
+      return(list(test = test_result_df, posthoc = post_hoc_df))
     } else {
       return(NULL) # Handle the case where there are not enough groups
     }
@@ -1178,12 +1190,79 @@ server <- function(input, output, session) {
   # Render the dataframe using DT::renderDataTable
   output$dataTable <- renderDataTable({
     req(comparisonResults()) # Ensure the dataframe is ready
-    datatable(comparisonResults() , options = list(pageLength = 5, autoWidth = TRUE)) 
+    datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE)) 
+  })
+  
+  output$postHocTable <- renderDataTable({
+    req(comparisonResults())  # Ensure the post-hoc results are available
+    if (!is.null(comparisonResults()$posthoc)) {
+      datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
+    }
+  })
+  
+  output$comparisonsHeading <- renderUI({
+    req(input$sampleInput, input$columnInput)
+    data <- shapiro_data_reactive() # Assuming this returns your dataset
+    
+    num_groups <- length(unique(data$cell))
+    
+    if (num_groups == 2) {
+      if (input$group_comparison == "parametric") {
+        h4(HTML("<b>Independent T-Test</b>"))
+      } else {
+        h4(HTML("<b>Mann-Whitney U Test</b>"))
+      }
+    } else if (num_groups > 2) {
+      if (input$group_comparison == "parametric") {
+        h4(HTML("<b>One-Way ANOVA</b>"))
+      } else {
+        h4(HTML("<b>Kruskal-Wallis Test</b>"))
+      }
+    } else {
+      return(NULL) # Handle the case where there are not enough groups
+    }
+  })
+  
+  # Dynamically generate UI for post hoc options based on the type of test and number of groups
+  output$postHocOptions <- renderUI({
+    # Ensure we have more than 2 groups for post hoc tests to make sense
+    req(input$sampleInput, input$columnInput, input$group_comparison)
+    data <- shapiro_data_reactive() 
+    num_groups <- length(unique(data$cell))
+    
+    if (input$group_comparison == "parametric" && num_groups > 2) {
+      # Parametric post hoc test options
+      radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA:</b>"),
+                   choices = list("Tukey's HSD" = "tukey",
+                                  "Bonferroni Correction" = "bonferroni",
+                                  "Scheffé's Test" = "scheffe"),
+                   selected = NULL)
+    } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
+      # Nonparametric post hoc test options
+      radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis:</b>"),
+                   choices = list("Dunn's Test" = "dunn",
+                                  "Conover-Iman Test" = "conover",
+                                  "Nemenyi Test" = "nemenyi"),
+                   selected = NULL)
+    }
   })
   
   
-
   
+  output$correctionOptions <- renderUI({
+    # Ensure we have more than 2 groups for post hoc tests to make sense
+    req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest == "dunn")
+    if (input$postHocTest == "dunn") {
+      radioButtons("correctionMethod", HTML("<b>Select a correction method for Dunn's test:</b>"),
+                   choices = list("Bonferroni" = "bonferroni",
+                                  "Šidák" = "sidak",
+                                  "Holm-Bonferroni" = "holm",
+                                  "Benjamini-Hochberg" = "bh",
+                                  "Hochberg's Step-up" = "hochberg"))
+    }
+  })
+  
+
 }
 
 # Run the application 

@@ -10,6 +10,10 @@ library(ggpubr)
 library(bslib)
 library(ggtext)
 library(shinyjs)
+library(car) 
+library(multcomp) 
+library(dplyr)
+library(rlang)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
@@ -202,8 +206,10 @@ ui <- fluidPage(
                        h6(HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>")),
                        checkboxInput("log_transform", "Log10", value = FALSE),
                        helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
-                       checkboxGroupInput("group_comparison", HTML("<b>Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
+                       radioButtons("group_comparison", HTML("<b>Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
                                           selected = NULL),
+                       uiOutput("postHocOptions"),
+                       uiOutput("correctionOptions"),
                        verbatimTextOutput("shapiroOutput"))
     ),
     
@@ -322,7 +328,9 @@ ui <- fluidPage(
                             uiOutput("densityPlotUI"),
                             uiOutput("leveneHeading"),
                             uiOutput("leveneUI"),
-                            uiOutput("testResultTable")
+                            uiOutput("comparisonsHeading"),
+                            uiOutput("testResultTable"),
+                            #uiOutput("postHocTable")
                    )
                  )
         ),
