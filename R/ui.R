@@ -14,6 +14,7 @@ library(car)
 library(multcomp) 
 library(dplyr)
 library(rlang)
+library(broom)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
@@ -330,7 +331,7 @@ ui <- fluidPage(
                             uiOutput("leveneUI"),
                             uiOutput("comparisonsHeading"),
                             uiOutput("testResultTable"),
-                            #uiOutput("postHocTable")
+                            uiOutput("postHocTableUI")
                    )
                  )
         ),

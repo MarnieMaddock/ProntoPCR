@@ -1140,12 +1140,28 @@ server <- function(input, output, session) {
         post_hoc_df <- NULL
             if(input$postHocTest == "tukey"){
               post_hoc_result <- TukeyHSD(aov_result)
-              post_hoc_df <- as.data.frame(post_hoc_result$cell)
-              
+              post_hoc_df <- broom::tidy(post_hoc_result)
+              post_hoc_df <- post_hoc_df %>%
+                dplyr::select(-term, -null.value) %>%  # Remove term and null.value columns
+                mutate(
+                  Significant = ifelse(adj.p.value < 0.05, "Yes", "No"),
+                  P_value_summary = ifelse(adj.p.value > 0.05, "ns", ifelse(adj.p.value < 0.01, "**", "*"))
+                ) %>%
+                rename("Adjusted P Value" = adj.p.value, 
+                       "Significant?" = Significant, 
+                       "P Value Summary" = P_value_summary,
+                        Contrast = contrast,
+                        Estimate = estimate,
+                        "Confidence Low" = conf.low,
+                        "Confidence High" = conf.high
+                       )
             }else if (input$postHocTest == "bonferroni"){
-              post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Bonferroni"))
+              # factor_variable <- shapiro_data_reactive()$cell
+              # post_hoc_result <- pairwise.t.test(data$score, factor_variable, p.adjust.method = "bonferroni")
+              #post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Bonferroni"))
+              print(post_hoc_result)
               # Example placeholder:
-              post_hoc_df <- summary(post_hoc_result)$test$coefficients
+              #post_hoc_df <- summary(post_hoc_result)$test$coefficients
             }else if (input$postHocTest == "scheffe"){
               post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Scheffe"))
               post_hoc_df <- summary(post_hoc_result)$test$coefficients
@@ -1173,8 +1189,6 @@ server <- function(input, output, session) {
         test_result_df <- test_result_df %>% 
           rename("P Value" = P_value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
       }
-      print(test_result_df)
-      print(post_hoc_df)
       return(list(test = test_result_df, posthoc = post_hoc_df))
     } else {
       return(NULL) # Handle the case where there are not enough groups
@@ -1191,6 +1205,11 @@ server <- function(input, output, session) {
   output$dataTable <- renderDataTable({
     req(comparisonResults()) # Ensure the dataframe is ready
     datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE)) 
+  })
+  
+  output$postHocTableUI <- renderUI({
+    # Dynamically create a dataTableOutput element
+    dataTableOutput("postHocTable")
   })
   
   output$postHocTable <- renderDataTable({
@@ -1232,14 +1251,14 @@ server <- function(input, output, session) {
     
     if (input$group_comparison == "parametric" && num_groups > 2) {
       # Parametric post hoc test options
-      radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA:</b>"),
+      radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
                    choices = list("Tukey's HSD" = "tukey",
                                   "Bonferroni Correction" = "bonferroni",
                                   "Scheffé's Test" = "scheffe"),
                    selected = NULL)
     } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
       # Nonparametric post hoc test options
-      radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis:</b>"),
+      radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
                    choices = list("Dunn's Test" = "dunn",
                                   "Conover-Iman Test" = "conover",
                                   "Nemenyi Test" = "nemenyi"),
