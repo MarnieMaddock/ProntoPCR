@@ -67,6 +67,7 @@ server <- function(input, output, session) {
   
   # New reactive expression for data wrangling
   wrangled_data <- reactive({
+    req(input$save_btn)
     if (is.null(data())) {
       return(NULL)
     }
@@ -933,6 +934,7 @@ server <- function(input, output, session) {
         P_value_summary = p_value_summary,
         stringsAsFactors = FALSE
       ))
+  
     }
     rownames(results_df) <- NULL
     # Return the results data frame
@@ -942,6 +944,8 @@ server <- function(input, output, session) {
   observe({
     results_shapiro <- test_results_shapiro() # Assumes this reactive expression exists
     
+    results_shapiro <- results_shapiro %>% 
+      rename("P Value" = P_value, "Passed Normality Test?" = Passed_normality_test, "P Value Summary" = P_value_summary)
     # Dynamically create or remove the table based on selection
     output$normalityTableUI <- renderUI({
       if("shapiro" %in% input$normality_test) {
@@ -1035,6 +1039,10 @@ server <- function(input, output, session) {
       Passed_variance_test = ifelse(p_value > 0.05, "Yes", "No"),
       P_value_summary = ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
     )
+    summary_df <- summary_df %>% 
+      rename("df (Group)" = DF_Group, "df (Error)" = DF_Error, "F" = F_Value, 
+        "P Value" = P_Value, "Passed Variance Test?" = Passed_variance_test, "P Value Summary" = P_value_summary)
+    rownames(summary_df) <- ""
     # Return the new summary data frame
     summary_df
   })
@@ -1082,6 +1090,7 @@ server <- function(input, output, session) {
         grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
         grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
         TTEST <- t.test(grp1, grp2, var.equal = TRUE)
+        
         t_value <- abs(TTEST$statistic)
         df <- TTEST$parameter
         p_value <- TTEST$p.value
@@ -1098,7 +1107,8 @@ server <- function(input, output, session) {
         rownames(test_result_df) <- ""
         test_result_df <- test_result_df %>% 
           rename("P Value (Two-Tailed)" = P.value_Two.Tailed, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-      } else {
+      
+        } else {
         # Perform Mann-Whitney U test
         grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
         grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
@@ -1119,7 +1129,8 @@ server <- function(input, output, session) {
         rownames(test_result_df) <- ""
         test_result_df <- test_result_df %>% 
           rename("P Value" = P.value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-      }
+        }
+      return(list(test = test_result_df))
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
         # Perform one-way ANOVA
@@ -1195,17 +1206,18 @@ server <- function(input, output, session) {
     }
   })
   
-    
-  # Use renderUI to dynamically generate dataTableOutput
-  output$testResultTable <- renderUI({
-    # Dynamically create a dataTableOutput element
-    dataTableOutput("dataTable")
-  })
   # Render the dataframe using DT::renderDataTable
   output$dataTable <- renderDataTable({
     req(comparisonResults()) # Ensure the dataframe is ready
     datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE)) 
   })
+  
+  # Use renderUI to dynamically generate dataTableOutput
+  output$testResultTable <- renderUI({
+    # Dynamically create a dataTableOutput element
+    dataTableOutput("dataTable")
+  })
+
   
   output$postHocTableUI <- renderUI({
     # Dynamically create a dataTableOutput element
@@ -1220,7 +1232,7 @@ server <- function(input, output, session) {
   })
   
   output$comparisonsHeading <- renderUI({
-    req(input$sampleInput, input$columnInput)
+    req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive() # Assuming this returns your dataset
     
     num_groups <- length(unique(data$cell))
@@ -1254,15 +1266,13 @@ server <- function(input, output, session) {
       radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
                    choices = list("Tukey's HSD" = "tukey",
                                   "Bonferroni Correction" = "bonferroni",
-                                  "Scheffé's Test" = "scheffe"),
-                   selected = NULL)
+                                  "Scheffé's Test" = "scheffe"))
     } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
       # Nonparametric post hoc test options
       radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
                    choices = list("Dunn's Test" = "dunn",
                                   "Conover-Iman Test" = "conover",
-                                  "Nemenyi Test" = "nemenyi"),
-                   selected = NULL)
+                                  "Nemenyi Test" = "nemenyi"))
     }
   })
   

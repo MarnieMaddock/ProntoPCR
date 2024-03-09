@@ -34,7 +34,7 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR v0.0.0.20", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v0.0.0.30", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
@@ -208,7 +208,7 @@ ui <- fluidPage(
                        checkboxInput("log_transform", "Log10", value = FALSE),
                        helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
                        radioButtons("group_comparison", HTML("<b>Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
-                                          selected = NULL),
+                                          selected = character(0)),
                        uiOutput("postHocOptions"),
                        uiOutput("correctionOptions"),
                        verbatimTextOutput("shapiroOutput"))
