@@ -1166,16 +1166,103 @@ server <- function(input, output, session) {
                         "Confidence Low" = conf.low,
                         "Confidence High" = conf.high
                        )
+              split_names <- strsplit(post_hoc_df$Contrast, split = "-")
+              
+              # Create new columns for Group1 and Group2 based on the split row names
+              post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+              post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+              #move columns usinhg datawizard package
+              post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Contrast")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+              #remove Contrast column
+              post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
             }else if (input$postHocTest == "bonferroni"){
-              # factor_variable <- shapiro_data_reactive()$cell
-              # post_hoc_result <- pairwise.t.test(data$score, factor_variable, p.adjust.method = "bonferroni")
-              #post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Bonferroni"))
-              print(post_hoc_result)
-              # Example placeholder:
-              #post_hoc_df <- summary(post_hoc_result)$test$coefficients
+              df <- shapiro_data_reactive()
+              # Extract the response variable and the grouping factor based on the input formula
+              response_var <- df[[input$columnInput]]
+              group_factor <- df$cell
+              # Perform the pairwise t-test with Bonferroni correction
+              post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "bonferroni")
+              # Convert the result to a data frame for display. The `pairwise.t.test` function
+              # returns a list with two components: p.value and method. The p.value component
+              # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
+              p_values_matrix <- post_hoc_result$p.value
+              post_hoc_df <- as.data.frame(as.table(p_values_matrix))
+              # Add a column to indicate whether the comparison is significant
+              post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
+              # Add a summary of the p-value similar to what you've done before
+              post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
+                                                    ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+              post_hoc_df <- post_hoc_df %>% 
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+             rownames(post_hoc_df) <- NULL
+            }else if (input$postHocTest == "holm"){
+              df <- shapiro_data_reactive()
+              # Extract the response variable and the grouping factor based on the input formula
+              response_var <- df[[input$columnInput]]
+              group_factor <- df$cell
+              # Perform the pairwise t-test with Bonferroni correction
+              post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "holm")
+              p_values_matrix <- post_hoc_result$p.value
+              post_hoc_df <- as.data.frame(as.table(p_values_matrix))
+              # Add a column to indicate whether the comparison is significant
+              post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
+              # Add a summary of the p-value similar to what you've done before
+              post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
+                                                    ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+              post_hoc_df <- post_hoc_df %>% 
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+              rownames(post_hoc_df) <- NULL
+            }else if (input$postHocTest == "bh"){
+              df <- shapiro_data_reactive()
+              # Extract the response variable and the grouping factor based on the input formula
+              response_var <- df[[input$columnInput]]
+              group_factor <- df$cell
+              # Perform the pairwise t-test with Bonferroni correction
+              post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "BH")
+              p_values_matrix <- post_hoc_result$p.value
+              post_hoc_df <- as.data.frame(as.table(p_values_matrix))
+              # Add a column to indicate whether the comparison is significant
+              post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
+              # Add a summary of the p-value similar to what you've done before
+              post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
+                                                    ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+              post_hoc_df <- post_hoc_df %>% 
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+              rownames(post_hoc_df) <- NULL
+            
             }else if (input$postHocTest == "scheffe"){
-              post_hoc_result <- glht(aov_result, linfct = mcp(cell = "Scheffe"))
-              post_hoc_df <- summary(post_hoc_result)$test$coefficients
+              df <- shapiro_data_reactive()
+              # Construct the formula as a string
+              formula_str <- paste(input$columnInput, "~ cell")
+              # Convert the string to a formula object
+              aov_formula <- as.formula(formula_str)
+              # Perform the ANOVA
+              aov_result <- aov(aov_formula, data = df)
+              post_hoc_result <- ScheffeTest(aov_result)
+              post_hoc_df <- post_hoc_result$cell
+              
+              # Convert the matrix or list into a dataframe
+              post_hoc_df <- as.data.frame(post_hoc_df)
+              # Split the row names at the '-' character
+              split_names <- strsplit(row.names(post_hoc_df), split = "-")
+              
+              # Create new columns for Group1 and Group2 based on the split row names
+              post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+              post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+              # Rename columns appropriately if needed
+              names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "P Value", "Group1", "Group2")
+              #move columns usinhg datawizard package
+              post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Difference")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+              post_hoc_df$Significant <- ifelse(post_hoc_df$"P Value" < 0.05, "Yes", "No")
+              # Add a summary of the p-value similar to what you've done before
+              post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"P Value" > 0.05, "ns", 
+                                                    ifelse(post_hoc_df$"P Value" < 0.01, "**", "*"))
+    
+              post_hoc_df <- post_hoc_df %>% 
+                rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
+              rownames(post_hoc_df) <- NULL
             }
 
       } else {
@@ -1266,6 +1353,8 @@ server <- function(input, output, session) {
       radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
                    choices = list("Tukey's HSD" = "tukey",
                                   "Bonferroni Correction" = "bonferroni",
+                                  "Holm Correction" = "holm",
+                                  "Benjamini-Hochberg Correction" = "bh",
                                   "Scheffé's Test" = "scheffe"))
     } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
       # Nonparametric post hoc test options

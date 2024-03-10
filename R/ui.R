@@ -15,6 +15,7 @@ library(multcomp)
 library(dplyr)
 library(rlang)
 library(broom)
+library(DescTools)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
