@@ -292,7 +292,7 @@ server <- function(input, output, session) {
     ddct_data <- wrangled_data() %>% 
       filter((group == control) | (group %in% samples)) %>% 
       filter(condition == condition2) %>%
-      select(group, condition, all_of(selected_gene))
+      dplyr::select(group, condition, all_of(selected_gene))
     
     # Resetting levels of factors to only include selected options
     ddct_data$group <- factor(ddct_data$group, levels = unique(c(as.character(control), as.character(samples))))
@@ -1134,13 +1134,12 @@ server <- function(input, output, session) {
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
         # Perform one-way ANOVA
-        df <- shapiro_data_reactive()
         # Construct the formula as a string
         formula_str <- paste(input$columnInput, "~ cell")
         # Convert the string to a formula object
         aov_formula <- as.formula(formula_str)
         # Perform the ANOVA
-        aov_result <- aov(aov_formula, data = df)
+        aov_result <- aov(aov_formula, data = shapiro_data_reactive())
         summary_aov <- summary(aov_result) # Storing the summary for potential display
         test_result_df <- as.data.frame(summary_aov[[1]])
         test_result_df$Significant <- ifelse(test_result_df$`Pr(>F)` < 0.05, "Yes", "No")
@@ -1177,10 +1176,9 @@ server <- function(input, output, session) {
               #remove Contrast column
               post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
             }else if (input$postHocTest == "bonferroni"){
-              df <- shapiro_data_reactive()
               # Extract the response variable and the grouping factor based on the input formula
-              response_var <- df[[input$columnInput]]
-              group_factor <- df$cell
+              response_var <- shapiro_data_reactive()[[input$columnInput]]
+              group_factor <- shapiro_data_reactive()$cell
               # Perform the pairwise t-test with Bonferroni correction
               post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "bonferroni")
               # Convert the result to a data frame for display. The `pairwise.t.test` function
@@ -1194,13 +1192,14 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
+
+                
              rownames(post_hoc_df) <- NULL
             }else if (input$postHocTest == "holm"){
-              df <- shapiro_data_reactive()
               # Extract the response variable and the grouping factor based on the input formula
-              response_var <- df[[input$columnInput]]
-              group_factor <- df$cell
+              response_var <- shapiro_data_reactive()[[input$columnInput]]
+              group_factor <- shapiro_data_reactive()$cell
               # Perform the pairwise t-test with Bonferroni correction
               post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "holm")
               p_values_matrix <- post_hoc_result$p.value
@@ -1211,7 +1210,7 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
               rownames(post_hoc_df) <- NULL
             }else if (input$postHocTest == "bh"){
               df <- shapiro_data_reactive()
@@ -1228,17 +1227,16 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group 1" = Var1, "Group 2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
               rownames(post_hoc_df) <- NULL
             
             }else if (input$postHocTest == "scheffe"){
-              df <- shapiro_data_reactive()
               # Construct the formula as a string
               formula_str <- paste(input$columnInput, "~ cell")
               # Convert the string to a formula object
               aov_formula <- as.formula(formula_str)
               # Perform the ANOVA
-              aov_result <- aov(aov_formula, data = df)
+              aov_result <- aov(aov_formula, data = shapiro_data_reactive())
               post_hoc_result <- ScheffeTest(aov_result)
               post_hoc_df <- post_hoc_result$cell
               
@@ -1286,6 +1284,400 @@ server <- function(input, output, session) {
         )
         test_result_df <- test_result_df %>% 
           rename("P Value" = P_value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
+        
+        post_hoc_df <- NULL
+        if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                        data = shapiro_data_reactive(), 
+                                        method = "bonferroni")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                             data = shapiro_data_reactive(), 
+                                             method = "sidak")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "dunn" && input$correctionMethod == "hs"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                             data = shapiro_data_reactive(), 
+                                             method = "hs")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "dunn" && input$correctionMethod == "holm"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                             data = shapiro_data_reactive(), 
+                                             method = "holm")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "dunn" && input$correctionMethod == "bh"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                             data = shapiro_data_reactive(), 
+                                             method = "bh")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          
+          # Perform the DunnTest with Bonferroni correction
+          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
+                                             data = shapiro_data_reactive(), 
+                                             method = "hochberg")
+          # Convert the test results to a dataframe for display
+          post_hoc_df <- dunn_test_results$res
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                      method = "bonferroni")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "sidak"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                         method = "sidak")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "holm"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                         method = "holm")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)   
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "bh"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                         method = "bh")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "hs"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                         method = "hs")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+        }else if(input$postHocTest == "conover" && input$correctionMethod == "hochberg"){
+          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
+          group_variable <- shapiro_data_reactive()$cell
+          conover_result <- conover.test(dependent_variable, group_variable,
+                                         method = "hochberg")
+          T <- conover_result$T
+          P <- conover_result$P
+          P.adjusted <- conover_result$P.adjusted
+          comparisons <- conover_result$comparisons
+          
+          # Create a dataframe
+          post_hoc_df <- data.frame(
+            Comparison = comparisons,
+            T = T,
+            P = P,
+            P.adjusted = P.adjusted
+          )
+          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
+          
+          # Create new columns for Group1 and Group2 based on the split row names
+          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          #remove comparison column
+          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
+          #move columns usinhg datawizard package
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          rownames(post_hoc_df) <- NULL
+          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
+          # Add a summary of the p-value 
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          
+          post_hoc_df <- post_hoc_df %>% 
+            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+        }
+        
       }
       return(list(test = test_result_df, posthoc = post_hoc_df))
     } else {
@@ -1360,8 +1752,7 @@ server <- function(input, output, session) {
       # Nonparametric post hoc test options
       radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
                    choices = list("Dunn's Test" = "dunn",
-                                  "Conover-Iman Test" = "conover",
-                                  "Nemenyi Test" = "nemenyi"))
+                                  "Conover-Iman Test" = "conover"))
     }
   })
   
@@ -1369,18 +1760,59 @@ server <- function(input, output, session) {
   
   output$correctionOptions <- renderUI({
     # Ensure we have more than 2 groups for post hoc tests to make sense
-    req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest == "dunn")
-    if (input$postHocTest == "dunn") {
+    req(input$sampleInput, input$columnInput, input$group_comparison )
+    if (input$postHocTest == "dunn" || input$postHocTest == "conover") {
       radioButtons("correctionMethod", HTML("<b>Select a correction method for Dunn's test:</b>"),
                    choices = list("Bonferroni" = "bonferroni",
                                   "Šidák" = "sidak",
-                                  "Holm-Bonferroni" = "holm",
+                                  "Holm" = "holm",
+                                  "Holm-Šidák" = "hs",
                                   "Benjamini-Hochberg" = "bh",
                                   "Hochberg's Step-up" = "hochberg"))
     }
   })
   
-
+  output$postHocHeading <- renderUI({
+    req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
+      if (input$group_comparison == "parametric" && input$postHocTest == "tukey") {
+        h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni") {
+        h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "holm") {
+        h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "bh") {
+        h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe") {
+        h4(HTML("<b>Scheffé's Post-hoc</b>"))  
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni") {
+        h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak") {
+        h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm") {
+        h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs") {
+        h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh") {
+        h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg") {
+        h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni") {
+        h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak") {
+        h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm") {
+        h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs") {
+        h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh") {
+        h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg") {
+        h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
+      } else {
+        return(NULL)
+      }
+  })
+  
 }
 
 # Run the application 

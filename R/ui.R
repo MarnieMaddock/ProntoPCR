@@ -16,6 +16,8 @@ library(dplyr)
 library(rlang)
 library(broom)
 library(DescTools)
+library(FSA)
+library(conover.test)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
@@ -332,6 +334,7 @@ ui <- fluidPage(
                             uiOutput("leveneUI"),
                             uiOutput("comparisonsHeading"),
                             uiOutput("testResultTable"),
+                            uiOutput("postHocHeading"),
                             uiOutput("postHocTableUI")
                    )
                  )
