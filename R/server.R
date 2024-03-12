@@ -802,6 +802,13 @@ server <- function(input, output, session) {
     
     # Apply axis label theme to the plot
     plot <- plot + axis_label_theme2
+    
+    if(input$add_significance == TRUE){
+      plot <- plot + stat_pvalue_manual(post_hoc_df, label = "FILLIN", y.position("Makeitautomatic?"), label.size = input$sigSize, bracket.size = input$bracketSize, 
+                                        step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE)
+    }
+    
+    
     shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
     # Print the plot
     print(plot)
@@ -816,6 +823,23 @@ server <- function(input, output, session) {
   })
   # Add more layers or customization as needed
   
+  output$sigUI <- renderUI({
+    if(input$add_significance == TRUE){
+      tagList(
+      fluidRow(
+        column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 10)),
+        column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.3, step = 0.1))
+      ),
+      fluidRow(
+        column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
+        column(6, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.03, step = 0.01))
+      ),
+      fluidRow(
+        column(12, checkboxInput("hideNS", "Hide ns", value = FALSE))
+      ),
+      )
+    }
+  })
   
   output$downloadGraph <- downloadHandler(
     filename = function() {
@@ -1086,6 +1110,9 @@ server <- function(input, output, session) {
     
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
+        group_names <- unique(shapiro_data_reactive()$cell)
+        group1_name <- group_names[1]
+        group2_name <- group_names[2]
         # Perform t-test
         grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
         grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
@@ -1098,6 +1125,8 @@ server <- function(input, output, session) {
         p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
         # Create the dataframe
         test_result_df <- data.frame(
+          group1 = group1_name,
+          group2 = group2_name,
           t = t_value,
           df = df,
           P.value_Two.Tailed = p_value,
@@ -1109,6 +1138,9 @@ server <- function(input, output, session) {
           rename("P Value (Two-Tailed)" = P.value_Two.Tailed, "Significant?" = Significant, "P Value Summary" = P_value_summary)
       
         } else {
+          group_names <- unique(shapiro_data_reactive()$cell)
+          group1_name <- group_names[1]
+          group2_name <- group_names[2]
         # Perform Mann-Whitney U test
         grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
         grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
@@ -1120,6 +1152,8 @@ server <- function(input, output, session) {
         p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
         
         test_result_df <- data.frame(
+          group1 = group1_name,
+          group2 = group2_name,
           W = w_value,
           P.value = p_value,
           Significant = significant,
@@ -1168,11 +1202,11 @@ server <- function(input, output, session) {
               split_names <- strsplit(post_hoc_df$Contrast, split = "-")
               
               # Create new columns for Group1 and Group2 based on the split row names
-              post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-              post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+              post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+              post_hoc_df$group2 <- sapply(split_names, `[`, 2)
               #move columns usinhg datawizard package
-              post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Contrast")
-              post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Contrast")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
               #remove Contrast column
               post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
             }else if (input$postHocTest == "bonferroni"){
@@ -1192,7 +1226,7 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
 
                 
              rownames(post_hoc_df) <- NULL
@@ -1210,7 +1244,7 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
               rownames(post_hoc_df) <- NULL
             }else if (input$postHocTest == "bh"){
               df <- shapiro_data_reactive()
@@ -1227,7 +1261,7 @@ server <- function(input, output, session) {
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                     ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
               post_hoc_df <- post_hoc_df %>% 
-                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "Group1" = Var1, "Group2" = Var2)
+                rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
               rownames(post_hoc_df) <- NULL
             
             }else if (input$postHocTest == "scheffe"){
@@ -1246,13 +1280,13 @@ server <- function(input, output, session) {
               split_names <- strsplit(row.names(post_hoc_df), split = "-")
               
               # Create new columns for Group1 and Group2 based on the split row names
-              post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-              post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+              post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+              post_hoc_df$group2 <- sapply(split_names, `[`, 2)
               # Rename columns appropriately if needed
-              names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "P Value", "Group1", "Group2")
+              names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "P Value", "group1", "group2")
               #move columns usinhg datawizard package
-              post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Difference")
-              post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Difference")
+              post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
               post_hoc_df$Significant <- ifelse(post_hoc_df$"P Value" < 0.05, "Yes", "No")
               # Add a summary of the p-value similar to what you've done before
               post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"P Value" > 0.05, "ns", 
@@ -1299,13 +1333,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1328,13 +1362,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1357,13 +1391,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1386,13 +1420,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1415,13 +1449,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1444,13 +1478,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1480,13 +1514,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1516,13 +1550,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1552,13 +1586,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1588,13 +1622,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1624,13 +1658,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1660,13 +1694,13 @@ server <- function(input, output, session) {
           split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
           
           # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$Group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$Group2 <- sapply(split_names, `[`, 2)
+          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
+          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           #remove comparison column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "Group2", after = "Group1")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
+          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
@@ -1753,14 +1787,17 @@ server <- function(input, output, session) {
       radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
                    choices = list("Dunn's Test" = "dunn",
                                   "Conover-Iman Test" = "conover"))
+    } else {
+      return(NULL) 
     }
   })
   
   
   
   output$correctionOptions <- renderUI({
+    num_groups <- length(unique(shapiro_data_reactive()$cell))
     # Ensure we have more than 2 groups for post hoc tests to make sense
-    req(input$sampleInput, input$columnInput, input$group_comparison )
+    req(input$sampleInput, input$columnInput, input$group_comparison, num_groups > 2)
     if (input$postHocTest == "dunn" || input$postHocTest == "conover") {
       radioButtons("correctionMethod", HTML("<b>Select a correction method for Dunn's test:</b>"),
                    choices = list("Bonferroni" = "bonferroni",
@@ -1769,44 +1806,48 @@ server <- function(input, output, session) {
                                   "Holm-Šidák" = "hs",
                                   "Benjamini-Hochberg" = "bh",
                                   "Hochberg's Step-up" = "hochberg"))
+    }else{
+      return(NULL)
     }
   })
   
   output$postHocHeading <- renderUI({
     req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-      if (input$group_comparison == "parametric" && input$postHocTest == "tukey") {
+    data <- shapiro_data_reactive() 
+    num_groups <- length(unique(data$cell))
+      if (input$group_comparison == "parametric" && input$postHocTest == "tukey" && num_groups > 2) {
         h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
-      } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni") {
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni" && num_groups > 2) {
         h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "parametric" && input$postHocTest == "holm") {
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "holm" && num_groups > 2) {
         h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "parametric" && input$postHocTest == "bh") {
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "bh" && num_groups > 2) {
         h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe") {
+      } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe" && num_groups > 2) {
         h4(HTML("<b>Scheffé's Post-hoc</b>"))  
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg" && num_groups > 2) {
         h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg") {
+      } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg" && num_groups > 2) {
         h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
       } else {
         return(NULL)

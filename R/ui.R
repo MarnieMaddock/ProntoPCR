@@ -37,7 +37,7 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR v0.0.0.30", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v0.0.0.40", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
@@ -148,6 +148,8 @@ ui <- fluidPage(
                                     selected = "se"),
                        # Add textInputs for custom Y-axis and X-axis labels
                        checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
+                       checkboxInput("add_significance", "If statistics has been performed, add comparisons to graph.", FALSE),
+                       uiOutput("sigUI")
                        
       ),
       # Add a dropdown menu for font selection
@@ -317,7 +319,7 @@ ui <- fluidPage(
                    selected = 1,
                    tabPanel("Flowchart", value = 1,
                             h4(HTML("<b>Statistical Flowchart</b>")),
-                            tags$img(src = "stats_flowchart.svg", height = 400, width = 600),
+                            tags$img(src = "stats_flowchart2.svg", height = 550, width = 750),
                             tags$br(),
                             tags$br(),
                             tags$br()),
