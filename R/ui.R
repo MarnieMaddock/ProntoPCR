@@ -18,6 +18,7 @@ library(broom)
 library(DescTools)
 library(FSA)
 library(conover.test)
+library(multcompView)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
@@ -142,14 +143,16 @@ ui <- fluidPage(
                        selectInput("plot_type", "Choose Plot Type:",
                                    choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
                                    selected = "column"),
+                       radioButtons("add_significance", "If statistics have been performed, add significance to graph.", choices = c("None" = "none", "Asterix Notation" = "asterix", "Compact Letter Display" = "cld"),
+                                    selected = "none"),
+                       uiOutput("sigUI"),
                        radioButtons("error_type", "Choose Error Bar Type:",
                                     choices = list("Standard Deviation" = "sd", 
                                                    "Standard Error" = "se"),
                                     selected = "se"),
                        # Add textInputs for custom Y-axis and X-axis labels
-                       checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE),
-                       checkboxInput("add_significance", "If statistics has been performed, add comparisons to graph.", FALSE),
-                       uiOutput("sigUI")
+                       checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE)
+
                        
       ),
       # Add a dropdown menu for font selection
@@ -197,8 +200,12 @@ ui <- fluidPage(
                        h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question and your field of study to determine what constitutes a small sample size.")),
       conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
+                       radioButtons("select_dct_or_ddct_stats", HTML("Select whether to use 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup> for statistical tests:"),
+                                    choices = c("ΔCt" = "dct_stats", "∆ΔCt" = "ddct_stats"),
+                                    selected = "dct_stats"),
                        h6("Select the samples and gene to perform statistics on."),
                        selectInput("sampleInput", "Select Sample:", choices = NULL, multiple = TRUE),
+                       uiOutput("selected_gene_ui_stats"),
                        selectInput("columnInput", "Select Gene:", choices = NULL),
                        tags$br(),
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
@@ -337,7 +344,9 @@ ui <- fluidPage(
                             uiOutput("comparisonsHeading"),
                             uiOutput("testResultTable"),
                             uiOutput("postHocHeading"),
-                            uiOutput("postHocTableUI")
+                            uiOutput("postHocTableUI"),
+                            uiOutput("cldHeading"),
+                            uiOutput("cld_tableUI")
                    )
                  )
         ),
