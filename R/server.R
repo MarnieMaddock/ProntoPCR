@@ -1824,9 +1824,9 @@ observeEvent(input$select_dct_or_ddct_stats, {
       # Render the dynamic selectInput for choosing condition
       output$condition_selector <- renderUI({
         req(wrangled_data())  # Ensure data is available
-        
+
         # Generate selectInput for choosing the condition dynamically
-        selectInput("selected_condition", "Select Condition", choices = unique(wrangled_data()$condition),
+        selectInput("selected_condition", "Select Condition", choices = unique(wrangled_data()$cell),
                     multiple = TRUE)
       })
       
@@ -2034,9 +2034,9 @@ observeEvent(input$select_dct_or_ddct_stats, {
     
     if(input$select_dct_or_ddct == "dct"){
       filtered_data2 <- dct_or_ddct() %>%
-        filter(condition %in% input$selected_condition)
+        filter(cell %in% input$selected_condition)
       filtered_rep_avg_data2 <- rep_avg_data() %>%
-        filter(condition %in% input$selected_condition)
+        filter(cell %in% input$selected_condition)
       
       # Determine the x aesthetic based on the number of selected conditions
       x_aes <- if (length(input$selected_condition) >= 2) {
@@ -2064,7 +2064,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
       filtered_data2 <- dct_or_ddct()
       filtered_rep_avg_data2 <- rep_avg_data_ddct()
       # Determine the x aesthetic based on the number of selected conditions
-      x_aes <- sym("group")
+      x_aes <- sym("cell")
       # Specify the y_aes based on user input
       y_aes <- sym("fc_ddct")
       y_aes_avg <- sym("mean_fc_ddct")
@@ -2234,10 +2234,12 @@ observeEvent(input$select_dct_or_ddct_stats, {
     plot <- plot + axis_label_theme2
     
     if(input$add_significance == "asterix"){
-      plot <- plot + stat_pvalue_manual(post_hoc_df, label = "FILLIN", y.position("Makeitautomatic?"), label.size = input$sigSize, bracket.size = input$bracketSize, 
+      split_col <- 
+      comparisonResults()$posthoc
+      plot <- plot + stat_pvalue_manual(comparisonResults()$posthoc, label = "P Value Summary", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                         step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
     }else if(input$add_significance == "cld"){
-      plot <- plot + stat_pvalue_manual(post_hoc_df, label = "FILLIN", y.position("Makeitautomatic?"), label.size = input$sigSize, bracket.size = input$bracketSize, 
+      plot <- plot + stat_pvalue_manual(cld_df, label = "FILLIN", y.position("Makeitautomatic?"), label.size = input$sigSize, bracket.size = input$bracketSize, 
                                         step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
     }else if (input$add_significance == "none"){
       plot <- plot
@@ -2262,12 +2264,15 @@ observeEvent(input$select_dct_or_ddct_stats, {
     if(input$add_significance == "asterix" || input$add_significance == "cld"){
       tagList(
       fluidRow(
-        column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 10)),
-        column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.3, step = 0.1))
+        column(12, numericInput("yPos", "Y position", value = 1))
+      ),  
+      fluidRow(
+        column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
+        column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.8, step = 0.1))
       ),
       fluidRow(
         column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
-        column(6, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.03, step = 0.01))
+        column(6, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.02, step = 0.01))
       ),
       fluidRow(
         column(12, checkboxInput("hideNS", "Hide ns", value = FALSE))
