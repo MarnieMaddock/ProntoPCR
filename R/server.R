@@ -352,6 +352,15 @@ server <- function(input, output, session) {
     paste("DDCT_processed_data_", Sys.Date(), ".csv", sep = "")
   })
   
+  values <- reactiveValues(ddctDataSaved = FALSE)
+  
+  observeEvent(input$save_ddct_data, {
+    # This block is executed whenever the 'Save ddct Data' button is clicked.
+    # Even though you don't want to perform any action immediately when the button is clicked,
+    # use this as a trigger for other reactive expressions or observers.
+    values$ddctDataSaved <- TRUE
+  })
+  
   # Calculate replicate averages when data is loaded
   
   rep_avg_data_ddct <- reactive({
@@ -401,25 +410,63 @@ server <- function(input, output, session) {
   })
   
   observe({
-    # Check if avg_dct_df is not NULL and has the expected columns
-    if (!is.null(average_dct()) && "condition" %in% names(average_dct()) && "group" %in% names(average_dct())) {
-      # Create the 'cell' column
-      
-      print(average_dct())
-      # Use the modified dataframe for your operations
       if (input$select_dct_or_ddct_stats == "dct_stats") {
         updateSelectInput(session, "sampleInput", choices = unique(wrangled_data()$cell))
         updateSelectInput(session, "columnInput", choices = grep("^fc_dct_", names(wrangled_data()), value = TRUE))
       } else if (input$select_dct_or_ddct_stats == "ddct_stats") {
+        # Check if avg_dct_df is not NULL and has the expected columns
+        if (!is.null(values$ddctDataSaved) && values$ddctDataSaved) {
         updateSelectInput(session, "sampleInput", choices = unique(average_dct()$cell))
         updateSelectInput(session, "columnInput", choices = grep("^fc_ddct", names(average_dct()), value = TRUE))
+        } else {
+          updateSelectInput(session, "sampleInput", choices=character(0), selected = character(0))  # Clear the sampleInput choices
+          updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
+        }
       }
+  })
+  
+  output$ddctMessage <- renderUI({
+    # Check if 'ddct_stats' is selected and data is not saved yet
+    if (input$select_dct_or_ddct_stats == "ddct_stats" && !values$ddctDataSaved) {
+      # Return a UI element with the message
+      tagList(
+        HTML('<h5>Please go to the 2<sup>-(∆∆Ct)</sup> Calculations tab to create your ∆∆Ct dataset.</h5>'),
+        tags$p("You need to save your ∆∆Ct dataset before proceeding.")
+      )
     } else {
-      print("average_dct() returned NULL or an unexpected structure.")
+      # Return NULL or an empty UI element if conditions are not met
+      return()
     }
   })
   
+stats_data <- reactive({
+  if (input$select_dct_or_ddct_stats == "dct_stats") {
+    wrangled_data()
+  } else if (input$select_dct_or_ddct_stats == "ddct_stats" && values$ddctDataSaved) {
+    average_dct()
+  } else{
+    return(NULL)
+  }
+})
   
+# Observe changes in the selection between dct and ddct
+observeEvent(input$select_dct_or_ddct_stats, {
+  # Reset the 'sample_size' checkbox
+  updateCheckboxInput(session, "sample_size", value = FALSE)
+  
+  # Clear all selections in 'normality_test' checkbox group
+  updateCheckboxGroupInput(session, "normality_test", selected = character(0))
+  
+  # Reset the 'variance' checkbox
+  updateCheckboxInput(session, "variance", value = FALSE)
+  
+  # Reset the 'log_transform' checkbox
+  updateCheckboxInput(session, "log_transform", value = FALSE)
+  
+  # Clear the selection in 'group_comparison' radio buttons
+  updateRadioButtons(session, "group_comparison", selected = character(0))
+})
+
   # Dynamically render the heading based on the checkbox
   output$sampleSizeHeading <- renderUI({
     if (input$sample_size) {  # Check if the checkbox is ticked
@@ -431,7 +478,7 @@ server <- function(input, output, session) {
   sampleCounts <- reactive({
     req(input$sampleInput, input$columnInput)  # Ensure the inputs are not NULL
     # Filter the data based on selected samples
-    selected_data <- wrangled_data()[wrangled_data()$cell %in% input$sampleInput, ]
+    selected_data <- stats_data()[stats_data()$cell %in% input$sampleInput, ]
     # Calculate the count of non-NA entries for the selected fc_dct_ column for each sample
     counts <- tapply(selected_data[[input$columnInput]], selected_data$cell, function(x) sum(!is.na(x)))
     # Return only the counts for the samples selected by the user
@@ -470,15 +517,21 @@ server <- function(input, output, session) {
   })
   
   shapiro_data_reactive <- reactive({
-    req(input$sampleInput) # Ensure at least one sample is selected
-    req(input$columnInput) # Ensure a column is selected
-    
-    wrangled_data() %>%
-      filter(cell %in% input$sampleInput) %>%
-      dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
-      filter(!is.na(!!as.symbol(input$columnInput))) %>%
-      droplevels()
-  })
+    req(input$select_dct_or_ddct_stats, input$sampleInput, input$columnInput, stats_data()) 
+      # Initial data filtering and selection
+      data <- stats_data() %>%
+        filter(cell %in% input$sampleInput) %>%
+        dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
+        filter(!is.na(!!as.symbol(input$columnInput))) %>%
+        droplevels()
+      # Apply log10 transformation if the checkbox is checked
+      if (input$log_transform == TRUE) {
+        data <- data %>%
+          mutate(!!as.symbol(input$columnInput) := log10(!!as.symbol(input$columnInput)))
+      }
+      data
+  }) 
+  
   
   # Reactive expression for performing the Shapiro-Wilk test
   test_results_shapiro <- reactive({
@@ -561,10 +614,6 @@ server <- function(input, output, session) {
     })
   })
   
-  
-  
-  
-  
   output$qqPlot <- renderPlot({
     req("qqplot" %in% input$normality_test, !is.null(input$columnInput))
     qqplot_data <- shapiro_data_reactive()
@@ -575,7 +624,6 @@ server <- function(input, output, session) {
       labs(title = "QQ Plot", x = "Theoretical Quantiles", y = "Sample Quantiles") +
       theme_Marnie
   })
-  
   
   output$densityPlot <- renderPlot({
     req(input$normality_test == "density", input$columnInput)
@@ -600,7 +648,6 @@ server <- function(input, output, session) {
       plotOutput("densityPlot")
     }
   })
-  
   
   output$leveneHeading <- renderUI({
     if (input$variance == TRUE ) {      
@@ -642,47 +689,13 @@ server <- function(input, output, session) {
   })
   
   
-  shapiro_data_reactive <- reactive({
-    req(input$select_dct_or_ddct_stats, input$sampleInput, input$columnInput) # Ensure at least one sample is selected
-    if (input$select_dct_or_ddct_stats == "dct_stats") {
-        # Initial data filtering and selection
-        data <- wrangled_data() %>%
-          filter(cell %in% input$sampleInput) %>%
-          dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
-          filter(!is.na(!!as.symbol(input$columnInput))) %>%
-          droplevels()
-        print(data)
-        # Apply log10 transformation if the checkbox is checked
-        if (input$log_transform == TRUE) {
-          data <- data %>%
-            mutate(!!as.symbol(input$columnInput) := log10(!!as.symbol(input$columnInput)))
-        }
-        data
-        print(data)
-      } else {
-        data <- average_dct() %>%
-          filter(cell %in% input$sampleInput) %>%
-          dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
-          filter(!is.na(!!as.symbol(input$columnInput))) %>%
-          droplevels()
-        print(data)
-        # Apply log10 transformation if the checkbox is checked
-        if (input$log_transform == TRUE) {
-          data <- data %>%
-            mutate(!!as.symbol(input$columnInput) := log10(!!as.symbol(input$columnInput)))
-        }
-        data
-        print(data)
-      }
-  }) 
-  
+
   
   
   comparisonResults <- reactive({
     # Ensure necessary inputs are available
     req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive() # Assuming this returns your dataset
-    
     num_groups <- length(unique(data$cell))
     
     if (num_groups == 2) {
@@ -833,6 +846,14 @@ server <- function(input, output, session) {
           group_factor <- shapiro_data_reactive()$cell
           # Perform the pairwise t-test with Bonferroni correction
           post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "bonferroni")
+          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
+            post_hoc_df <- data.frame(
+              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
+            )
+            cld_df <- data.frame(
+              Message = "No p-values were computed"
+            )
+          } else {
           # Convert the result to a data frame for display. The `pairwise.t.test` function
           # returns a list with two components: p.value and method. The p.value component
           # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
@@ -840,7 +861,6 @@ server <- function(input, output, session) {
           post_hoc_df <- as.data.frame(as.table(p_values_matrix))
           # Add a column to indicate whether the comparison is significant
           post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
-          
           # Add a summary of the p-value similar to what you've done before
           post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
                                                 ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
@@ -856,7 +876,6 @@ server <- function(input, output, session) {
           post_hoc_df$group2 <- as.character(post_hoc_df$group2)
           # Extract unique groups from both 'group1' and 'group2'
           groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          
           # Initialize the p_matrix with NA values and correct dimensions
           p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), dimnames = list(groups, groups))
           # Loop through each row in post_hoc_df to assign adjusted p-values
@@ -865,12 +884,10 @@ server <- function(input, output, session) {
             g1 <- post_hoc_df$group1[i]
             g2 <- post_hoc_df$group2[i]
             p_value <- post_hoc_df$`Adjusted P Value`[i]
-            
             # Assign the adjusted p-value to the matrix, considering both [g1, g2] and [g2, g1]
             p_matrix[g1, g2] <- p_value
             p_matrix[g2, g1] <- p_value # Ensure symmetry
           }
-          
           for(i in 1:nrow(post_hoc_df)) {
             if (post_hoc_df$group1[i] != post_hoc_df$group2[i]) {
               p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$`Adjusted P Value`[i]
@@ -883,7 +900,7 @@ server <- function(input, output, session) {
             Group = names(cl_display$Letters),
             Letters = unname(cl_display$Letters)
           )
-
+        }
           
         }else if (input$postHocTest == "holm"){
           # Extract the response variable and the grouping factor based on the input formula
@@ -891,6 +908,14 @@ server <- function(input, output, session) {
           group_factor <- shapiro_data_reactive()$cell
           # Perform the pairwise t-test with Bonferroni correction
           post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "holm")
+          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
+            post_hoc_df <- data.frame(
+              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
+            )
+            cld_df <- data.frame(
+              Message = "No p-values were computed"
+            )
+            }else{
           p_values_matrix <- post_hoc_result$p.value
           post_hoc_df <- as.data.frame(as.table(p_values_matrix))
           # Add a column to indicate whether the comparison is significant
@@ -936,7 +961,7 @@ server <- function(input, output, session) {
             Group = names(cl_display$Letters),
             Letters = unname(cl_display$Letters)
           )
-          
+          }
         }else if (input$postHocTest == "bh"){
           df <- shapiro_data_reactive()
           # Extract the response variable and the grouping factor based on the input formula
@@ -944,6 +969,14 @@ server <- function(input, output, session) {
           group_factor <- df$cell
           # Perform the pairwise t-test with Bonferroni correction
           post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "BH")
+          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
+            post_hoc_df <- data.frame(
+              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
+            )
+            cld_df <- data.frame(
+              Message = "No p-values were computed"
+            )
+          }else{
           p_values_matrix <- post_hoc_result$p.value
           post_hoc_df <- as.data.frame(as.table(p_values_matrix))
           # Add a column to indicate whether the comparison is significant
@@ -989,7 +1022,7 @@ server <- function(input, output, session) {
             Group = names(cl_display$Letters),
             Letters = unname(cl_display$Letters)
           )
-          
+          }
         }else if (input$postHocTest == "scheffe"){
           # Construct the formula as a string
           formula_str <- paste(input$columnInput, "~ cell")
@@ -1769,7 +1802,7 @@ server <- function(input, output, session) {
       tags$h6(HTML("Groups with the same letter are not significantly different from each other."))
     )
   })
-  
+
   
   
   

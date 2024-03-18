@@ -87,7 +87,8 @@ ui <- fluidPage(
           column(width = 5, uiOutput("select_control")),
           column(width = 5, uiOutput("select_samples")),
           column(width = 5, uiOutput("select_condition")),
-          column(width = 5, uiOutput("column_selector2")))
+          column(width = 5, uiOutput("column_selector2"))),
+        actionButton("save_ddct_data", "Save ΔΔCt Data"),
       ),
       conditionalPanel(condition = "input.tabselected == 4",
                        #graphing_sidebarUI("sidebar"),
@@ -205,6 +206,7 @@ ui <- fluidPage(
                                     selected = "dct_stats"),
                        h6("Select the samples and gene to perform statistics on."),
                        selectInput("sampleInput", "Select Sample:", choices = NULL, multiple = TRUE),
+                       uiOutput("ddctMessage"),
                        uiOutput("selected_gene_ui_stats"),
                        selectInput("columnInput", "Select Gene:", choices = NULL),
                        tags$br(),
