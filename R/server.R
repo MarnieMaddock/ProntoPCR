@@ -1042,14 +1042,14 @@ observeEvent(input$select_dct_or_ddct_stats, {
           post_hoc_df$group1 <- sapply(split_names, `[`, 1)
           post_hoc_df$group2 <- sapply(split_names, `[`, 2)
           # Rename columns appropriately if needed
-          names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "P Value", "group1", "group2")
+          names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "Adjusted P Value", "group1", "group2")
           #move columns usinhg datawizard package
           post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Difference")
           post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          post_hoc_df$Significant <- ifelse(post_hoc_df$"P Value" < 0.05, "Yes", "No")
+          post_hoc_df$Significant <- ifelse(post_hoc_df$"Adjusted P Value" < 0.05, "Yes", "No")
           # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"P Value" > 0.05, "ns", 
-                                                ifelse(post_hoc_df$"P Value" < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"Adjusted P Value" > 0.05, "ns", 
+                                                ifelse(post_hoc_df$"Adjusted P Value" < 0.01, "**", "*"))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
@@ -1059,8 +1059,8 @@ observeEvent(input$select_dct_or_ddct_stats, {
           p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
                              dimnames = list(groups, groups))
           for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"P Value"[i]
+            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
+            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
           }
           cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
           cld_df <- data.frame(
@@ -1349,7 +1349,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "bonferroni")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1357,7 +1357,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -1398,7 +1398,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "sidak")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1406,7 +1406,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -1447,7 +1447,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "holm")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1455,7 +1455,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -1496,7 +1496,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "bh")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1504,7 +1504,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -1545,7 +1545,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "hs")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1553,7 +1553,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -1594,7 +1594,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           group_variable <- shapiro_data_reactive()$cell
           conover_result <- conover.test(dependent_variable, group_variable,
                                          method = "hochberg")
-          "T" <- conover_result$"T"
+          "T" <- conover_result$T
           P <- conover_result$P
           P.adjusted <- conover_result$P.adjusted
           comparisons <- conover_result$comparisons
@@ -1602,7 +1602,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
           # Create a dataframe
           post_hoc_df <- data.frame(
             Comparison = comparisons,
-            "T" = "T",
+            "T" = T,
             P = P,
             P.adjusted = P.adjusted
           )
@@ -2234,13 +2234,103 @@ observeEvent(input$select_dct_or_ddct_stats, {
     plot <- plot + axis_label_theme2
     
     if(input$add_significance == "asterix"){
-      split_col <- 
-      comparisonResults()$posthoc
-      plot <- plot + stat_pvalue_manual(comparisonResults()$posthoc, label = "P Value Summary", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
-                                        step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
+      num_groups <- length(unique(shapiro_data_reactive()$cell))
+      if(num_groups > 2){
+        comparisonResults_posthoc_renamed <- comparisonResults()$posthoc %>%
+          rename(p.signif = `P Value Summary`)
+        plot <- plot + stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
+                                          step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
+      }else{
+        print(comparisonResults()$test)
+        comparisonResults_renamed <- comparisonResults()$test %>%
+          rename(p.signif = `P Value Summary`)
+        plot <- plot + stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
+                                          step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
+      }
+      
     }else if(input$add_significance == "cld"){
-      plot <- plot + stat_pvalue_manual(cld_df, label = "FILLIN", y.position("Makeitautomatic?"), label.size = input$sigSize, bracket.size = input$bracketSize, 
+      # Assuming comparisonResults()$cld_df has columns 'group' and 'Letters'
+      cld_data <- comparisonResults()$cld
+      # Transform cld_data to have group1 and group2 columns, both containing the same group values
+      cld_data <- cld_data %>%
+        mutate(group1 = Group, 
+               group2 = Group)
+      
+      plot <- plot + stat_pvalue_manual(cld_data, label = "Letters", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                         step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
+    }else if(input$add_significance == "pval"){
+      num_groups <- length(unique(shapiro_data_reactive()$cell))
+      if(num_groups > 2){
+      plot_data <- comparisonResults()$posthoc %>%
+        rename(p.signif = `Adjusted P Value`)
+      
+      # Further filter if hideNS is TRUE
+      if(input$hideNS){
+        plot_data <- plot_data %>%
+          # Ensure p.signif is numeric for comparison, handling potential character data
+          mutate(p.signif = as.numeric(as.character(p.signif))) %>%
+          filter(p.signif <= 0.05)
+      }
+      # Check if plot_data is empty after filtering
+      if(nrow(plot_data) == 0){
+        plot <- plot
+      }else{
+      # Then, format p-values according to user preferences
+      formatted_pvalues <- lapply(plot_data$`p.signif`, function(p) {
+        formatted_p <- sprintf(paste0("%.", input$pValueDecimals, "f"), p)
+        
+        # Prepend "P =" or use no prefix if selected
+        prefix <- switch(input$pValuePrefix,
+                         "P = " = "P = ", # Assuming you want to keep this option
+                         "None" = "",
+                         "P = ") # Default case for clarity, might adjust based on actual options
+        
+        paste0(prefix, formatted_p)
+      })
+        # Update plot_data with formatted p-values
+        plot_data$`p.signif` <- unlist(formatted_pvalues)
+        # Finally, add the formatted p-values to the plot
+        plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
+                                          y.position = input$yPos, label.size = input$sigSize, 
+                                          bracket.size = input$bracketSize, 
+                                          step.increase = input$stepIncrease, hide.ns = input$hideNS, 
+                                          tip.length = input$tipLength, na.rm = TRUE, 
+                                          inherit.aes= FALSE)
+      }
+      }else{
+        plot_data <- comparisonResults()$test
+        if("P Value" %in% names(plot_data)) {
+          plot_data <- plot_data %>% 
+            rename(p.signif = `P Value`)
+        } else if("P Value (Two-Tailed)" %in% names(plot_data)) {
+          plot_data <- plot_data %>%
+            rename(p.signif = `P Value (Two-Tailed)`)
+        }
+        # Ensure the column is numeric for further operations
+        plot_data <- plot_data %>%
+          mutate(p.signif = as.numeric(as.character(p.signif)))
+        
+        formatted_pvalues <- lapply(plot_data$`p.signif`, function(p) {
+          formatted_p <- sprintf(paste0("%.", input$pValueDecimals, "f"), p)
+          
+          # Prepend "P =" or use no prefix if selected
+          prefix <- switch(input$pValuePrefix,
+                           "P = " = "P = ", # Assuming you want to keep this option
+                           "None" = "",
+                           "P = ") # Default case for clarity, might adjust based on actual options
+          
+          paste0(prefix, formatted_p)
+        })
+        # Update plot_data with formatted p-values
+        plot_data$`p.signif` <- unlist(formatted_pvalues)
+        # Finally, add the formatted p-values to the plot
+        plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
+                                          y.position = input$yPos, label.size = input$sigSize, 
+                                          bracket.size = input$bracketSize, 
+                                          step.increase = input$stepIncrease, hide.ns = input$hideNS, 
+                                          tip.length = input$tipLength, na.rm = TRUE, 
+                                          inherit.aes= FALSE)
+      }
     }else if (input$add_significance == "none"){
       plot <- plot
     }
@@ -2259,27 +2349,49 @@ observeEvent(input$select_dct_or_ddct_stats, {
     
   })
   # Add more layers or customization as needed
+  # Assuming shapiro_data_reactive() returns your dataset
+  num_groups <- reactive({
+    length(unique(shapiro_data_reactive()$cell))
+  })
   
   output$sigUI <- renderUI({
-    if(input$add_significance == "asterix" || input$add_significance == "cld"){
+    if(input$add_significance == "asterix" || input$add_significance == "cld" || input$add_significance == "pval"){
       tagList(
-      fluidRow(
-        column(12, numericInput("yPos", "Y position", value = 1))
-      ),  
-      fluidRow(
-        column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
-        column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.8, step = 0.1))
-      ),
-      fluidRow(
-        column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
-        column(6, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.02, step = 0.01))
-      ),
-      fluidRow(
-        column(12, checkboxInput("hideNS", "Hide ns", value = FALSE))
-      ),
+        fluidRow(
+          column(12, numericInput("yPos", "Y position", value = 1))
+        ),
+        fluidRow(
+          column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
+          if(input$add_significance != "cld") {
+            column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.8, step = 0.1))
+          }
+        ),
+        if(input$add_significance != "cld" && num_groups() > 2) {
+          fluidRow(
+            column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
+            column(6, checkboxInput("hideNS", "Hide ns", value = FALSE))
+          )
+        },
+        if(input$add_significance == "pval"){
+          tagList(
+            fluidRow(
+              column(6, selectInput("pValuePrefix", "P-value Prefix", choices = c("None", "P = "))),
+              column(6, numericInput("pValueDecimals", "Decimal Places for P-value", value = 2, min = 0, max = 10))
+            )
+          )
+        },
+        # Tip Length is applicable for all scenarios except "cld"
+        if(input$add_significance != "cld") {
+          fluidRow(
+            column(12, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.02, step = 0.01))
+          )
+        }
       )
     }
   })
+  
+  
+  
   
   output$downloadGraph <- downloadHandler(
     filename = function() {

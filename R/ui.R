@@ -144,9 +144,11 @@ ui <- fluidPage(
                        selectInput("plot_type", "Choose Plot Type:",
                                    choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
                                    selected = "column"),
-                       radioButtons("add_significance", "If statistics have been performed, add significance to graph.", choices = c("None" = "none", "Asterix Notation" = "asterix", "Compact Letter Display" = "cld"),
+                       h5(HTML("<b>Significance</b>")),
+                       radioButtons("add_significance", "If statistics have been performed, add significance to graph.", choices = c("None" = "none", "Asterix Notation" = "asterix", "P Values" = "pval","Compact Letter Display" = "cld"),
                                     selected = "none"),
                        uiOutput("sigUI"),
+                       h5(HTML("<b>Error Bars</b>")),
                        radioButtons("error_type", "Choose Error Bar Type:",
                                     choices = list("Standard Deviation" = "sd", 
                                                    "Standard Error" = "se"),
@@ -162,6 +164,7 @@ ui <- fluidPage(
                          column(width = 6, numericInput("errorbar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1)),
                          column(width = 6, numericInput("errorbar_thickness", "Error Bar Thickness:", value = 1, min = 0.05, step = 0.2)),
                        ),
+                       h5(HTML("<b>Point Design</b>")),
                        # Choose fill or colour
                        selectInput("fill_color_toggle", "Choose Fill or Border:",
                                    choices = c("Fill" = "fill", "Border" = "color"),
@@ -180,6 +183,7 @@ ui <- fluidPage(
                  numericInput("error_bar_thickness", "Error Bar Thickness:", value = 1.5, min = 0.05, step = 0.2),
                  numericInput("average_line_thickness", "Average Line Thickness:", value = 1, min = 0.05, step = 0.1))
         ),
+        h5(HTML("<b>Point Design</b>")),
         numericInput("point_size", "Point Size:", value = 3, min = 1, max = 10, step = 0.5),
         checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
         fluidRow(
