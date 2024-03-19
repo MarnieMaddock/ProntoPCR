@@ -90,7 +90,7 @@ ui <- fluidPage(
           column(width = 5, uiOutput("column_selector2"))),
         actionButton("save_ddct_data", "Save ΔΔCt Data"),
       ),
-      conditionalPanel(condition = "input.tabselected == 4",
+      conditionalPanel(condition = "input.tabselected == 5",
                        #graphing_sidebarUI("sidebar"),
                        h4(HTML("<b>Create Graph</b>")),
                        radioButtons("select_dct_or_ddct", HTML("Select whether to graph 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup>:"),
@@ -159,7 +159,7 @@ ui <- fluidPage(
                        
       ),
       # Add a dropdown menu for font selection
-      conditionalPanel(condition = "input.tabselected == 4 && input.plot_type == 'column'",
+      conditionalPanel(condition = "input.tabselected == 5 && input.plot_type == 'column'",
                        fluidRow(
                          column(width = 6, numericInput("errorbar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1)),
                          column(width = 6, numericInput("errorbar_thickness", "Error Bar Thickness:", value = 1, min = 0.05, step = 0.2)),
@@ -174,7 +174,7 @@ ui <- fluidPage(
 
       ),
       conditionalPanel(
-        condition = "input.tabselected == 4 && input.plot_type == 'dot'",
+        condition = "input.tabselected == 5 && input.plot_type == 'dot'",
         fluidRow(
           column(width = 6, 
                  numericInput("error_bar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1),
@@ -196,14 +196,14 @@ ui <- fluidPage(
         tags$br(),
         tags$br(),
       ),
-      conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 1",
+      conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 1",
                        h3(HTML("<b>Statistical Flowchart</b>")),
                        h6("This is the suggested workflow for statistical analysis of PCR data. This is a guide only and should be used in conjunction with your own knowledge of statistics for your own applications."),
                        tags$br(),
                        tags$br(),
                        tags$br(),
                        h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question and your field of study to determine what constitutes a small sample size.")),
-      conditionalPanel(condition = "input.tabselected == 5 && input.subStats == 2",
+      conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
                        radioButtons("select_dct_or_ddct_stats", HTML("Select whether to use 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup> for statistical tests:"),
                                     choices = c("ΔCt" = "dct_stats", "∆ΔCt" = "ddct_stats"),
@@ -296,37 +296,8 @@ ui <- fluidPage(
                    ),
                  ),
         ),
-        tabPanel("Graphs", value = 4,
-                 #graphing_mainUI("main"),
-                 # Add a plot
-                 plotOutput("plot"),
-                 tags$br(),
-                 tags$br(),
-                 tags$br(),
-                 tags$br(),
-                 h4(HTML("Download Graph")),
-                 h6("SVG graphs are editable in illustrator, inkscape etc."),
-                 fluidRow(
-                   column(4,
-                          selectInput("file_format", "Choose File Format:",
-                                      choices = c("svg", "png", "jpeg", "tiff"),
-                                      selected = "svg")
-                   ),
-                   column(4,
-                          numericInput("dpi", "DPI:", 500)
-                   ),
-                   column(2,
-                          numericInput("width", "Width (inches):", 8)
-                   ),
-                   column(2,
-                          numericInput("height", "Height (inches):", 5)
-                   ),
-                   column(12,
-                          # Add a download button
-                          downloadButton("downloadGraph", "Download Graph")
-                   )
-                 )),
-        tabPanel("Stats", value = 5,
+        
+        tabPanel("Stats", value = 4,
                  tabsetPanel(
                    id = "subStats",
                    selected = 1,
@@ -356,7 +327,36 @@ ui <- fluidPage(
                    )
                  )
         ),
-        tabPanel("Graphs & Stats", value = 6),
+        tabPanel("Graphs", value = 5,
+                 #graphing_mainUI("main"),
+                 # Add a plot
+                 plotOutput("plot"),
+                 tags$br(),
+                 tags$br(),
+                 tags$br(),
+                 tags$br(),
+                 h4(HTML("Download Graph")),
+                 h6("SVG graphs are editable in illustrator, inkscape etc."),
+                 fluidRow(
+                   column(4,
+                          selectInput("file_format", "Choose File Format:",
+                                      choices = c("svg", "png", "jpeg", "tiff"),
+                                      selected = "svg")
+                   ),
+                   column(4,
+                          numericInput("dpi", "DPI:", 500)
+                   ),
+                   column(2,
+                          numericInput("width", "Width (inches):", 8)
+                   ),
+                   column(2,
+                          numericInput("height", "Height (inches):", 5)
+                   ),
+                   column(12,
+                          # Add a download button
+                          downloadButton("downloadGraph", "Download Graph")
+                   )
+                 )),
       )
     )
   )        

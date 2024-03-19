@@ -1826,7 +1826,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
         req(wrangled_data())  # Ensure data is available
 
         # Generate selectInput for choosing the condition dynamically
-        selectInput("selected_condition", "Select Condition", choices = unique(wrangled_data()$cell),
+        selectInput("selected_condition", "Select Samples", choices = unique(wrangled_data()$cell),
                     multiple = TRUE)
       })
       
@@ -2241,7 +2241,6 @@ observeEvent(input$select_dct_or_ddct_stats, {
         plot <- plot + stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                           step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
       }else{
-        print(comparisonResults()$test)
         comparisonResults_renamed <- comparisonResults()$test %>%
           rename(p.signif = `P Value Summary`)
         plot <- plot + stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
