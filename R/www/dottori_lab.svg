@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
+   width="157.04335mm"
+   height="59.779938mm"
+   viewBox="0 0 157.04335 59.779938"
    version="1.1"
    id="svg5"
    xml:space="preserve"
@@ -28,18 +28,18 @@
      showguides="true"
      inkscape:zoom="1.3986392"
      inkscape:cx="219.85656"
-     inkscape:cy="80.435328"
+     inkscape:cy="252.74567"
      inkscape:window-width="1920"
      inkscape:window-height="986"
      inkscape:window-x="-11"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1"><sodipodi:guide
-       position="-78.317198,485.79363"
+       position="-78.3172,248.57357"
        orientation="0,-1"
        id="guide10119"
        inkscape:locked="false" /><sodipodi:guide
-       position="-18.349682,307.7828"
+       position="-18.349685,70.562747"
        orientation="0,-1"
        id="guide16112"
        inkscape:locked="false" /></sodipodi:namedview><defs
@@ -97,12 +97,13 @@
        cy="-261.48892"
        fx="8.4271812"
        fy="-261.48892"
-       r="71.135888"
+       r="71.135887"
        gradientTransform="matrix(0.1888326,-0.35293713,0.34834821,0.18637739,119.33234,82.576989)"
        gradientUnits="userSpaceOnUse" /></defs><g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"><circle
+     id="layer1"
+     transform="translate(-3.2186508e-6,-1.0848045e-5)"><circle
        style="fill:url(#radialGradient6972);fill-opacity:1;stroke:none;stroke-width:2.4647;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
        id="path2923-7"
        cx="29.889973"

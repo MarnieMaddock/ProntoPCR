@@ -22,6 +22,7 @@ library(multcompView)
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
+source("about.R")
 
 
 # Define UI for application that draws a histogram
@@ -38,12 +39,18 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR v0.0.0.40", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v1.0.0.", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
       # About tab
-      conditionalPanel(condition = "input.tabselected==1", tags$img(src = "dottori_lab.svg", height = 600, width = 400)),
+      conditionalPanel(condition = "input.tabselected==1", 
+                       tags$h3("Contact"),
+                       tags$p("If you have found this application useful please share with your networks. If this is used in any capacity in a publication, please cite the journal article associated with this software (a lot of work goes into making software like this!). If there any questions, or have any suggestions for improvement, please contact the team at mlm715@uowmail.edu.au, mmaddock@uow.edu.au, mdottori@uow.edu.au."),
+                       tags$h3("Citation"),
+                       tags$div(style = "height: 150px;"),
+                       tags$div(tags$img(src = "dottori_lab.svg", height = "auto", width = 300), style = "text-align: center;")
+      ),
       # Input Data Tab
       conditionalPanel(condition = "input.tabselected==2",
                        fileInput("file", "Choose CSV File", accept = c(".csv")),
@@ -72,14 +79,14 @@ ui <- fluidPage(
                        tags$br(),
                        helpText("mean_hk: Calculates the mean of the houskeepers you specified in the input data tab."),
                        tags$br(),
-                       helpText("dct_gene: Calculates the difference between the Ct value of your gene and the average of your housekeepers i.e. ΔCt = Ct (gene of interest) – Ct (housekeeping gene)."),
+                       helpText("dcq_gene: Calculates the difference between the Cq value of your gene and the average of your housekeepers i.e. ΔCq = Cq (gene of interest) – Cq (housekeeping gene)."),
                        tags$br(),
-                       helpText(HTML("fc_dct_gene: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2<sup>-(ΔCt)</sup>.")),
+                       helpText(HTML("fc_dcq_gene: Calculates the relative mRNA fold change - and is useful when you don't have an appropriate control/untreated reference value i.e. 2<sup>-(ΔCq)</sup>.")),
                        tags$br(),
-                       helpText(HTML("dct_ctrl_avg: Calculates the average of the control group for the selected gene.")),
-                       helpText(HTML("ddct_gene: Calculates the difference between the ΔCt of your gene and the average of the control group i.e. ΔΔCt = ΔCt (gene of interest) – ΔCt (control group).")),
+                       helpText(HTML("dcq_ctrl_avg: Calculates the average of the control group for the selected gene.")),
+                       helpText(HTML("ddcq_gene: Calculates the difference between the ΔCq of your gene and the average of the control group i.e. ΔΔCq = ΔCq (gene of interest) – ΔCq (control group).")),
                        tags$br(),
-                       helpText(HTML("fc_ddct: Fold change of the ΔΔCt value i.e. 2<sup>-(ΔΔCt)</sup>.")),
+                       helpText(HTML("fc_ddcq: Fold change of the ΔΔCq value i.e. 2<sup>-(ΔΔCq)</sup>.")),
                        uiOutput("condition_filter")),
       conditionalPanel(
         condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
@@ -88,14 +95,14 @@ ui <- fluidPage(
           column(width = 5, uiOutput("select_samples")),
           column(width = 5, uiOutput("select_condition")),
           column(width = 5, uiOutput("column_selector2"))),
-        actionButton("save_ddct_data", "Save ΔΔCt Data"),
+        actionButton("save_ddcq_data", "Save ΔΔCq Data"),
       ),
       conditionalPanel(condition = "input.tabselected == 5",
                        #graphing_sidebarUI("sidebar"),
                        h4(HTML("<b>Create Graph</b>")),
-                       radioButtons("select_dct_or_ddct", HTML("Select whether to graph 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup>:"),
-                                    choices = c("ΔCt" = "dct", "∆ΔCt" = "ddct"),
-                                    selected = "dct"),
+                       radioButtons("select_dcq_or_ddcq", HTML("Select whether to graph 2<sup>-(ΔCq)</sup> or 2<sup>-(ΔΔCq)</sup>:"),
+                                    choices = c("ΔCq" = "dcq", "∆ΔCq" = "ddcq"),
+                                    selected = "dcq"),
                        uiOutput("selected_gene_ui"),
                        tags$br(),
                        fluidRow(
@@ -205,12 +212,12 @@ ui <- fluidPage(
                        h6("Note, the choice of small sample size being < 50 is an arbitrary value. Use the context of your question and your field of study to determine what constitutes a small sample size.")),
       conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 2",
                        h5(HTML("<b>Statistics</b>")),
-                       radioButtons("select_dct_or_ddct_stats", HTML("Select whether to use 2<sup>-(ΔCt)</sup> or 2<sup>-(ΔΔCt)</sup> for statistical tests:"),
-                                    choices = c("ΔCt" = "dct_stats", "∆ΔCt" = "ddct_stats"),
-                                    selected = "dct_stats"),
+                       radioButtons("select_dcq_or_ddcq_stats", HTML("Select whether to use 2<sup>-(ΔCq)</sup> or 2<sup>-(ΔΔCq)</sup> for statistical tests:"),
+                                    choices = c("ΔCq" = "dcq_stats", "∆ΔCq" = "ddcq_stats"),
+                                    selected = "dcq_stats"),
                        h6("Select the samples and gene to perform statistics on."),
                        selectInput("sampleInput", "Select Sample:", choices = NULL, multiple = TRUE),
-                       uiOutput("ddctMessage"),
+                       uiOutput("ddcqMessage"),
                        uiOutput("selected_gene_ui_stats"),
                        selectInput("columnInput", "Select Gene:", choices = NULL),
                        tags$br(),
@@ -238,7 +245,8 @@ ui <- fluidPage(
         type = "tabs", 
         id = "tabselected", 
         selected = 1, # Default tab selected is 1
-        tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1),
+        tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1,
+                 about_text),
         tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table2.png", height = 400, width = 680),
                  # Display uploaded data using DataTable
                  dataTableOutput("table"),
@@ -248,12 +256,12 @@ ui <- fluidPage(
                  tabsetPanel(
                    id = "subPanel",
                    selected = 3.1,
-                   tabPanel(HTML("2<sup>-(∆Ct)</sup>"), value = 3.1,
+                   tabPanel(HTML("2<sup>-(∆Cq)</sup>"), value = 3.1,
                             tabsetPanel(
                               id = "subCalc",
                               selected = 1,
                               tabPanel("All Data", value = 1,
-                                       h4(HTML("<b>Average the houskeeping genes and perform ∆Ct and 2<sup>-∆Ct</sup></b>")),
+                                       h4(HTML("<b>Average the houskeeping genes and perform ∆Cq and 2<sup>-∆Cq</sup></b>")),
                                        tags$br(),
                                        dataTableOutput("calculations_table"),
                                        # Add this inside your UI, preferably in the "Calculations" tabPanel
@@ -279,19 +287,19 @@ ui <- fluidPage(
                                        tags$br())
                             )
                    ),
-                   tabPanel(HTML("2<sup>-(∆∆Ct)</sup>"), value = 3.2,
+                   tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
                             tabsetPanel(
                               id = "subCalc2",
                               selected = 3,
                               tabPanel("All Data", value = 3,
-                                       h4(HTML("<b>Average ∆Ct for control and perform 2<sup>-∆ΔCt</sup></b>")),
-                                       dataTableOutput("ddct_data"),
-                                       downloadUI("download_ddct_data", "Download Processed Data"),
+                                       h4(HTML("<b>Average ∆Cq for control and perform 2<sup>-∆ΔCq</sup></b>")),
+                                       dataTableOutput("ddcq_data"),
+                                       downloadUI("download_ddcq_data", "Download Processed Data"),
                                        tags$br()),
                               tabPanel("Biological Replicate", value = 4,
                                        h4(HTML("<b>Biological Replicate Average Values</b>")),
-                                       dataTableOutput("rep_avg_table_ddct"),
-                                       downloadUI("download_ddct_avg_data", "Download Replicate Data"))
+                                       dataTableOutput("rep_avg_table_ddcq"),
+                                       downloadUI("download_ddcq_avg_data", "Download Replicate Data"))
                             )
                    ),
                  ),

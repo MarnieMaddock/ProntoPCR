@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="144.07809mm"
+   height="68.602005mm"
+   viewBox="0 0 144.07809 68.602005"
+   version="1.1"
+   id="svg310"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
+   sodipodi:docname="Sample.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview312"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.9827809"
+     inkscape:cx="405.23892"
+     inkscape:cy="197.44995"
+     inkscape:window-width="2880"
+     inkscape:window-height="1526"
+     inkscape:window-x="2869"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs307">
+    <rect
+       x="537.12439"
+       y="434.23859"
+       width="306.64005"
+       height="123.05949"
+       id="rect6009" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-29.578779,-10.002402)">
+    <text
+       xml:space="preserve"
+       style="font-size:8.46667px;line-height:1.4;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;text-anchor:start;fill:#00359b;fill-opacity:1;stroke-width:0.423;stroke-linecap:round"
+       x="29.12816"
+       y="76.822601"
+       id="text485-6"><tspan
+         sodipodi:role="line"
+         id="tspan483-3"
+         style="font-size:8.46667px;text-align:start;text-anchor:start;fill:#00359b;fill-opacity:1;stroke-width:0.423"
+         x="29.12816"
+         y="76.822601">Grouping1<tspan
+   style="font-size:8.46667px;fill:#000000;fill-opacity:1"
+   id="tspan4075">_</tspan><tspan
+   style="font-size:8.46667px;fill:#fe6100;fill-opacity:1"
+   id="tspan5901">BiologicalRep#</tspan><tspan
+   style="font-size:8.46667px;fill:#000000;fill-opacity:1"
+   id="tspan4185">_</tspan><tspan
+   style="font-size:8.46667px;fill:#dc267f;fill-opacity:1"
+   id="tspan5903">Grouping2</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="font-size:8.46667px;text-align:start;text-anchor:start;fill:#00359b;fill-opacity:1;stroke-width:0.423"
+         x="29.12816"
+         y="88.675941"
+         id="tspan489-1" /></text>
+    <g
+       id="g6029">
+      <text
+         xml:space="preserve"
+         style="font-size:9.87777px;line-height:1.4;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;text-anchor:start;fill:#fffffe;stroke-width:0.423;stroke-linecap:round"
+         x="61.443375"
+         y="18.80101"
+         id="text485"><tspan
+           sodipodi:role="line"
+           id="tspan483"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.423"
+           x="61.443375"
+           y="18.80101">IsC_2_SC</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.423"
+           x="61.443375"
+           y="32.629887"
+           id="tspan487">Dis_1_F</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.423"
+           x="61.443375"
+           y="46.458767"
+           id="tspan541">DrugA1uM_3_NIL</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:start;text-anchor:start;fill:#000000;fill-opacity:1;stroke-width:0.423"
+           x="61.443375"
+           y="60.287643"
+           id="tspan489">DrugB1uM_2_NIL</tspan></text>
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#00359b;stroke-width:0.679198;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201"
+         width="50.417896"
+         height="24.158319"
+         x="59.331169"
+         y="38.446938" />
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#00359b;stroke-width:0.7;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201-8"
+         width="17.607946"
+         height="24.441622"
+         x="59.189522"
+         y="10.464078" />
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#fe6100;stroke-width:0.7;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201-8-4"
+         width="8.0901403"
+         height="24.664974"
+         x="80.356056"
+         y="10.352402" />
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#fe6100;stroke-width:0.7;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201-8-4-3"
+         width="8.0901403"
+         height="24.664974"
+         x="112.99146"
+         y="38.193611" />
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#dc267f;stroke-width:0.720746;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201-8-4-4"
+         width="18.655077"
+         height="24.421228"
+         x="125.38068"
+         y="38.315483" />
+      <rect
+         style="fill:#000000;fill-opacity:0;stroke:#dc267f;stroke-width:0.720746;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
+         id="rect1201-8-4-4-7"
+         width="18.655077"
+         height="24.421228"
+         x="92.621025"
+         y="10.474275" />
+    </g>
+    <text
+       xml:space="preserve"
+       transform="scale(0.26458333)"
+       id="text6007"
+       style="font-size:37.3333px;line-height:0.6;font-family:Arial;-inkscape-font-specification:Arial;text-align:start;white-space:pre;shape-inside:url(#rect6009);fill:#dc267f;fill-opacity:1;stroke:#dc267f;stroke-width:2.64567;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>

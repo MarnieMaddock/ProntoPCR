@@ -100,14 +100,14 @@ server <- function(input, output, session) {
     #ncol(data) provides the last column index of the dataframe.
     df <- df %>% 
       mutate(across((which(names(df) == "mean_hk") + 1):ncol(df), 
-                    list(dct = ~ ifelse(.x != 0, .x - mean_hk, 0)), 
+                    list(dcq = ~ ifelse(.x != 0, .x - mean_hk, 0)), 
                     .names = "{.fn}_{.col}"))
     
     #calulcate fold change (relative mRNA)
     # Calculate fc, considering the case where the data point is 0
     df <- df %>% 
       mutate(across(
-        (which(startsWith(names(df), "dct_"))):ncol(df),
+        (which(startsWith(names(df), "dcq_"))):ncol(df),
         list(fc = ~ ifelse(.x != 0, 2^(-.x), 0)),
         .names = "{.fn}_{.col}"
       ))
@@ -187,7 +187,7 @@ server <- function(input, output, session) {
     req(wrangled_data())
     
     vars <- colnames(wrangled_data()) %>%
-      grep("^fc_dct", ., value = TRUE)
+      grep("^fc_dcq", ., value = TRUE)
     
     # Now, the 'vars' object contains the desired column names
     rep_avg <- wrangled_data() %>%
@@ -273,14 +273,14 @@ server <- function(input, output, session) {
   output$column_selector2 <- renderUI({
     req(wrangled_data())
     
-    # Filter column names to include only those starting with "dct"
-    dct_columns <- grep("^dct_", colnames(wrangled_data()), value = TRUE)
+    # Filter column names to include only those starting with "dcq"
+    dcq_columns <- grep("^dcq_", colnames(wrangled_data()), value = TRUE)
     
     # Generate selectInput for choosing the column dynamically
-    selectInput("select_gene", "Select Gene to calculate DDCT", choices = dct_columns)
+    selectInput("select_gene", "Select Gene to calculate ΔΔCq", choices = dcq_columns)
   })
   
-  ddct_filtered_data <- reactive({
+  ddcq_filtered_data <- reactive({
     req(wrangled_data())
     req(input$select_gene)
     
@@ -289,20 +289,20 @@ server <- function(input, output, session) {
     samples <- input$select_samples
     selected_gene <- input$select_gene
     
-    ddct_data <- wrangled_data() %>% 
+    ddcq_data <- wrangled_data() %>% 
       filter((group == control) | (group %in% samples)) %>% 
       filter(condition == condition2) %>%
       dplyr::select(group, condition, all_of(selected_gene))
     
     # Resetting levels of factors to only include selected options
-    ddct_data$group <- factor(ddct_data$group, levels = unique(c(as.character(control), as.character(samples))))
-    ddct_data$condition <- factor(ddct_data$condition, levels = condition2)
-    return(ddct_data)
+    ddcq_data$group <- factor(ddcq_data$group, levels = unique(c(as.character(control), as.character(samples))))
+    ddcq_data$condition <- factor(ddcq_data$condition, levels = condition2)
+    return(ddcq_data)
   })
   
   mean_value <- reactiveVal(NULL)
-  # Calculate the average delta ct for the selected gene in the control samples
-  average_dct <- reactive({
+  # Calculate the average delta cq for the selected gene in the control samples
+  average_dcq <- reactive({
     req(wrangled_data())
     req(input$select_gene)
     req(input$select_control)
@@ -312,91 +312,91 @@ server <- function(input, output, session) {
     control2 <- input$select_control
     samples2 <- input$select_samples
     
-    # Calculate the average delta ct for the selected gene in the control samples
-    avg_dct_ctrl <- ddct_filtered_data() %>%
+    # Calculate the average delta cq for the selected gene in the control samples
+    avg_dcq_ctrl <- ddcq_filtered_data() %>%
       filter(group == control2) %>%
       group_by(group, condition) %>%
-      summarise(dct_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
+      summarise(dcq_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
     
     # Left join the original dataframe with the summarised dataframe
-    avg_dct_ctrl <- left_join(ddct_filtered_data(), avg_dct_ctrl, by = c("group", "condition"))
+    avg_dcq_ctrl <- left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = c("group", "condition"))
     
     # Calculate the mean value
-    mean_val <- mean(avg_dct_ctrl$dct_ctrl_avg, na.rm = TRUE)
+    mean_val <- mean(avg_dcq_ctrl$dcq_ctrl_avg, na.rm = TRUE)
     
     # Store the mean value in the reactive value
     mean_value(mean_val)
     
-    # Assign the mean value to the entire dct_ctrl_avg column
-    avg_dct_ctrl$dct_ctrl_avg <- mean_val
+    # Assign the mean value to the entire dcq_ctrl_avg column
+    avg_dcq_ctrl$dcq_ctrl_avg <- mean_val
     
-    # Create a new column ddct by subtracting selected_gene2 from dct_ctrl_avg
-    avg_dct_ctrl$ddct <-  avg_dct_ctrl[[selected_gene2]] - avg_dct_ctrl$dct_ctrl_avg
+    # Create a new column ddcq by subtracting selected_gene2 from dcq_ctrl_avg
+    avg_dcq_ctrl$ddcq <-  avg_dcq_ctrl[[selected_gene2]] - avg_dcq_ctrl$dcq_ctrl_avg
     
-    # Create a new column fc_ddct containing 2^(-ddct)
-    avg_dct_ctrl$fc_ddct <- 2^(-avg_dct_ctrl$ddct)
+    # Create a new column fc_ddcq containing 2^(-ddcq)
+    avg_dcq_ctrl$fc_ddcq <- 2^(-avg_dcq_ctrl$ddcq)
     
     # Resetting levels of factors to only include selected options
-    avg_dct_ctrl$group <- factor(avg_dct_ctrl$group, levels = unique(c(as.character(control2), as.character(samples2))))
-    avg_dct_ctrl$condition <- factor(avg_dct_ctrl$condition, levels = condition3)
-    avg_dct_ctrl$cell <- paste(avg_dct_ctrl$condition, avg_dct_ctrl$group, sep = "_")
-    return(avg_dct_ctrl)
+    avg_dcq_ctrl$group <- factor(avg_dcq_ctrl$group, levels = unique(c(as.character(control2), as.character(samples2))))
+    avg_dcq_ctrl$condition <- factor(avg_dcq_ctrl$condition, levels = condition3)
+    avg_dcq_ctrl$cell <- paste(avg_dcq_ctrl$condition, avg_dcq_ctrl$group, sep = "_")
+    return(avg_dcq_ctrl)
   })
   
-  output$ddct_data <- renderDataTable({
-    req(average_dct())
-    average_dct()
+  output$ddcq_data <- renderDataTable({
+    req(average_dcq())
+    average_dcq()
   }, options = list(pageLength = 5))
   
-  downloadServer("download_ddct_data", ddct_data, function(input, session) {
-    paste("DDCT_processed_data_", Sys.Date(), ".csv", sep = "")
+  downloadServer("download_ddcq_data", ddcq_data, function(input, session) {
+    paste("DDCQ_processed_data_", Sys.Date(), ".csv", sep = "")
   })
   
-  values <- reactiveValues(ddctDataSaved = FALSE)
+  values <- reactiveValues(ddcqDataSaved = FALSE)
   
-  observeEvent(input$save_ddct_data, {
-    # This block is executed whenever the 'Save ddct Data' button is clicked.
+  observeEvent(input$save_ddcq_data, {
+    # This block is executed whenever the 'Save ddcq Data' button is clicked.
     # Even though you don't want to perform any action immediately when the button is clicked,
     # use this as a trigger for other reactive expressions or observers.
-    values$ddctDataSaved <- TRUE
+    values$ddcqDataSaved <- TRUE
   })
   
   # Calculate replicate averages when data is loaded
   
-  rep_avg_data_ddct <- reactive({
-    req(average_dct())
+  rep_avg_data_ddcq <- reactive({
+    req(average_dcq())
     
-    rep_avg_ddct <- average_dct() %>%
+    rep_avg_ddcq <- average_dcq() %>%
       group_by(condition, group) %>%
-      summarize(mean_fc_ddct = mean(fc_ddct, na.rm = TRUE), .groups = "drop")
+      summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop")
     
     #add column cell
-    rep_avg_ddct$cell <- paste(rep_avg_ddct$condition, rep_avg_ddct$group, sep = "_")
-    rep_avg_ddct$cell <- as.factor(rep_avg_ddct$cell)
+    rep_avg_ddcq$cell <- paste(rep_avg_ddcq$condition, rep_avg_ddcq$group, sep = "_")
+    rep_avg_ddcq$cell <- as.factor(rep_avg_ddcq$cell)
     #Move column
-    rep_avg_ddct <- data_relocate(rep_avg_ddct, select = "cell", after = "group")
-    return(rep_avg_ddct)
+    rep_avg_ddcq <- data_relocate(rep_avg_ddcq, select = "cell", after = "group")
+    return(rep_avg_ddcq)
   })
   
   # Display the replicate averages table in "Calculations" tab
-  output$rep_avg_table_ddct <- renderDataTable({
-    rep_avg_data_ddct()
+  output$rep_avg_table_ddcq <- renderDataTable({
+    rep_avg_data_ddcq()
   }, options = list(pageLength = 5))
   
-  downloadServer("download_ddct_avg_data", rep_avg_table_ddct, function(input, session) {
-    paste("DDCT_processed_replicate_data_", Sys.Date(), ".csv", sep = "")
+  downloadServer("download_ddcq_avg_data", rep_avg_table_ddcq, function(input, session) {
+    paste("DDCq_processed_replicate_data_", Sys.Date(), ".csv", sep = "")
   })
   
   #Stats
-  observeEvent(input$select_dct_or_ddct_stats, {
-    # Check if 'ddct' is selected
-    if (input$select_dct_or_ddct_stats == "ddct_stats") {
+  observeEvent(input$select_dcq_or_ddcq_stats, {
+    # Check if 'ddcq' is selected
+    if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
       # Display the gene selection message
       output$selected_gene_ui_stats <- renderUI({
         textOutput("selected_gene_message_stats")
       })
     } else {
-      # Hide the message when 'dct' is selected or for any other condition
+      # Hide the message when 'dcq' is selected or for any other condition
       output$selected_gene_ui_stats <- renderUI({})
     }
   })
@@ -404,20 +404,20 @@ server <- function(input, output, session) {
   # Define the text output for displaying the selected gene
   output$selected_gene_message_stats <- renderText({
     req(input$select_gene)  # Ensure there is a selection
-    # Use gsub to remove "dct_" from the selected gene's name
-    selected_gene_cleaned <- gsub("^dct_", "", input$select_gene)
+    # Use gsub to remove "dcq_" from the selected gene's name
+    selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)
     paste("You are currently performing stats on gene:", selected_gene_cleaned)
   })
   
   observe({
-      if (input$select_dct_or_ddct_stats == "dct_stats") {
+      if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
         updateSelectInput(session, "sampleInput", choices = unique(wrangled_data()$cell))
-        updateSelectInput(session, "columnInput", choices = grep("^fc_dct_", names(wrangled_data()), value = TRUE))
-      } else if (input$select_dct_or_ddct_stats == "ddct_stats") {
-        # Check if avg_dct_df is not NULL and has the expected columns
-        if (!is.null(values$ddctDataSaved) && values$ddctDataSaved) {
-        updateSelectInput(session, "sampleInput", choices = unique(average_dct()$cell))
-        updateSelectInput(session, "columnInput", choices = grep("^fc_ddct", names(average_dct()), value = TRUE))
+        updateSelectInput(session, "columnInput", choices = grep("^fc_dcq_", names(wrangled_data()), value = TRUE))
+      } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
+        # Check if avg_dcq_df is not NULL and has the expected columns
+        if (!is.null(values$ddcqDataSaved) && values$ddcqDataSaved) {
+        updateSelectInput(session, "sampleInput", choices = unique(average_dcq()$cell))
+        updateSelectInput(session, "columnInput", choices = grep("^fc_ddcq", names(average_dcq()), value = TRUE))
         } else {
           updateSelectInput(session, "sampleInput", choices=character(0), selected = character(0))  # Clear the sampleInput choices
           updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
@@ -425,13 +425,13 @@ server <- function(input, output, session) {
       }
   })
   
-  output$ddctMessage <- renderUI({
-    # Check if 'ddct_stats' is selected and data is not saved yet
-    if (input$select_dct_or_ddct_stats == "ddct_stats" && !values$ddctDataSaved) {
+  output$ddcqMessage <- renderUI({
+    # Check if 'ddcq_stats' is selected and data is not saved yet
+    if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && !values$ddcqDataSaved) {
       # Return a UI element with the message
       tagList(
-        HTML('<h5>Please go to the 2<sup>-(∆∆Ct)</sup> Calculations tab to create your ∆∆Ct dataset.</h5>'),
-        tags$p("You need to save your ∆∆Ct dataset before proceeding.")
+        HTML('<h5>Please go to the 2<sup>-(∆∆Cq)</sup> Calculations tab to create your ∆∆Cq dataset.</h5>'),
+        tags$p("You need to save your ∆∆Cq dataset before proceeding.")
       )
     } else {
       # Return NULL or an empty UI element if conditions are not met
@@ -440,17 +440,17 @@ server <- function(input, output, session) {
   })
   
 stats_data <- reactive({
-  if (input$select_dct_or_ddct_stats == "dct_stats") {
+  if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
     wrangled_data()
-  } else if (input$select_dct_or_ddct_stats == "ddct_stats" && values$ddctDataSaved) {
-    average_dct()
+  } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && values$ddcqDataSaved) {
+    average_dcq()
   } else{
     return(NULL)
   }
 })
   
-# Observe changes in the selection between dct and ddct
-observeEvent(input$select_dct_or_ddct_stats, {
+# Observe changes in the selection between dcq and ddcq
+observeEvent(input$select_dcq_or_ddcq_stats, {
   # Reset the 'sample_size' checkbox
   updateCheckboxInput(session, "sample_size", value = FALSE)
   
@@ -479,7 +479,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
     req(input$sampleInput, input$columnInput)  # Ensure the inputs are not NULL
     # Filter the data based on selected samples
     selected_data <- stats_data()[stats_data()$cell %in% input$sampleInput, ]
-    # Calculate the count of non-NA entries for the selected fc_dct_ column for each sample
+    # Calculate the count of non-NA entries for the selected fc_dcq_ column for each sample
     counts <- tapply(selected_data[[input$columnInput]], selected_data$cell, function(x) sum(!is.na(x)))
     # Return only the counts for the samples selected by the user
     counts[names(counts) %in% input$sampleInput]
@@ -517,7 +517,7 @@ observeEvent(input$select_dct_or_ddct_stats, {
   })
   
   shapiro_data_reactive <- reactive({
-    req(input$select_dct_or_ddct_stats, input$sampleInput, input$columnInput, stats_data()) 
+    req(input$select_dcq_or_ddcq_stats, input$sampleInput, input$columnInput, stats_data()) 
       # Initial data filtering and selection
       data <- stats_data() %>%
         filter(cell %in% input$sampleInput) %>%
@@ -1807,20 +1807,20 @@ observeEvent(input$select_dct_or_ddct_stats, {
   
   
   
-  # Graphing dct or ddct  
+  # Graphing dcq or ddcq  
   # Define a reactive expression to switch between datasets
-  dct_or_ddct <- reactive({
-    if (input$select_dct_or_ddct == "dct") {
-      # If 'dct' is selected, return wrangled_data()
+  dcq_or_ddcq <- reactive({
+    if (input$select_dcq_or_ddcq == "dcq") {
+      # If 'dcq' is selected, return wrangled_data()
       return(wrangled_data())
     } else {
-      # If 'ddct' is selected, return average_dct()
-      return(average_dct())
+      # If 'ddcq' is selected, return average_dcq()
+      return(average_dcq())
     }
   })
   
-  observeEvent(input$select_dct_or_ddct,{
-    if (input$select_dct_or_ddct == "dct") {
+  observeEvent(input$select_dcq_or_ddcq,{
+    if (input$select_dcq_or_ddcq == "dcq") {
       # Render the dynamic selectInput for choosing condition
       output$condition_selector <- renderUI({
         req(wrangled_data())  # Ensure data is available
@@ -1834,15 +1834,15 @@ observeEvent(input$select_dct_or_ddct_stats, {
       output$column_selector <- renderUI({
         req(wrangled_data())  # Ensure data is available
         
-        # Filter column names to include only those starting with "fc_dct"
-        fc_dct_columns <- grep("^fc_dct", colnames(wrangled_data()), value = TRUE)
+        # Filter column names to include only those starting with "fc_dcq"
+        fc_dcq_columns <- grep("^fc_dcq", colnames(wrangled_data()), value = TRUE)
         
         # Generate selectInput for choosing the column dynamically
-        selectInput("fc_dct_column", "Select Gene", choices = fc_dct_columns)
+        selectInput("fc_dcq_column", "Select Gene", choices = fc_dcq_columns)
         
       })
     } else {
-      # Hide the UI elements if ddct is selected
+      # Hide the UI elements if ddcq is selected
       output$condition_selector <- renderUI(NULL)
       output$column_selector <- renderUI(NULL)
     }
@@ -1850,15 +1850,15 @@ observeEvent(input$select_dct_or_ddct_stats, {
   
   
   
-  observeEvent(input$select_dct_or_ddct, {
-    # Check if 'ddct' is selected
-    if (input$select_dct_or_ddct == "ddct") {
+  observeEvent(input$select_dcq_or_ddcq, {
+    # Check if 'ddcq' is selected
+    if (input$select_dcq_or_ddcq == "ddcq") {
       # Display the gene selection message
       output$selected_gene_ui <- renderUI({
         textOutput("selected_gene_message")
       })
     } else {
-      # Hide the message when 'dct' is selected or for any other condition
+      # Hide the message when 'dcq' is selected or for any other condition
       output$selected_gene_ui <- renderUI({})
     }
   })
@@ -1866,8 +1866,8 @@ observeEvent(input$select_dct_or_ddct_stats, {
   # Define the text output for displaying the selected gene
   output$selected_gene_message <- renderText({
     req(input$select_gene)  # Ensure there is a selection
-    # Use gsub to remove "dct_" from the selected gene's name
-    selected_gene_cleaned <- gsub("^dct_", "", input$select_gene)
+    # Use gsub to remove "dcq_" from the selected gene's name
+    selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)
     paste("You are currently graphing gene:", selected_gene_cleaned)
   })
   
@@ -1876,20 +1876,20 @@ observeEvent(input$select_dct_or_ddct_stats, {
     selected_gene_cleaned <- ""
     
     # Determine which input to use based on the condition selected
-    if (input$select_dct_or_ddct == "dct") {
-      # Ensure the fc_dct_column input is used for dct condition
-      req(input$fc_dct_column)  # Ensure there is a selection for the dct condition
-      selected_gene_cleaned <- gsub("^fc_dct_", "", input$fc_dct_column)  # Clean the gene name for dct
-    } else if (input$select_dct_or_ddct == "ddct") {
-      # Assume there's another input mechanism for ddct or use a default value
-      req(input$select_gene)  # Placeholder, adjust as necessary for ddct
-      selected_gene_cleaned <- gsub("^dct_", "", input$select_gene)  # Clean the gene name for ddct
+    if (input$select_dcq_or_ddcq == "dcq") {
+      # Ensure the fc_dcq_column input is used for dcq condition
+      req(input$fc_dcq_column)  # Ensure there is a selection for the dcq condition
+      selected_gene_cleaned <- gsub("^fc_dcq_", "", input$fc_dcq_column)  # Clean the gene name for dcq
+    } else if (input$select_dcq_or_ddcq == "ddcq") {
+      # Assume there's another input mechanism for ddcq or use a default value
+      req(input$select_gene)  # Placeholder, adjust as necessary for ddcq
+      selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)  # Clean the gene name for ddcq
     }
     
     # Determine the placeholder text based on the selection
-    placeholder_text <- if (input$select_dct_or_ddct == "dct") {
+    placeholder_text <- if (input$select_dcq_or_ddcq == "dcq") {
       paste0("Relative *", selected_gene_cleaned, "* mRNA (2<sup>-ΔCq</sup>)")
-    } else if (input$select_dct_or_ddct == "ddct") {
+    } else if (input$select_dcq_or_ddcq == "ddcq") {
       paste0("Fold change *", selected_gene_cleaned, "* mRNA (2<sup>-ΔΔCq</sup>)")
     } else {
       "Enter Y-axis Label"  # Default text if neither is selected
@@ -2020,20 +2020,20 @@ observeEvent(input$select_dct_or_ddct_stats, {
     }
   }
   
-  fc_dct_columns_reactive <- reactive({
+  fc_dcq_columns_reactive <- reactive({
     req(wrangled_data())  # Ensure data is available
-    grep("^fc_dct", colnames(wrangled_data()), value = TRUE)
+    grep("^fc_dcq", colnames(wrangled_data()), value = TRUE)
   })
   
-  # Now, you can access `fc_dct_columns_reactive()` as a reactive value.
+  # Now, you can access `fc_dcq_columns_reactive()` as a reactive value.
   
   
   output$plot <- renderPlot({
-    req(input$select_dct_or_ddct, input$y_label, input$x_label, input$fc_dct_column)
+    req(input$select_dcq_or_ddcq, input$y_label, input$x_label, input$fc_dcq_column)
     set.seed(input$seed_input)
     
-    if(input$select_dct_or_ddct == "dct"){
-      filtered_data2 <- dct_or_ddct() %>%
+    if(input$select_dcq_or_ddcq == "dcq"){
+      filtered_data2 <- dcq_or_ddcq() %>%
         filter(cell %in% input$selected_condition)
       filtered_rep_avg_data2 <- rep_avg_data() %>%
         filter(cell %in% input$selected_condition)
@@ -2046,8 +2046,8 @@ observeEvent(input$select_dct_or_ddct_stats, {
       }
 
       # Specify the y_aes based on user input
-      y_aes <- sym(input$fc_dct_column)
-      y_aes_avg <- sym(input$fc_dct_column)
+      y_aes <- sym(input$fc_dcq_column)
+      y_aes_avg <- sym(input$fc_dcq_column)
       
       positions <- if (length(input$selected_condition) >= 2) {
         # Parse positions if user entered them, or use unique values from "cell" column
@@ -2060,14 +2060,14 @@ observeEvent(input$select_dct_or_ddct_stats, {
         unlist(strsplit(input$x_axis_positions, ","))
       }
       
-    }else if(input$select_dct_or_ddct == "ddct"){
-      filtered_data2 <- dct_or_ddct()
-      filtered_rep_avg_data2 <- rep_avg_data_ddct()
+    }else if(input$select_dcq_or_ddcq == "ddcq"){
+      filtered_data2 <- dcq_or_ddcq()
+      filtered_rep_avg_data2 <- rep_avg_data_ddcq()
       # Determine the x aesthetic based on the number of selected conditions
       x_aes <- sym("cell")
       # Specify the y_aes based on user input
-      y_aes <- sym("fc_ddct")
-      y_aes_avg <- sym("mean_fc_ddct")
+      y_aes <- sym("fc_ddcq")
+      y_aes_avg <- sym("mean_fc_ddcq")
       
       positions <- if (length(input$select_samples) >= 2) {
         # Parse positions if user entered them, or use unique values from "cell" column
@@ -2153,7 +2153,6 @@ observeEvent(input$select_dct_or_ddct_stats, {
     } else {
       c(0, NA) # If ymin is not below 0, start the y-axis at 0
     }
-    #if(input$select_dct_or_ddct == "dct"){      
     #Create your plot using ggplot2 with the selected dataset
     if (input$plot_type == "column"){
       if (input$fill_color_toggle == "color"){
