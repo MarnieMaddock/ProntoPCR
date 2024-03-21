@@ -1813,6 +1813,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     if (input$select_dcq_or_ddcq == "dcq") {
       # If 'dcq' is selected, return wrangled_data()
       return(wrangled_data())
+
     } else {
       # If 'ddcq' is selected, return average_dcq()
       return(average_dcq())
@@ -1839,7 +1840,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         
         # Generate selectInput for choosing the column dynamically
         selectInput("fc_dcq_column", "Select Gene", choices = fc_dcq_columns)
-        
       })
     } else {
       # Hide the UI elements if ddcq is selected
@@ -2037,7 +2037,12 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         filter(cell %in% input$selected_condition)
       filtered_rep_avg_data2 <- rep_avg_data() %>%
         filter(cell %in% input$selected_condition)
-      
+      #If filtered_rep_avg_data2 has column fc_avg, rename to input$selected_condition
+      #This is needed if only one gene is present in the dataset apart from the housekeepers
+          if("fc_avg" %in% colnames(filtered_rep_avg_data2)){
+            filtered_rep_avg_data2 <- filtered_rep_avg_data2 %>%
+              rename(!!input$fc_dcq_column := fc_avg)
+          }
       # Determine the x aesthetic based on the number of selected conditions
       x_aes <- if (length(input$selected_condition) >= 2) {
         sym("cell")
@@ -2068,7 +2073,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       # Specify the y_aes based on user input
       y_aes <- sym("fc_ddcq")
       y_aes_avg <- sym("mean_fc_ddcq")
-      
+
       positions <- if (length(input$select_samples) >= 2) {
         # Parse positions if user entered them, or use unique values from "cell" column
         if (!is.null(input$x_axis_positions)) {

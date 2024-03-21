@@ -39,7 +39,7 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("STATqPCR v1.0.0.", style = "margin-left: 65px;")),
+  div(tags$h1("STATqPCR v1.0.1", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
