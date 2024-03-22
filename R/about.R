@@ -1,5 +1,5 @@
 about_text <- div(
-    h3("About STATqPCR"),
+    h3("About FASTqPCR"),
     p("STATqPCR has been developed to simplify and accerlate the analysis of qPCR data (which is known to be a repetitive and time-consuming task). All caluclations, statistics and graphing can be performed in under 1 minute*.
       The web application is designed to do the following:"),
     shiny::tags$ul(
