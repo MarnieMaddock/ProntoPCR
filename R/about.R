@@ -32,5 +32,5 @@ about_text <- div(
       # If you are still unsure, please refer to the 'Contact' tab."),
     p("Refer to Input Data Tab for another example."),
     
-    p("*Once the user is familar with the user interface, you can expect to perform all calculations and analysis in under 1 minute. This estimate does not include the time it takes to pre-format the data."),
+    p("*Once the user is familar with the user interface, you can expect to perform all calculations and analysis in under 1 minute. This estimate does not include the time it takes to pre-format and load the data."),
   )

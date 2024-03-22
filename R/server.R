@@ -3,7 +3,7 @@
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("utils_graphTheme.R")
-
+source("utils_performCLD.R")
 
 server <- function(input, output, session) {
   
@@ -727,18 +727,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         test_result_df <- test_result_df %>% 
           rename("P Value (Two-Tailed)" = P.value_Two.Tailed, "Significant?" = Significant, "P Value Summary" = P_value_summary)
         #compact letter display
-        groups <- unique(c(test_result_df$group1, test_result_df$group2))
-        p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                           dimnames = list(groups, groups))
-        for(i in 1:nrow(test_result_df)) {
-          p_matrix[test_result_df$group1[i], test_result_df$group2[i]] <- test_result_df$"P Value (Two-Tailed)"[i]
-          p_matrix[test_result_df$group2[i], test_result_df$group1[i]] <- test_result_df$"P Value (Two-Tailed)"[i]
-        }
-        cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-        cld_df <- data.frame(
-          Group = names(cl_display$Letters),
-          Letters = unname(cl_display$Letters)
-        )
+        cld_df <- performCLD(data = test_result_df, p_colname = "P Value (Two-Tailed)",  remove_NA = FALSE)
         
       } else {
         group_names <- unique(shapiro_data_reactive()$cell)
@@ -767,18 +756,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         test_result_df <- test_result_df %>% 
           rename("P Value" = P.value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
         #compact letter display
-        groups <- unique(c(test_result_df$group1, test_result_df$group2))
-        p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                           dimnames = list(groups, groups))
-        for(i in 1:nrow(test_result_df)) {
-          p_matrix[test_result_df$group1[i], test_result_df$group2[i]] <- test_result_df$"P Value"[i]
-          p_matrix[test_result_df$group2[i], test_result_df$group1[i]] <- test_result_df$"P Value"[i]
-        }
-        cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-        cld_df <- data.frame(
-          Group = names(cl_display$Letters),
-          Letters = unname(cl_display$Letters)
-        )
+        cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
       }
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
@@ -825,20 +803,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           #remove Contrast column
           post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
-
+          rownames(post_hoc_df) <- NULL
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$`Adjusted P Value`[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$`Adjusted P Value`[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if (input$postHocTest == "bonferroni"){
           # Extract the response variable and the grouping factor based on the input formula
@@ -854,53 +821,25 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
               Message = "No p-values were computed"
             )
           } else {
-          # Convert the result to a data frame for display. The `pairwise.t.test` function
-          # returns a list with two components: p.value and method. The p.value component
-          # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
-          p_values_matrix <- post_hoc_result$p.value
-          post_hoc_df <- as.data.frame(as.table(p_values_matrix))
-          # Add a column to indicate whether the comparison is significant
-          post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
-          # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
-                                                ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
-
-          rownames(post_hoc_df) <- NULL
-          #compact letter display
-          #remove rows that have NA in Adjusted P Value
-          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$`Adjusted P Value`), ]
-          #change group1 group2 to as.character
-          post_hoc_df$group1 <- as.character(post_hoc_df$group1)
-          post_hoc_df$group2 <- as.character(post_hoc_df$group2)
-          # Extract unique groups from both 'group1' and 'group2'
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          # Initialize the p_matrix with NA values and correct dimensions
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), dimnames = list(groups, groups))
-          # Loop through each row in post_hoc_df to assign adjusted p-values
-          for (i in 1:nrow(post_hoc_df)) {
-            # Extract current groups and their adjusted p-value
-            g1 <- post_hoc_df$group1[i]
-            g2 <- post_hoc_df$group2[i]
-            p_value <- post_hoc_df$`Adjusted P Value`[i]
-            # Assign the adjusted p-value to the matrix, considering both [g1, g2] and [g2, g1]
-            p_matrix[g1, g2] <- p_value
-            p_matrix[g2, g1] <- p_value # Ensure symmetry
+            # Convert the result to a data frame for display. The `pairwise.t.test` function
+            # returns a list with two components: p.value and method. The p.value component
+            # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
+            p_values_matrix <- post_hoc_result$p.value
+            post_hoc_df <- as.data.frame(as.table(p_values_matrix))
+            # Add a column to indicate whether the comparison is significant
+            post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
+            # Add a summary of the p-value similar to what you've done before
+            post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
+                                                  ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+            post_hoc_df <- post_hoc_df %>% 
+              rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
+  
+            rownames(post_hoc_df) <- NULL
+            post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
+  
+            #compact letter display
+            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
           }
-          for(i in 1:nrow(post_hoc_df)) {
-            if (post_hoc_df$group1[i] != post_hoc_df$group2[i]) {
-              p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$`Adjusted P Value`[i]
-              p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$`Adjusted P Value`[i]
-            }
-            # Else, it implicitly remains NA as initialized, correctly indicating no comparison
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
-        }
           
         }else if (input$postHocTest == "holm"){
           # Extract the response variable and the grouping factor based on the input formula
@@ -926,41 +865,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           post_hoc_df <- post_hoc_df %>% 
             rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
           rownames(post_hoc_df) <- NULL
+          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
+          
           #compact letter display
-          #remove rows that have NA in Adjusted P Value
-          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$`Adjusted P Value`), ]
-          #change group1 group2 to as.character
-          post_hoc_df$group1 <- as.character(post_hoc_df$group1)
-          post_hoc_df$group2 <- as.character(post_hoc_df$group2)
-          # Extract unique groups from both 'group1' and 'group2'
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          
-          # Initialize the p_matrix with NA values and correct dimensions
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), dimnames = list(groups, groups))
-          # Loop through each row in post_hoc_df to assign adjusted p-values
-          for (i in 1:nrow(post_hoc_df)) {
-            # Extract current groups and their adjusted p-value
-            g1 <- post_hoc_df$group1[i]
-            g2 <- post_hoc_df$group2[i]
-            p_value <- post_hoc_df$`Adjusted P Value`[i]
-            
-            # Assign the adjusted p-value to the matrix, considering both [g1, g2] and [g2, g1]
-            p_matrix[g1, g2] <- p_value
-            p_matrix[g2, g1] <- p_value # Ensure symmetry
-          }
-          
-          for(i in 1:nrow(post_hoc_df)) {
-            if (post_hoc_df$group1[i] != post_hoc_df$group2[i]) {
-              p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$`Adjusted P Value`[i]
-              p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$`Adjusted P Value`[i]
-            }
-            # Else, it implicitly remains NA as initialized, correctly indicating no comparison
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
           }
         }else if (input$postHocTest == "bh"){
           df <- shapiro_data_reactive()
@@ -987,41 +895,11 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           post_hoc_df <- post_hoc_df %>% 
             rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
           rownames(post_hoc_df) <- NULL
+          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
+          
           #compact letter display
-          #remove rows that have NA in Adjusted P Value
-          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$`Adjusted P Value`), ]
-          #change group1 group2 to as.character
-          post_hoc_df$group1 <- as.character(post_hoc_df$group1)
-          post_hoc_df$group2 <- as.character(post_hoc_df$group2)
-          # Extract unique groups from both 'group1' and 'group2'
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
           
-          # Initialize the p_matrix with NA values and correct dimensions
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), dimnames = list(groups, groups))
-          # Loop through each row in post_hoc_df to assign adjusted p-values
-          for (i in 1:nrow(post_hoc_df)) {
-            # Extract current groups and their adjusted p-value
-            g1 <- post_hoc_df$group1[i]
-            g2 <- post_hoc_df$group2[i]
-            p_value <- post_hoc_df$`Adjusted P Value`[i]
-            
-            # Assign the adjusted p-value to the matrix, considering both [g1, g2] and [g2, g1]
-            p_matrix[g1, g2] <- p_value
-            p_matrix[g2, g1] <- p_value # Ensure symmetry
-          }
-          
-          for(i in 1:nrow(post_hoc_df)) {
-            if (post_hoc_df$group1[i] != post_hoc_df$group2[i]) {
-              p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$`Adjusted P Value`[i]
-              p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$`Adjusted P Value`[i]
-            }
-            # Else, it implicitly remains NA as initialized, correctly indicating no comparison
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
           }
         }else if (input$postHocTest == "scheffe"){
           # Construct the formula as a string
@@ -1055,18 +933,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
           rownames(post_hoc_df) <- NULL
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
         }
         
       } else {
@@ -1122,18 +989,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1164,18 +1021,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hs"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1206,18 +1053,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "holm"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1248,18 +1085,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "bh"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1290,18 +1117,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1332,18 +1149,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1381,18 +1188,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "sidak"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1430,18 +1227,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "holm"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1479,18 +1266,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)  
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "bh"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1528,18 +1305,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "hs"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1577,18 +1344,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          
         }else if(input$postHocTest == "conover" && input$correctionMethod == "hochberg"){
           dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
           group_variable <- shapiro_data_reactive()$cell
@@ -1626,18 +1383,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                    "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
           #compact letter display
-          groups <- unique(c(post_hoc_df$group1, post_hoc_df$group2))
-          p_matrix <- matrix(NA, nrow = length(groups), ncol = length(groups), 
-                             dimnames = list(groups, groups))
-          for(i in 1:nrow(post_hoc_df)) {
-            p_matrix[post_hoc_df$group1[i], post_hoc_df$group2[i]] <- post_hoc_df$"Adjusted P Value"[i]
-            p_matrix[post_hoc_df$group2[i], post_hoc_df$group1[i]] <- post_hoc_df$"Adjusted P Value"[i]
-          }
-          cl_display <- multcompLetters(p_matrix, compare = "<", threshold = 0.05)
-          cld_df <- data.frame(
-            Group = names(cl_display$Letters),
-            Letters = unname(cl_display$Letters)
-          )
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
         }
         
       }
