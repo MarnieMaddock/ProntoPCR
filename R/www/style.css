@@ -91,3 +91,34 @@ textarea:hover {
   border-color: #00359bff;
 }
 
+/* Default state */
+#save_btn, 
+#save_ddcq_data {
+    background-color: white; /* Light blue background by default */
+    color: #00359bff; /* Text color */
+    transition: background-color 0.5s ease-in-out; /* Smooth transition for the background color */
+}
+
+/* Hover state - optional change to indicate hover */
+#save_btn:hover, 
+#save_ddcq_data:hover {
+    background-color: #00359bff; /* Slightly different or the same as the default state */
+    /*text colour*/
+    color: white;
+}
+
+/* Active state - when the button is clicked */
+#save_ddcq_data:active, 
+#save_btn:active {
+    background-color: #00359bff; /* Darker blue when clicked */
+    color: white;
+}
+
+/* Focus state - optional, if you want to maintain a style after clicking */
+#save_btn:focus, 
+#save_ddcq_data:focus {
+    background-color: #00359bff; /* This could match the default or be a unique style */
+    color: white;
+}
+
+
