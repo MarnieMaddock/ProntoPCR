@@ -769,6 +769,19 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
+        # Check if there are enough observations in each group
+        # if(any(sampleSizeTable()$N <= 1, na.rm = TRUE)) {
+        #   test_result_df <- data.frame(
+        #     Message = "Not enough observations in at least one of the groups."
+        #   )
+        #   # Not enough observations to perform post-hoc test
+        #   post_hoc_df <- data.frame(
+        #     Message = "Not enough observations in at least one of the groups."
+        #   )
+        #   cld_df <- data.frame(
+        #     Message = "Not enough observations in the groups."
+        #   )
+        # }
         # Perform one-way ANOVA
         # Construct the formula as a string
         formula_str <- paste(input$columnInput, "~ cell")
@@ -784,7 +797,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
                                                         ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", "*")))
         test_result_df <- test_result_df %>% 
           rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-        
+        print(test_result_df)
         post_hoc_df <- NULL
         if(input$postHocTest == "tukey"){
           post_hoc_result <- TukeyHSD(aov_result)
@@ -820,60 +833,63 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if (input$postHocTest == "bonferroni"){
-          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput)
-          # You can then access each dataframe like this:
-          post_hoc_df <- results$post_hoc_df
+          try({
+            # Validate conditions
+            results <- performPostHoc(
+              data = shapiro_data_reactive(),
+              p_adjust_method = "bonferroni",
+              input_column = input$columnInput,
+              sample_sizes = sampleSizeTable()
+            )
+            # You can then access each dataframe like this:
+            post_hoc_df <- results$post_hoc_df
+            
+            #compact letter display
+            cld_df <- results$cld_df
+            print(cld_df)
+            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+            print(cld_df)
+          }, silent = TRUE)
+          
+
+        }else if (input$postHocTest == "holm"){
+          try({
+            # Validate conditions
+            results <- performPostHoc(
+              data = shapiro_data_reactive(),
+              p_adjust_method = "holm",
+              input_column = input$columnInput,
+              sample_sizes = sampleSizeTable()
+            )
+            # You can then access each dataframe like this:
+            post_hoc_df <- results$post_hoc_df
+            
             #compact letter display
             cld_df <- results$cld_df
             cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          
-        }else if (input$postHocTest == "holm"){
-          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "holm", input_column = input$columnInput)
-          # You can then access each dataframe like this:
-          post_hoc_df <- results$post_hoc_df
-          #compact letter display
-          cld_df <- results$cld_df
-          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+          }, silent = TRUE)
           
         }else if (input$postHocTest == "bh"){
-          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "BH", input_column = input$columnInput)
+          try({
+            # Validate conditions
+            results <- performPostHoc(
+              data = shapiro_data_reactive(),
+              p_adjust_method = "BH",
+              input_column = input$columnInput,
+              sample_sizes = sampleSizeTable()
+            )
+            # You can then access each dataframe like this:
+            post_hoc_df <- results$post_hoc_df
+            
+            #compact letter display
+            cld_df <- results$cld_df
+            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+          }, silent = TRUE)
+        }else if (input$postHocTest == "scheffe"){
+          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "scheffe", input_column = input$columnInput, sample_sizes = sampleSizeTable())
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
-          #compact letter display
           cld_df <- results$cld_df
-          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-        }else if (input$postHocTest == "scheffe"){
-          # Construct the formula as a string
-          formula_str <- paste(input$columnInput, "~ cell")
-          # Convert the string to a formula object
-          aov_formula <- as.formula(formula_str)
-          # Perform the ANOVA
-          aov_result <- aov(aov_formula, data = shapiro_data_reactive())
-          post_hoc_result <- ScheffeTest(aov_result)
-          post_hoc_df <- post_hoc_result$cell
-          
-          # Convert the matrix or list into a dataframe
-          post_hoc_df <- as.data.frame(post_hoc_df)
-          # Split the row names at the '-' character
-          split_names <- strsplit(row.names(post_hoc_df), split = "-")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          # Rename columns appropriately if needed
-          names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "Adjusted P Value", "group1", "group2")
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Difference")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          post_hoc_df$Significant <- ifelse(post_hoc_df$"Adjusted P Value" < 0.05, "Yes", "No")
-          # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"Adjusted P Value" < 0.001, "***",
-                                                ifelse(post_hoc_df$"Adjusted P Value" < 0.01, "**",
-                                                       ifelse(post_hoc_df$"Adjusted P Value" > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
-          rownames(post_hoc_df) <- NULL
           #compact letter display
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
         }
@@ -891,7 +907,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         p_value_summary <- ifelse(p_value < 0.001, "***", 
                                   ifelse(p_value < 0.01, "**", 
                                          ifelse(p_value > 0.05, "ns", "*")))
-        
         test_result_df <- data.frame(
           H = H_value,
           df = degf,
@@ -904,201 +919,96 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         
         post_hoc_df <- NULL
         if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "bonferroni",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "bonferroni")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
-          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+          cld_df <- results$cld_df
+          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "sidak")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "sidak",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hs"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "hs",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "hs")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "holm"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "holm",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "holm")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "bh"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "bh")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "bh",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          
-          # Perform the DunnTest with Bonferroni correction
-          dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-                                             data = shapiro_data_reactive(), 
-                                             method = "hochberg")
-          # Convert the test results to a dataframe for display
-          post_hoc_df <- dunn_test_results$res
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
+          # Validate conditions
+          results <- performPostHoc(
+            data = shapiro_data_reactive(),
+            post_hoc = "dunn",
+            p_adjust_method = "hochberg",
+            input_column = input$columnInput,
+            sample_sizes = sampleSizeTable()
+          )
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
