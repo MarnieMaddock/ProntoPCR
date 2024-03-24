@@ -4,7 +4,7 @@ source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("utils_graphTheme.R")
 source("utils_performCLD.R")
-
+source("utils_performPostHoc.R")
 server <- function(input, output, session) {
   
   # Reactive values to store housekeeper names and numeric input value
@@ -820,102 +820,28 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if (input$postHocTest == "bonferroni"){
-          # Extract the response variable and the grouping factor based on the input formula
-          response_var <- shapiro_data_reactive()[[input$columnInput]]
-          group_factor <- shapiro_data_reactive()$cell
-          # Perform the pairwise t-test with Bonferroni correction
-          post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "bonferroni")
-          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
-            post_hoc_df <- data.frame(
-              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
-            )
-            cld_df <- data.frame(
-              Message = "No p-values were computed"
-            )
-          } else {
-            # Convert the result to a data frame for display. The `pairwise.t.test` function
-            # returns a list with two components: p.value and method. The p.value component
-            # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
-            p_values_matrix <- post_hoc_result$p.value
-            post_hoc_df <- as.data.frame(as.table(p_values_matrix))
-            # Add a column to indicate whether the comparison is significant
-            post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
-            # Add a summary of the p-value similar to what you've done before
-            post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
-                                                  ifelse(post_hoc_df$Freq < 0.01, "**", 
-                                                         ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
-            post_hoc_df <- post_hoc_df %>% 
-              rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
-  
-            rownames(post_hoc_df) <- NULL
-            post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
-  
+          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput)
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
             #compact letter display
+            cld_df <- results$cld_df
             cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          }
           
         }else if (input$postHocTest == "holm"){
-          # Extract the response variable and the grouping factor based on the input formula
-          response_var <- shapiro_data_reactive()[[input$columnInput]]
-          group_factor <- shapiro_data_reactive()$cell
-          # Perform the pairwise t-test with Bonferroni correction
-          post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "holm")
-          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
-            post_hoc_df <- data.frame(
-              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
-            )
-            cld_df <- data.frame(
-              Message = "No p-values were computed"
-            )
-            }else{
-          p_values_matrix <- post_hoc_result$p.value
-          post_hoc_df <- as.data.frame(as.table(p_values_matrix))
-          # Add a column to indicate whether the comparison is significant
-          post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
-          # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
-                                                ifelse(post_hoc_df$Freq < 0.01, "**", 
-                                                       ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
-          
+          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "holm", input_column = input$columnInput)
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          }
+          
         }else if (input$postHocTest == "bh"){
-          df <- shapiro_data_reactive()
-          # Extract the response variable and the grouping factor based on the input formula
-          response_var <- df[[input$columnInput]]
-          group_factor <- df$cell
-          # Perform the pairwise t-test with Bonferroni correction
-          post_hoc_result <- pairwise.t.test(response_var, group_factor, p.adjust.method = "BH")
-          if(is.null(post_hoc_result$p.value) || all(post_hoc_result$p.value == "-", na.rm = TRUE)) {
-            post_hoc_df <- data.frame(
-              Message = "No p-values were computed. Check that ANOVA displayed p < 0.05"
-            )
-            cld_df <- data.frame(
-              Message = "No p-values were computed"
-            )
-          }else{
-          p_values_matrix <- post_hoc_result$p.value
-          post_hoc_df <- as.data.frame(as.table(p_values_matrix))
-          # Add a column to indicate whether the comparison is significant
-          post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
-          # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
-                                                ifelse(post_hoc_df$Freq < 0.01, "**", 
-                                                       ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
-          
+          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "BH", input_column = input$columnInput)
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          
-          }
         }else if (input$postHocTest == "scheffe"){
           # Construct the formula as a string
           formula_str <- paste(input$columnInput, "~ cell")

@@ -23,6 +23,7 @@ library(multcompView)
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("about.R")
+source("example_data_text.R")
 
 
 # Define UI for application that draws a histogram
@@ -52,11 +53,11 @@ ui <- fluidPage(
                        tags$div(tags$img(src = "dottori_lab.svg", height = "auto", width = 300), style = "text-align: center;")
       ),
       # Input Data Tab
-      conditionalPanel(condition = "input.tabselected==2",
+      conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
                        fileInput("file", "Choose CSV File", accept = c(".csv")),
-                       helpText("Please select a CSV file containing PCR data with the formatting given on the right. This MUST have the same headings and Sample name structure."),
-                       helpText("If you also have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset for those instances. Any NA values will be disregarded."),
-                       helpText("Please ensure you have no gaps between rows in your dataset. Each row should have at least one measurement."),
+                       helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data Tab. This MUST have the same headings and Sample name structure."),
+                       helpText("If you also have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset for those instances. Any NA values will be disregarded (i.e. REMOVED)."),
+                        tags$br(),
                        numericInput(
                          "housekeepers",
                          "How many housekeeper genes do you have?",
@@ -66,7 +67,6 @@ ui <- fluidPage(
                        uiOutput("groups"),
                        helpText("Ensure that genes are entered exactly as they appear in the Target column."),
                        actionButton("save_btn", "Save housekeeper names"),
-                       tags$br(),
                        tags$br(),
                        tags$br(),
                        textOutput("text1"), verbatimTextOutput("saved_variables"),
@@ -247,11 +247,21 @@ ui <- fluidPage(
         selected = 1, # Default tab selected is 1
         tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1,
                  about_text),
-        tabPanel("Input Data", textOutput("inputdata"), value = 2, tags$img(src = "table2.png", height = 400, width = 680),
-                 # Display uploaded data using DataTable
-                 dataTableOutput("table"),
-                 tags$br(),
-                 tags$br()),
+        tabPanel("Input Data", textOutput("inputdata"), value = 2, 
+                 tabsetPanel(
+                   id = "subInput",
+                   selected = 2.1,
+                   tabPanel("Data", value = 2.1,
+                            h3(HTML("Inserted Data")),
+                            # Display uploaded data using DataTable
+                            dataTableOutput("table"),
+                            tags$br(),
+                            tags$br()),
+                   tabPanel("Example Data", value = 2.2,
+                            example_data_text
+                            )
+                 )
+                ),
         tabPanel("Calculations", value = 3,
                  tabsetPanel(
                    id = "subPanel",
@@ -364,7 +374,8 @@ ui <- fluidPage(
                           # Add a download button
                           downloadButton("downloadGraph", "Download Graph")
                    )
-                 )),
+                 )
+                ),
       )
     )
   )        
