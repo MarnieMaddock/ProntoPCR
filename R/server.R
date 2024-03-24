@@ -563,7 +563,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       # Determine if the group passes the normality test based on the p-value
       passed_test <- test_result$p.value > 0.05
       # Determine the p-value summary
-      p_value_summary <- ifelse(test_result$p.value > 0.05, "ns", ifelse(test_result$p.value < 0.01, "**", "*"))
+      p_value_summary <- ifelse(test_result$p.value < 0.001, "***", 
+                                ifelse(test_result$p.value < 0.01, "**", 
+                                       ifelse(test_result$p.value > 0.05, "ns", "*")))
       
       # Add the results to the data frame
       results_df <- rbind(results_df, data.frame(
@@ -671,7 +673,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       F_Value = f_value,
       P_Value = p_value,
       Passed_variance_test = ifelse(p_value > 0.05, "Yes", "No"),
-      P_value_summary = ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+      P_value_summary = ifelse(p_value < 0.001, "***", 
+                               ifelse(p_value < 0.01, "**", 
+                                      ifelse(p_value > 0.05, "ns", "*")))
     )
     summary_df <- summary_df %>% 
       rename("df (Group)" = DF_Group, "df (Error)" = DF_Error, "F" = F_Value, 
@@ -712,7 +716,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         df <- TTEST$parameter
         p_value <- TTEST$p.value
         significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        p_value_summary <- ifelse(p_value < 0.001, "***", 
+                                  ifelse(p_value < 0.01, "**", 
+                                         ifelse(p_value > 0.05, "ns", "*")))
         # Create the dataframe
         test_result_df <- data.frame(
           group1 = group1_name,
@@ -741,7 +747,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         w_value <- mwu$statistic
         p_value <- mwu$p.value
         significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        p_value_summary <- ifelse(p_value < 0.001, "***", 
+                                  ifelse(p_value < 0.01, "**", 
+                                         ifelse(p_value > 0.05, "ns", "*")))
         
         test_result_df <- data.frame(
           group1 = group1_name,
@@ -771,7 +779,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         summary_aov <- summary(aov_result) # Storing the summary for potential display
         test_result_df <- as.data.frame(summary_aov[[1]])
         test_result_df$Significant <- ifelse(test_result_df$`Pr(>F)` < 0.05, "Yes", "No")
-        test_result_df$P_value_summary <- ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", ifelse(test_result_df$`Pr(>F)` < 0.01, "**", "*"))
+        test_result_df$P_value_summary <- ifelse(test_result_df$`Pr(>F)` < 0.001, "***",
+                                                 ifelse(test_result_df$`Pr(>F)` < 0.01, "**",
+                                                        ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", "*")))
         test_result_df <- test_result_df %>% 
           rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
         
@@ -783,7 +793,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             dplyr::select(-term, -null.value) %>%  # Remove term and null.value columns
             mutate(
               Significant = ifelse(adj.p.value < 0.05, "Yes", "No"),
-              P_value_summary = ifelse(adj.p.value > 0.05, "ns", ifelse(adj.p.value < 0.01, "**", "*"))
+              P_value_summary = ifelse(adj.p.value < 0.001, "***", 
+                                       ifelse(adj.p.value < 0.01, "**", 
+                                              ifelse(adj.p.value > 0.05, "ns", "*")))
             ) %>%
             rename("Adjusted P Value" = adj.p.value, 
                    "Significant?" = Significant, 
@@ -829,8 +841,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             # Add a column to indicate whether the comparison is significant
             post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
             # Add a summary of the p-value similar to what you've done before
-            post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
-                                                  ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+            post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
+                                                  ifelse(post_hoc_df$Freq < 0.01, "**", 
+                                                         ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
             post_hoc_df <- post_hoc_df %>% 
               rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
   
@@ -860,8 +873,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           # Add a column to indicate whether the comparison is significant
           post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
           # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
-                                                ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
+                                                ifelse(post_hoc_df$Freq < 0.01, "**", 
+                                                       ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
           post_hoc_df <- post_hoc_df %>% 
             rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
           rownames(post_hoc_df) <- NULL
@@ -890,8 +904,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           # Add a column to indicate whether the comparison is significant
           post_hoc_df$Significant <- ifelse(post_hoc_df$Freq < 0.05, "Yes", "No")
           # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq > 0.05, "ns", 
-                                                ifelse(post_hoc_df$Freq < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$Freq < 0.001, "***", 
+                                                ifelse(post_hoc_df$Freq < 0.01, "**", 
+                                                       ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
           post_hoc_df <- post_hoc_df %>% 
             rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
           rownames(post_hoc_df) <- NULL
@@ -926,8 +941,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
           post_hoc_df$Significant <- ifelse(post_hoc_df$"Adjusted P Value" < 0.05, "Yes", "No")
           # Add a summary of the p-value similar to what you've done before
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"Adjusted P Value" > 0.05, "ns", 
-                                                ifelse(post_hoc_df$"Adjusted P Value" < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"Adjusted P Value" < 0.001, "***",
+                                                ifelse(post_hoc_df$"Adjusted P Value" < 0.01, "**",
+                                                       ifelse(post_hoc_df$"Adjusted P Value" > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
@@ -946,7 +962,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         
         # Determine significance and p-value summary
         significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value > 0.05, "ns", ifelse(p_value < 0.01, "**", "*"))
+        p_value_summary <- ifelse(p_value < 0.001, "***", 
+                                  ifelse(p_value < 0.01, "**", 
+                                         ifelse(p_value > 0.05, "ns", "*")))
         
         test_result_df <- data.frame(
           H = H_value,
@@ -982,8 +1000,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1014,8 +1033,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1046,8 +1066,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1078,8 +1099,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1110,8 +1132,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1142,8 +1165,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adj < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adj < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1181,8 +1205,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1220,8 +1245,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1259,8 +1285,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1298,8 +1325,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1337,8 +1365,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -1376,8 +1405,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           rownames(post_hoc_df) <- NULL
           post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
           # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted > 0.05, "ns", 
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**", "*"))
+          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
+                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
+                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
@@ -2024,18 +2054,28 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       if(nrow(plot_data) == 0){
         plot <- plot
       }else{
-      # Then, format p-values according to user preferences
-      formatted_pvalues <- lapply(plot_data$`p.signif`, function(p) {
-        formatted_p <- sprintf(paste0("%.", input$pValueDecimals, "f"), p)
+
+        # Then, format p-values according to user preferences
+        formatted_pvalues <- lapply(plot_data$`p.signif`, function(p) {
+          # Format the p-value with the specified number of decimal places
+          formatted_p <- sprintf(paste0("%.", input$pValueDecimals, "f"), p)
+          
+          # Check and remove the leading zero if required
+          if(input$remove0) {
+            formatted_p <- sub("^0\\.", ".", formatted_p)
+          }
+          
+          # Determine the prefix based on user selection
+          prefix <- ifelse(input$pValuePrefix == "P = ", "P = ", "")
+          
+          # Construct the final string with prefix and potentially modified p-value
+          final_string <- paste0(prefix, formatted_p)
+          
+          return(final_string)
+        })
         
-        # Prepend "P =" or use no prefix if selected
-        prefix <- switch(input$pValuePrefix,
-                         "P = " = "P = ", # Assuming you want to keep this option
-                         "None" = "",
-                         "P = ") # Default case for clarity, might adjust based on actual options
         
-        paste0(prefix, formatted_p)
-      })
+
         # Update plot_data with formatted p-values
         plot_data$`p.signif` <- unlist(formatted_pvalues)
         # Finally, add the formatted p-values to the plot
@@ -2059,17 +2099,25 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         plot_data <- plot_data %>%
           mutate(p.signif = as.numeric(as.character(p.signif)))
         
+        # Then, format p-values according to user preferences
         formatted_pvalues <- lapply(plot_data$`p.signif`, function(p) {
+          # Format the p-value with the specified number of decimal places
           formatted_p <- sprintf(paste0("%.", input$pValueDecimals, "f"), p)
           
-          # Prepend "P =" or use no prefix if selected
-          prefix <- switch(input$pValuePrefix,
-                           "P = " = "P = ", # Assuming you want to keep this option
-                           "None" = "",
-                           "P = ") # Default case for clarity, might adjust based on actual options
+          # Check and remove the leading zero if required
+          if(input$remove0) {
+            formatted_p <- sub("^0\\.", ".", formatted_p)
+          }
           
-          paste0(prefix, formatted_p)
+          # Determine the prefix based on user selection
+          prefix <- ifelse(input$pValuePrefix == "P = ", "P = ", "")
+          
+          # Construct the final string with prefix and potentially modified p-value
+          final_string <- paste0(prefix, formatted_p)
+          
+          return(final_string)
         })
+
         # Update plot_data with formatted p-values
         plot_data$`p.signif` <- unlist(formatted_pvalues)
         # Finally, add the formatted p-values to the plot
@@ -2112,7 +2160,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         fluidRow(
           column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
           if(input$add_significance != "cld") {
-            column(6, numericInput("bracketSize", "Bracket Size", min = 0, max = 10, value = 0.8, step = 0.1))
+            column(6, numericInput("bracketSize", "Bracket Thickness", min = 0, max = 10, value = 0.8, step = 0.1))
           }
         ),
         if(input$add_significance != "cld" && num_groups() > 2) {
@@ -2125,7 +2173,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           tagList(
             fluidRow(
               column(6, selectInput("pValuePrefix", "P-value Prefix", choices = c("None", "P = "))),
-              column(6, numericInput("pValueDecimals", "Decimal Places for P-value", value = 2, min = 0, max = 10))
+              column(6, numericInput("pValueDecimals", "Decimal Places for P-value", value = 2, min = 0, max = 10)),
+            ),
+            fluidRow(
+              column(6, checkboxInput("remove0", "Remove leading zero from P-value", value = FALSE))
             )
           )
         },

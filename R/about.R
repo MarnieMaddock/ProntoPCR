@@ -25,12 +25,21 @@ about_text <- div(
     ),
     p("The Sample column should be formatted as follows:"),
     tags$img(src = "Sample.svg", height = "200px", width = "auto"),
-    p("Where grouping1 is your main group that you are comparing e.g. diseased and control cell lines, or different drugs, the number refers to the biological replicate number, and grouping2 is an additional grouping factor e.g. different cell types. A second grouping is not a requirement, and can be combined into grouping1 e.g. DrugA1uM. Please write NIL if there is not second grouping variable, do not leave this blank.
+    p("Where grouping1 is your main group that you are comparing e.g. diseased and control cell lines, or different drugs, the number refers to the biological replicate number, and grouping2 is an additional grouping factor e.g. different cell types. This is useful if you have similar grouping1 names over different experiments, and do not want the data to merge. A second grouping is not a requirement, and can be combined into grouping1 e.g. DrugA1uM. Please write NIL if there is not second grouping variable, do not leave this blank.
       Note: If you set up your PCR experiments using this format, this step is very easy. E.g. Plate set-up of a PCR experiment (In Quantstudio software)."),
     tags$img(src="plate_setup.svg", height = "300px", width = "auto"),
       # If you are unsure of how to format your data, please refer to the example data provided in the 'Example Data' tab. 
       # If you are still unsure, please refer to the 'Contact' tab."),
     p("Refer to Input Data Tab for another example."),
-    
+    h5("Notes"),
+    p("This application is designed for qPCR data that has been normalised to housekeeper genes."),
+    p("P Values are given as:"),
+      shiny::tags$ul(
+        tags$li(HTML("<i>p</i> < 0.05 = *")),
+        tags$li(HTML("<i>p</i> < 0.01 = **")),
+        tags$li(HTML("<i>p</i> < 0.001 = ***")),
+        tags$li(HTML("<i>p</i> > 0.05 = ns")),
+        tags$li(HTML("However, in most instances it is more appropriate to report the numeric <i>p</i> values. This can be found in the statistics report. This is important if data is used in future meta-analyses.")),
+      ),
     p("*Once the user is familar with the user interface, you can expect to perform all calculations and analysis in under 1 minute. This estimate does not include the time it takes to pre-format and load the data."),
   )
