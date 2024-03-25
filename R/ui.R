@@ -374,7 +374,9 @@ ui <- fluidPage(
                           # Add a download button
                           downloadButton("downloadGraph", "Download Graph")
                    )
-                 )
+                 ),
+                 tags$br(),
+                 tags$br()
                 ),
       )
     )

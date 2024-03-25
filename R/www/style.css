@@ -93,32 +93,97 @@ textarea:hover {
 
 /* Default state */
 #save_btn, 
-#save_ddcq_data {
+#save_ddcq_data,
+#download_processed_data-download,
+#download_filtered_data-download,
+#download_rep_avg_data-download,
+#download_rep_avg_filtered_data-download,
+#download_ddcq_data-download,
+#download_ddcq_avg_data-download,
+#downloadGraph {
     background-color: white; /* Light blue background by default */
-    color: #00359bff; /* Text color */
+    color: #17141fff; /* Text color */
+    border-color: #d3d3d3ff;
     transition: background-color 0.5s ease-in-out; /* Smooth transition for the background color */
 }
 
 /* Hover state - optional change to indicate hover */
 #save_btn:hover, 
-#save_ddcq_data:hover {
+#save_ddcq_data:hover,
+#download_processed_data-download:hover,
+#download_filtered_data-download:hover,
+#download_rep_avg_data-download:hover,
+#download_rep_avg_filtered_data-download:hover,
+#download_ddcq_data-download:hover,
+#download_ddcq_avg_data-download:hover,
+#downloadGraph:hover {
     background-color: #00359bff; /* Slightly different or the same as the default state */
     /*text colour*/
     color: white;
+    border-color: #00359bff;
 }
 
 /* Active state - when the button is clicked */
 #save_ddcq_data:active, 
-#save_btn:active {
+#save_btn:active,
+#download_processed_data-download:active,
+#download_filtered_data-download:active,
+#download_rep_avg_data-download:active,
+#download_rep_avg_filtered_data-download:active,
+#download_ddcq_data-download:active,
+#download_ddcq_avg_data-download:active,
+#downloadGraph:active {
     background-color: #00359bff; /* Darker blue when clicked */
     color: white;
 }
 
 /* Focus state - optional, if you want to maintain a style after clicking */
 #save_btn:focus, 
-#save_ddcq_data:focus {
+#save_ddcq_data:focus,
+#download_processed_data-download:focus,
+#download_filtered_data-download:focus,
+#download_rep_avg_data-download:focus,
+#download_rep_avg_filtered_data-download:focus,
+#download_ddcq_data-download:focus,
+#download_ddcq_avg_data-download:focus,
+#downloadGraph:focus {
     background-color: #00359bff; /* This could match the default or be a unique style */
     color: white;
+}
+
+/* dropdown box color*/
+.selectize-input.focus {
+  border-color: #00359bff !important;
+  box-shadow: 0 0 5px #00359bff !important;
+}
+
+
+/* Change the color of the hovered item */
+.selectize-dropdown-content .option:hover {
+  background-color: #00359bff; /* Your desired hover color */
+  color: white;
+}
+
+/* If you need to keep the selected item a certain color even after hover */
+.selectize-dropdown-content .option.selected {
+    background-color: #00359bff; 
+  color: white; /* Color for selected item */
+}
+
+/* To address an item remaining highlighted after hover */
+.selectize-dropdown-content .option.active {
+    background-color: #00359bff; 
+  color: white; /* Same color as your hover color */
+}
+
+/*Search bar of tables colour */
+.dataTables_wrapper .dataTables_filter input:focus {
+  border-color: #00359bff; /* or your specific shade of yellow */
+}
+
+.btn:active {
+  background-color: yellow; /* Change this to the specific shade of yellow you desire */
+  border-color: yellow; /* If the border color also needs to change */
 }
 
 
