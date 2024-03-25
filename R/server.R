@@ -3,6 +3,7 @@
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 
+source("utils_performComparisonTests.R")
 source("utils_performCLD.R")
 source("utils_performTukeyPostHoc.R")
 source("utils_performPostHoc.R")
@@ -711,87 +712,24 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
-        group_names <- unique(shapiro_data_reactive()$cell)
-        group1_name <- group_names[1]
-        group2_name <- group_names[2]
-        # Perform t-test
-        grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
-        grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
-        TTEST <- t.test(grp1, grp2, var.equal = TRUE)
-        
-        t_value <- abs(TTEST$statistic)
-        df <- TTEST$parameter
-        p_value <- TTEST$p.value
-        significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value < 0.001, "***", 
-                                  ifelse(p_value < 0.01, "**", 
-                                         ifelse(p_value > 0.05, "ns", "*")))
-        # Create the dataframe
-        test_result_df <- data.frame(
-          group1 = group1_name,
-          group2 = group2_name,
-          t = t_value,
-          df = df,
-          P.value_Two.Tailed = p_value,
-          Significant = significant,
-          P_value_summary = p_value_summary
-        )
-        rownames(test_result_df) <- ""
-        test_result_df <- test_result_df %>% 
-          rename("P Value (Two-Tailed)" = P.value_Two.Tailed, "Significant?" = Significant, "P Value Summary" = P_value_summary)
+        #perform t-test
+        test_result <- performComparisonTests(test_type = "t-test", data = shapiro_data_reactive(), column_input = input$columnInput)
+        test_result_df <- test_result$test_result_df
         #compact letter display
         cld_df <- performCLD(data = test_result_df, p_colname = "P Value (Two-Tailed)",  remove_NA = FALSE)
-        
       } else {
-        group_names <- unique(shapiro_data_reactive()$cell)
-        group1_name <- group_names[1]
-        group2_name <- group_names[2]
-        # Perform Mann-Whitney U test
-        grp1 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[1]) %>% pull(!!as.symbol(input$columnInput))
-        grp2 <-  shapiro_data_reactive() %>% filter(cell == unique(shapiro_data_reactive()$cell)[2]) %>% pull(!!as.symbol(input$columnInput))
-        mwu <- wilcox.test(grp1, grp2)
-        
-        w_value <- mwu$statistic
-        p_value <- mwu$p.value
-        significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value < 0.001, "***", 
-                                  ifelse(p_value < 0.01, "**", 
-                                         ifelse(p_value > 0.05, "ns", "*")))
-        
-        test_result_df <- data.frame(
-          group1 = group1_name,
-          group2 = group2_name,
-          W = w_value,
-          P.value = p_value,
-          Significant = significant,
-          P_value_summary = p_value_summary
-        )
-        #remove rowname of test_result_df
-        rownames(test_result_df) <- ""
-        test_result_df <- test_result_df %>% 
-          rename("P Value" = P.value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
+        test_result <- performComparisonTests(test_type = "wilcox", data = shapiro_data_reactive(), column_input = input$columnInput)
+        test_result_df <- test_result$test_result_df
         #compact letter display
         cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
       }
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
-        # Perform one-way ANOVA
-        # Construct the formula as a string
-        formula_str <- paste(input$columnInput, "~ cell")
-        # Convert the string to a formula object
-        aov_formula <- as.formula(formula_str)
-        # Perform the ANOVA
-        aov_result <- aov(aov_formula, data = shapiro_data_reactive())
-        summary_aov <- summary(aov_result) # Storing the summary for potential display
-        test_result_df <- as.data.frame(summary_aov[[1]])
-        test_result_df$Significant <- ifelse(test_result_df$`Pr(>F)` < 0.05, "Yes", "No")
-        test_result_df$P_value_summary <- ifelse(test_result_df$`Pr(>F)` < 0.001, "***",
-                                                 ifelse(test_result_df$`Pr(>F)` < 0.01, "**",
-                                                        ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", "*")))
-        test_result_df <- test_result_df %>% 
-          rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-        post_hoc_df <- NULL
+        test_result <- performComparisonTests(test_type = "ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
+        test_result_df <- test_result$test_result_df
+        aov_result  <- test_result$aov_result
+        
         if(input$postHocTest == "tukey"){
           results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
           # You can then access each dataframe like this:
@@ -861,28 +799,8 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         }
         
       } else {
-        formula_str_kt <- paste(input$columnInput, "~ cell")
-        kt_formula <- as.formula(formula_str_kt)
-        KT <- kruskal.test(kt_formula, data = shapiro_data_reactive())
-        H_value <- KT$statistic
-        degf <- KT$parameter
-        p_value <- KT$p.value
-        
-        # Determine significance and p-value summary
-        significant <- ifelse(p_value < 0.05, "Yes", "No")
-        p_value_summary <- ifelse(p_value < 0.001, "***", 
-                                  ifelse(p_value < 0.01, "**", 
-                                         ifelse(p_value > 0.05, "ns", "*")))
-        test_result_df <- data.frame(
-          H = H_value,
-          df = degf,
-          P_value = p_value,
-          Significant = significant,
-          P_value_summary = p_value_summary
-        )
-        test_result_df <- test_result_df %>% 
-          rename("P Value" = P_value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-        
+        test_result <- performComparisonTests(test_type = "kw", data = shapiro_data_reactive(), column_input = input$columnInput)
+        test_result_df <- test_result$test_result_df
         post_hoc_df <- NULL
         if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
           # Validate conditions
@@ -1195,9 +1113,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   })
 
   
-  
-  
-  
+
   # Graphing dcq or ddcq  
   # Define a reactive expression to switch between datasets
   dcq_or_ddcq <- reactive({
@@ -1293,49 +1209,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   
   # Get the color scheme based on user input
   color_schemes <- getColourSchemes()
-    #reactiveValues(
-  #   colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
-  #   colourblind2 = c("#ffbd00", "#ff5400", "#ff0054", "#9e0059", "#390099"),
-  #   colourblind3 = c("#70d6ff", "#ff70a6", "#ff9770", "#ffd670", "#e9ff70"),
-  #   colourblind4 = c("gray20", "#ff0166ff", "#117f80ff", "#40007fff", "#785ef0","#66ccfeff" ),
-  #   grays = c("gray10", "gray30", "gray50", "gray70", "gray80", "gray100"),
-  #   grays2 = c("#f8f9fa", "#e9ecef", "#dee2e6", "#ced4da", "#adb5bd", "#6c757d", "#495057", "#343a40", "#212529"),
-  #   grays3 = c("#2b2d42", "#8d99ae", "#edf2f4"),
-  #   electraGray = c("#e00154", "#222337", "#e6e1dd", "#b4a8b4", "#ddd2cf"),
-  #   bones = c("#edede9", "#d6ccc2", "#f5ebe0", "#e3d5ca", "#d5bdaf"),
-  #   oranges = c("#ffc971", "#ffb627", "#ff9505", "#e2711d" ,"#cc5803"),
-  #   oranges2 = c("#ff4800", "#ff5400", "#ff6000", "#ff6d00", "#ff7900", "#ff8500", "#ff9100", "#ff9e00", "#ffaa00", "#ffb600"),
-  #   pinks = c("#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fb6f92"),
-  #   pinks2 = c("#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"),
-  #   blues = c("#03045e", "#0077b6", "#00b4d8", "#90e0ef", "#caf0f8"),
-  #   blues2 = c("#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"),
-  #   greens = c("#dad7cd", "#a3b18a", "#588157", "#3a5a40", "#344e41"),
-  #   greens2 = c("#d8f3dc", "#b7e4c7", "#95d5b2", "#74c69d", "#52b788", "#40916c", "#2d6a4f", "#1b4332", "#081c15"),
-  #   greens3 = c("#073b3a", "#0b6e4f", "#08a045", "#6bbf59"),
-  #   green2purple = c("#35e95f", "#35d475", "#35ac7a", "#347f83", "#2e518a", "#40288f", "#5702a1", "#6500a3", "#8127b9"),
-  #   purples = c("#c8b1e4", "#9b72cf", "#532b88", "#2f184b", "#f4effa"),
-  #   purples3 = c("#7b2cbf", "#9d4edd", "#e0aaff" ),
-  #   purple2orange = c("#9d53ff", "#b29ef8", "#f8d9c6", "#ffb57d", "#fb9649"),
-  #   blaze = c("#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"),
-  #   blaze2 = c("#14213d", "#fca311", "#C49792", "#e5e5e5"),
-  #   peace = c("#2e58a4ff", "#b69e71ff", "#e3ded4ff", "#71aec7ff","#4f5357ff"),
-  #   peace2 = c("#797d62", "#9b9b7a", "#d9ae94", "#f1dca7", "#ffcb69","#d08c60", "#997b66") ,
-  #   ireland = c("#ff9f1c", "#ffbf69", "#e5e5e5", "#cbf3f0", "#2ec4b6"),
-  #   twotone1 = c("#023e8a", "#0077b6", "#ff7900","#ff9e00"),
-  #   twotone2 = c("#90b5daff", "#91b5daff", "#e47076ff", "#e46f74ff"),
-  #   twotone3 = c("#447db3ff", "#e7953fff"),
-  #   pastels = c("#ddfff7", "#93e1d8", "#ffa69e"),
-  #   pastels2 = c("#90f1ef", "#ffd6e0", "#ffef9f"),
-  #   pastels3 = c("#bdb2ff", "#ffcad4", "#b0d0d3" ),
-  #   pastels4 = c("#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"),
-  #   pastels5 = c("#ccd5ae", "#e9edc9", "#fefae0", "#faedcd", "#d4a373"),
-  #   pastels6 = c("#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff", "#a0c4ff", "#bdb2ff", "#ffc6ff", "#fffffc"),
-  #   pastels7 = c("#809bce", "#95b8d1","#b8e0d2", "#d6eadf", "#eac4d5"),
-  #   vibrant = c("#ff0f7b", "#f89b29" ),
-  #   vibrant2 = c("#10e0ff", "#0086eb", "#006ee9", "#ffcd00", "#ffef00"),
-  #   vibrant3 = c("#ff00c1", "#9600ff", "#4900ff", "#00b8ff", "#00fff9"),
-  #   custom = c("#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de", "#56cfe1","#64dfdf", "#72efdd", "#80ffdb", "#B7D7B9", "#D2C3A8", "#E0B9A0","#EDAF97","#C49792", "#AD91A3", "#9D91A3")
-  # )
   
   # Dynamic generation of text inputs based on positions
   output$x_axis_labels <- renderUI({
@@ -1805,8 +1678,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       )
     }
   })
-  
-  
   
   
   output$downloadGraph <- downloadHandler(
