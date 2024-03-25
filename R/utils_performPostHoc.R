@@ -3,7 +3,7 @@ performPostHoc <- function(data, p_adjust_method, input_column = input$columnInp
   post_hoc_df <- data.frame()
   cld_df <- data.frame()
 
-  # First, check if there are enough observations in each group
+  # Check if there are enough observations in each group
   if(any(sample_sizes$N <= 1, na.rm = TRUE)) {
     test_result_df <- data.frame(
       Message = "Not enough observations in at least one of the groups."
@@ -17,6 +17,7 @@ performPostHoc <- function(data, p_adjust_method, input_column = input$columnInp
     )
     return(list(post_hoc_df = post_hoc_df, cld_df = cld_df, test_result_df = test_result_df))
   } else {
+    
       if(p_adjust_method == "bonferroni" || p_adjust_method == "holm" || p_adjust_method == "BH"){
       # Extract the response variable and the grouping factor based on the input formula
       response_var <- data[[input_column]]
@@ -84,43 +85,7 @@ performPostHoc <- function(data, p_adjust_method, input_column = input$columnInp
           post_hoc_df <- post_hoc_df %>% 
             rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
           rownames(post_hoc_df) <- NULL
-          #return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
-  # } else if (post_hoc == "dunn" && p_adjust_method == "bonferroni" || p_adjust_method == "sidak" || p_adjust_method == "hs" || p_adjust_method == "holm" || p_adjust_method == "bh" || p_adjust_method == "hochberg"){
-  #   dependent_variable <- data[[input_column]]
-  #   group_variable <- data$cell
-  #   
-  #   # Perform the DunnTest with Bonferroni correction
-  #   dunn_test_results <- FSA::dunnTest(dependent_variable ~ group_variable, 
-  #                                      data = data, 
-  #                                      method = p_adjust_method)
-  #   print(dunn_test_results)
-  #   # Convert the test results to a dataframe for display
-  #   post_hoc_df <- dunn_test_results$res
-  #   split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-  #   
-  #   # Create new columns for Group1 and Group2 based on the split row names
-  #   post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-  #   post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-  #   #remove comparison column
-  #   post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-  #   #move columns usinhg datawizard package
-  #   post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-  #   post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-  #   rownames(post_hoc_df) <- NULL
-  #   post_hoc_df$Significant <- ifelse(is.na(post_hoc_df$P.adj), "NA", 
-  #                                     ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No"))
-  #   # Add a summary of the p-value 
-  #   post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-  #                                         ifelse(post_hoc_df$P.adj < 0.01, "**",
-  #                                                ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
-  #   
-  #   post_hoc_df <- post_hoc_df %>% 
-  #     rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-  #            "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
-  #   print(post_hoc_df)
-  #   #return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
-  #   }
-  }
+    }
   }
   return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
 }

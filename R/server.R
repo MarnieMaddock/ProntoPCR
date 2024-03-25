@@ -4,6 +4,7 @@ source("module_download.R")
 source("utils_downloadGraphHandler.R")
 
 source("utils_performCLD.R")
+source("utils_performTukeyPostHoc.R")
 source("utils_performPostHoc.R")
 source("utils_performDunnPostHoc.R")
 source("utils_performConoverPostHoc.R")
@@ -790,46 +791,20 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
                                                         ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", "*")))
         test_result_df <- test_result_df %>% 
           rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-        print(test_result_df)
         post_hoc_df <- NULL
         if(input$postHocTest == "tukey"){
-          post_hoc_result <- TukeyHSD(aov_result)
-          post_hoc_df <- broom::tidy(post_hoc_result)
-          post_hoc_df <- post_hoc_df %>%
-            dplyr::select(-term, -null.value) %>%  # Remove term and null.value columns
-            mutate(
-              Significant = ifelse(adj.p.value < 0.05, "Yes", "No"),
-              P_value_summary = ifelse(adj.p.value < 0.001, "***", 
-                                       ifelse(adj.p.value < 0.01, "**", 
-                                              ifelse(adj.p.value > 0.05, "ns", "*")))
-            ) %>%
-            rename("Adjusted P Value" = adj.p.value, 
-                   "Significant?" = Significant, 
-                   "P Value Summary" = P_value_summary,
-                   Contrast = contrast,
-                   Estimate = estimate,
-                   "Confidence Low" = conf.low,
-                   "Confidence High" = conf.high
-            )
-          split_names <- strsplit(post_hoc_df$Contrast, split = "-")
+          results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
+          # You can then access each dataframe like this:
+          post_hoc_df <- results$post_hoc_df
           
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Contrast")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          #remove Contrast column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
-          rownames(post_hoc_df) <- NULL
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if (input$postHocTest == "bonferroni"){
           try({
             # Validate conditions
-            results <- performPostHoc(
-              data = shapiro_data_reactive(),
+            results <- performPostHoc(data = shapiro_data_reactive(),
               p_adjust_method = "bonferroni",
               input_column = input$columnInput,
               sample_sizes = sampleSizeTable()
@@ -839,9 +814,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
             
             #compact letter display
             cld_df <- results$cld_df
-            print(cld_df)
             cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-            print(cld_df)
           }, silent = TRUE)
           
 
