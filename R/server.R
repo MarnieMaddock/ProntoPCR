@@ -2,9 +2,15 @@
 
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
-source("utils_graphTheme.R")
+
 source("utils_performCLD.R")
 source("utils_performPostHoc.R")
+source("utils_performDunnPostHoc.R")
+source("utils_performConoverPostHoc.R")
+
+#graph utilities
+source("utils_graphTheme.R")
+source("utils_getColourSchemes.R")
 server <- function(input, output, session) {
   
   # Reactive values to store housekeeper names and numeric input value
@@ -769,19 +775,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
-        # Check if there are enough observations in each group
-        # if(any(sampleSizeTable()$N <= 1, na.rm = TRUE)) {
-        #   test_result_df <- data.frame(
-        #     Message = "Not enough observations in at least one of the groups."
-        #   )
-        #   # Not enough observations to perform post-hoc test
-        #   post_hoc_df <- data.frame(
-        #     Message = "Not enough observations in at least one of the groups."
-        #   )
-        #   cld_df <- data.frame(
-        #     Message = "Not enough observations in the groups."
-        #   )
-        # }
         # Perform one-way ANOVA
         # Construct the formula as a string
         formula_str <- paste(input$columnInput, "~ cell")
@@ -920,12 +913,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         post_hoc_df <- NULL
         if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "bonferroni",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
@@ -936,12 +927,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "sidak",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
@@ -951,12 +940,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hs"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "hs",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
@@ -967,12 +954,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "holm"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "holm",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
@@ -983,12 +968,10 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "bh"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "bh",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
           # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
@@ -998,257 +981,80 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
           # Validate conditions
-          results <- performPostHoc(
+          results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
-            post_hoc = "dunn",
             p_adjust_method = "hochberg",
-            input_column = input$columnInput,
-            sample_sizes = sampleSizeTable()
+            input_column = input$columnInput
           )
-          # You can then access each dataframe like this:
           post_hoc_df <- results$post_hoc_df
           #compact letter display
           cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "bonferroni")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "bonferroni",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "sidak"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "sidak")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "sidak",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "holm"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "holm")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "holm",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)  
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "bh"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "bh")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "bh",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "hs"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "hs")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "hs",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
           
         }else if(input$postHocTest == "conover" && input$correctionMethod == "hochberg"){
-          dependent_variable <- shapiro_data_reactive()[[input$columnInput]]
-          group_variable <- shapiro_data_reactive()$cell
-          conover_result <- conover.test(dependent_variable, group_variable,
-                                         method = "hochberg")
-          "T" <- conover_result$T
-          P <- conover_result$P
-          P.adjusted <- conover_result$P.adjusted
-          comparisons <- conover_result$comparisons
-          
-          # Create a dataframe
-          post_hoc_df <- data.frame(
-            Comparison = comparisons,
-            "T" = T,
-            P = P,
-            P.adjusted = P.adjusted
+          results <-performConoverPostHoc(
+            data = shapiro_data_reactive(),
+            p_adjust_method = "hochberg",
+            input_column = input$columnInput
           )
-          split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-          
-          # Create new columns for Group1 and Group2 based on the split row names
-          post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-          post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-          #remove comparison column
-          post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-          #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
-          rownames(post_hoc_df) <- NULL
-          post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-          # Add a summary of the p-value 
-          post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted < 0.001, "***",
-                                                ifelse(post_hoc_df$P.adjusted < 0.01, "**",
-                                                       ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-          
-          post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-                   "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
+          post_hoc_df <- results$post_hoc_df
           #compact letter display
+          cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
         }
         
@@ -1513,49 +1319,50 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   
   
   # Get the color scheme based on user input
-  color_schemes <- reactiveValues(
-    colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
-    colourblind2 = c("#ffbd00", "#ff5400", "#ff0054", "#9e0059", "#390099"),
-    colourblind3 = c("#70d6ff", "#ff70a6", "#ff9770", "#ffd670", "#e9ff70"),
-    colourblind4 = c("gray20", "#ff0166ff", "#117f80ff", "#40007fff", "#785ef0","#66ccfeff" ),
-    grays = c("gray10", "gray30", "gray50", "gray70", "gray80", "gray100"),
-    grays2 = c("#f8f9fa", "#e9ecef", "#dee2e6", "#ced4da", "#adb5bd", "#6c757d", "#495057", "#343a40", "#212529"),
-    grays3 = c("#2b2d42", "#8d99ae", "#edf2f4"),
-    electraGray = c("#e00154", "#222337", "#e6e1dd", "#b4a8b4", "#ddd2cf"),
-    bones = c("#edede9", "#d6ccc2", "#f5ebe0", "#e3d5ca", "#d5bdaf"),
-    oranges = c("#ffc971", "#ffb627", "#ff9505", "#e2711d" ,"#cc5803"),
-    oranges2 = c("#ff4800", "#ff5400", "#ff6000", "#ff6d00", "#ff7900", "#ff8500", "#ff9100", "#ff9e00", "#ffaa00", "#ffb600"),
-    pinks = c("#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fb6f92"),
-    pinks2 = c("#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"),
-    blues = c("#03045e", "#0077b6", "#00b4d8", "#90e0ef", "#caf0f8"),
-    blues2 = c("#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"),
-    greens = c("#dad7cd", "#a3b18a", "#588157", "#3a5a40", "#344e41"),
-    greens2 = c("#d8f3dc", "#b7e4c7", "#95d5b2", "#74c69d", "#52b788", "#40916c", "#2d6a4f", "#1b4332", "#081c15"),
-    greens3 = c("#073b3a", "#0b6e4f", "#08a045", "#6bbf59"),
-    green2purple = c("#35e95f", "#35d475", "#35ac7a", "#347f83", "#2e518a", "#40288f", "#5702a1", "#6500a3", "#8127b9"),
-    purples = c("#c8b1e4", "#9b72cf", "#532b88", "#2f184b", "#f4effa"),
-    purples3 = c("#7b2cbf", "#9d4edd", "#e0aaff" ),
-    purple2orange = c("#9d53ff", "#b29ef8", "#f8d9c6", "#ffb57d", "#fb9649"),
-    blaze = c("#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"),
-    blaze2 = c("#14213d", "#fca311", "#C49792", "#e5e5e5"),
-    peace = c("#2e58a4ff", "#b69e71ff", "#e3ded4ff", "#71aec7ff","#4f5357ff"),
-    peace2 = c("#797d62", "#9b9b7a", "#d9ae94", "#f1dca7", "#ffcb69","#d08c60", "#997b66") ,
-    ireland = c("#ff9f1c", "#ffbf69", "#e5e5e5", "#cbf3f0", "#2ec4b6"),
-    twotone1 = c("#023e8a", "#0077b6", "#ff7900","#ff9e00"),
-    twotone2 = c("#90b5daff", "#91b5daff", "#e47076ff", "#e46f74ff"),
-    twotone3 = c("#447db3ff", "#e7953fff"),
-    pastels = c("#ddfff7", "#93e1d8", "#ffa69e"),
-    pastels2 = c("#90f1ef", "#ffd6e0", "#ffef9f"),
-    pastels3 = c("#bdb2ff", "#ffcad4", "#b0d0d3" ),
-    pastels4 = c("#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"),
-    pastels5 = c("#ccd5ae", "#e9edc9", "#fefae0", "#faedcd", "#d4a373"),
-    pastels6 = c("#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff", "#a0c4ff", "#bdb2ff", "#ffc6ff", "#fffffc"),
-    pastels7 = c("#809bce", "#95b8d1","#b8e0d2", "#d6eadf", "#eac4d5"),
-    vibrant = c("#ff0f7b", "#f89b29" ),
-    vibrant2 = c("#10e0ff", "#0086eb", "#006ee9", "#ffcd00", "#ffef00"),
-    vibrant3 = c("#ff00c1", "#9600ff", "#4900ff", "#00b8ff", "#00fff9"),
-    custom = c("#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de", "#56cfe1","#64dfdf", "#72efdd", "#80ffdb", "#B7D7B9", "#D2C3A8", "#E0B9A0","#EDAF97","#C49792", "#AD91A3", "#9D91A3")
-  )
+  color_schemes <- getColourSchemes()
+    #reactiveValues(
+  #   colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
+  #   colourblind2 = c("#ffbd00", "#ff5400", "#ff0054", "#9e0059", "#390099"),
+  #   colourblind3 = c("#70d6ff", "#ff70a6", "#ff9770", "#ffd670", "#e9ff70"),
+  #   colourblind4 = c("gray20", "#ff0166ff", "#117f80ff", "#40007fff", "#785ef0","#66ccfeff" ),
+  #   grays = c("gray10", "gray30", "gray50", "gray70", "gray80", "gray100"),
+  #   grays2 = c("#f8f9fa", "#e9ecef", "#dee2e6", "#ced4da", "#adb5bd", "#6c757d", "#495057", "#343a40", "#212529"),
+  #   grays3 = c("#2b2d42", "#8d99ae", "#edf2f4"),
+  #   electraGray = c("#e00154", "#222337", "#e6e1dd", "#b4a8b4", "#ddd2cf"),
+  #   bones = c("#edede9", "#d6ccc2", "#f5ebe0", "#e3d5ca", "#d5bdaf"),
+  #   oranges = c("#ffc971", "#ffb627", "#ff9505", "#e2711d" ,"#cc5803"),
+  #   oranges2 = c("#ff4800", "#ff5400", "#ff6000", "#ff6d00", "#ff7900", "#ff8500", "#ff9100", "#ff9e00", "#ffaa00", "#ffb600"),
+  #   pinks = c("#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fb6f92"),
+  #   pinks2 = c("#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"),
+  #   blues = c("#03045e", "#0077b6", "#00b4d8", "#90e0ef", "#caf0f8"),
+  #   blues2 = c("#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8", "#48cae4", "#90e0ef", "#ade8f4", "#caf0f8"),
+  #   greens = c("#dad7cd", "#a3b18a", "#588157", "#3a5a40", "#344e41"),
+  #   greens2 = c("#d8f3dc", "#b7e4c7", "#95d5b2", "#74c69d", "#52b788", "#40916c", "#2d6a4f", "#1b4332", "#081c15"),
+  #   greens3 = c("#073b3a", "#0b6e4f", "#08a045", "#6bbf59"),
+  #   green2purple = c("#35e95f", "#35d475", "#35ac7a", "#347f83", "#2e518a", "#40288f", "#5702a1", "#6500a3", "#8127b9"),
+  #   purples = c("#c8b1e4", "#9b72cf", "#532b88", "#2f184b", "#f4effa"),
+  #   purples3 = c("#7b2cbf", "#9d4edd", "#e0aaff" ),
+  #   purple2orange = c("#9d53ff", "#b29ef8", "#f8d9c6", "#ffb57d", "#fb9649"),
+  #   blaze = c("#8ecae6", "#219ebc", "#023047", "#ffb703", "#fb8500"),
+  #   blaze2 = c("#14213d", "#fca311", "#C49792", "#e5e5e5"),
+  #   peace = c("#2e58a4ff", "#b69e71ff", "#e3ded4ff", "#71aec7ff","#4f5357ff"),
+  #   peace2 = c("#797d62", "#9b9b7a", "#d9ae94", "#f1dca7", "#ffcb69","#d08c60", "#997b66") ,
+  #   ireland = c("#ff9f1c", "#ffbf69", "#e5e5e5", "#cbf3f0", "#2ec4b6"),
+  #   twotone1 = c("#023e8a", "#0077b6", "#ff7900","#ff9e00"),
+  #   twotone2 = c("#90b5daff", "#91b5daff", "#e47076ff", "#e46f74ff"),
+  #   twotone3 = c("#447db3ff", "#e7953fff"),
+  #   pastels = c("#ddfff7", "#93e1d8", "#ffa69e"),
+  #   pastels2 = c("#90f1ef", "#ffd6e0", "#ffef9f"),
+  #   pastels3 = c("#bdb2ff", "#ffcad4", "#b0d0d3" ),
+  #   pastels4 = c("#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"),
+  #   pastels5 = c("#ccd5ae", "#e9edc9", "#fefae0", "#faedcd", "#d4a373"),
+  #   pastels6 = c("#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff", "#a0c4ff", "#bdb2ff", "#ffc6ff", "#fffffc"),
+  #   pastels7 = c("#809bce", "#95b8d1","#b8e0d2", "#d6eadf", "#eac4d5"),
+  #   vibrant = c("#ff0f7b", "#f89b29" ),
+  #   vibrant2 = c("#10e0ff", "#0086eb", "#006ee9", "#ffcd00", "#ffef00"),
+  #   vibrant3 = c("#ff00c1", "#9600ff", "#4900ff", "#00b8ff", "#00fff9"),
+  #   custom = c("#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de", "#56cfe1","#64dfdf", "#72efdd", "#80ffdb", "#B7D7B9", "#D2C3A8", "#E0B9A0","#EDAF97","#C49792", "#AD91A3", "#9D91A3")
+  # )
   
   # Dynamic generation of text inputs based on positions
   output$x_axis_labels <- renderUI({

@@ -24,6 +24,7 @@ source("module_download.R")
 source("utils_downloadGraphHandler.R")
 source("about.R")
 source("example_data_text.R")
+source("utils_getColourSchemes.R")
 
 
 # Define UI for application that draws a histogram
@@ -136,7 +137,8 @@ ui <- fluidPage(
                        selectInput("color_scheme_select", "Choose Colour Scheme:",
                                    choices = c("Custom" = "custom", "Colourblind friendly 1" = "colourblind1",
                                                "Colourblind friendly 2" = "colourblind2", "Colourblind friendly 3" = "colourblind3",
-                                               "Colourblind friendly 4" = "colourblind4", "Grays 1" = "grays", "Grays 2" = "grays2",
+                                               "Colourblind friendly 4" = "colourblind4", "Colourblind friendly 5" = "colourblind5",
+                                               "Grays 1" = "grays", "Grays 2" = "grays2",
                                                "Grays 3" = "grays3", "ElectraGray" = "electraGray", "Bones" = "bones",
                                                "Oranges 1" = "oranges", "Oranges 2" = "oranges2", "Pinks 1" = "pinks",
                                                "Pinks 2" = "pinks2", "Blues 1" = "blues", "Blues 2" = "blues2", "Greens 1" = "greens",
