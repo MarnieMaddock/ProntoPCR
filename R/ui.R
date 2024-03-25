@@ -36,7 +36,7 @@ ui <- fluidPage(
   #   tags$link(rel = "stylesheet", type = "text/css", href = "style.css")
   # ),
   # Use div to place the logo
-  div(id = "logo", tags$img(src = "dottori_lab_circle2.svg")),
+  div(id = "logo", tags$img(src = "dottori_lab_pentagon.svg")),
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title

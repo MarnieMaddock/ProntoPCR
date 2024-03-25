@@ -1,13 +1,15 @@
 #logo img {
-  border-radius: 50%; /* Makes the image circular */
   width: 70px; 
   height: 70px; 
-  object-fit: cover; /* Ensures the image covers the area without losing its aspect ratio */
-  /* Additional styles for positioning*/
+  object-fit: cover;
   position: absolute;
   top: 1px; 
-  left: 5px; 
+  left: 5px;
+
+  /* Clip-path for a hexagon shape */
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
 }
+
 
 #logo2 img {
   width: 220px; 
