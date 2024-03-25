@@ -1,8 +1,8 @@
-
-
+# Load the required libraries
 source("module_download.R")
 source("utils_downloadGraphHandler.R")
 
+#Stats functions
 source("utils_performComparisonTests.R")
 source("utils_performCLD.R")
 source("utils_performTukeyPostHoc.R")
@@ -10,14 +10,13 @@ source("utils_performPostHoc.R")
 source("utils_performDunnPostHoc.R")
 source("utils_performConoverPostHoc.R")
 
-#graph utilities
+#Graph functions
 source("utils_graphTheme.R")
 source("utils_getColourSchemes.R")
+
 server <- function(input, output, session) {
   
-  # Reactive values to store housekeeper names and numeric input value
-  housekeepers_names <- reactiveValues()
-  
+
   # Reactive function to read and display the uploaded CSV file
   data <- reactive({
     req(input$file)
@@ -28,12 +27,15 @@ server <- function(input, output, session) {
     return(df)
   })
   
-  # Display the table using DataTable
+  # Display the inserted csv as a table using DataTable
   output$table <- renderDataTable({
     data()
   }, options = list(pageLength = 5))
   
-  # Generate dynamic text input fields based on the number of groups
+  # Reactive values to store housekeeper names and numeric input value
+  housekeepers_names <- reactiveValues()
+  
+  # Generate dynamic text input fields based on the number of groups for housekeeper genes
   output$groups <- renderUI({
     housekeepers <- as.integer(input$housekeepers)
     lapply(
@@ -54,7 +56,7 @@ server <- function(input, output, session) {
     saved_variables$names <- sapply(1:housekeepers, function(i) input[[paste0("group", i)]])
   })
   
-  # Generate the output text
+  # Generate the output text based on the saved variables
   output$text1 <- renderText({
     if (is.null(input$housekeepers)) {
       return()
@@ -98,7 +100,7 @@ server <- function(input, output, session) {
       mutate(
         mean_hk = mean(c_across(all_of(variables)), na.rm = TRUE),
       )
-    #move columns
+    #move columns using datawizard package
     df <- data_relocate(df, select = "mean_hk", after = "Sample")
     df <- data_relocate(df, select = saved_variables$names, after = "Sample")
     
@@ -113,26 +115,28 @@ server <- function(input, output, session) {
     
     #calulcate fold change (relative mRNA)
     # Calculate fc, considering the case where the data point is 0
-    df <- df %>% 
+    #supressed warnings as it is inconsequential to the data functionality
+    df <- suppressWarnings({df %>% 
       mutate(across(
         (which(startsWith(names(df), "dcq_"))):ncol(df),
         list(fc = ~ ifelse(.x != 0, 2^(-.x), 0)),
         .names = "{.fn}_{.col}"
       ))
-    
-    
+    })
     
     # Make a new column that places each sample as the specified condition
+    #regex extracts characters after the last underscore
     df$condition <- gsub(".*_(\\w+)$", "\\1", df$Sample)
     df$condition <- as.factor(df$condition)
     #Add group data
+    #regex extracts characters before the first underscore
     df$group <- gsub("^([^_]+)_.*$", "\\1", df$Sample)
     df$group <- as.factor(df$group)
     
     #add combined
     df$cell <- paste(df$condition, df$group, sep = "_")
     df$cell <- as.factor(df$cell)
-    #Move column
+    #Move column using datawizard package
     df <- data_relocate(df, select = "group", after = "Sample")
     df <- data_relocate(df, select = "condition", after = "Sample")
     df <- data_relocate(df, select = "cell", after = "group")
@@ -140,12 +144,10 @@ server <- function(input, output, session) {
     return(df)
   })
   
-  
+  #download processed data as a csv.
   downloadServer("download_processed_data", wrangled_data, function(input, session) {
     paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
   })
-  
-  
   
   # Display the table using DataTable in "Calculations" tab
   output$calculations_table <- renderDataTable({
@@ -153,15 +155,13 @@ server <- function(input, output, session) {
     wrangled_data()
   }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
   
-  
-  
+  # filter data by condition
   output$condition_filter <- renderUI({
     req(wrangled_data())  # Ensure data is available
     conditions <- unique(wrangled_data()$condition)
     
     selectInput("condition", "Select Condition", choices = conditions)
   })
-  
   
   filtered_data <- reactive({
     req(wrangled_data())
@@ -175,16 +175,20 @@ server <- function(input, output, session) {
       return(NULL)
     }
   })
-  
+  # Display the filtered table
   output$filtered_table <- renderDataTable({
     req(filtered_data())
     filtered_data()
   }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
   
+  #save the condition to use in string for saving csv file
+  condition_for_download <- reactive({
+    input$condition
+  })
+  
   downloadServer("download_filtered_data", filtered_data, function(input, session) {
-    condition <- input$condition  
-    if (!is.null(condition)) {
-      paste("filtered_PCR_data_", condition, "_", Sys.Date(), ".csv", sep = "")
+    if (!is.null(condition_for_download())) {
+      paste("filtered_PCR_data_", condition_for_download(), "_", Sys.Date(), ".csv", sep = "")
     } else {
       paste("filtered_PCR_data_", Sys.Date(), ".csv", sep = "")
     }
@@ -249,9 +253,8 @@ server <- function(input, output, session) {
   })
   
   downloadServer("download_rep_avg_filtered_data", filtered_rep_avg_data, function(input, session) {
-    condition <- input$condition  
-    if (!is.null(condition)) {
-      paste("Replicate_avg_data_", condition, "_", Sys.Date(), ".csv", sep = "")
+    if (!is.null(condition_for_download())) {
+      paste("Replicate_avg_data_", condition_for_download(), "_", Sys.Date(), ".csv", sep = "")
     } else {
       paste("Replicate_avg_data_filtered_", Sys.Date(), ".csv", sep = "")
     }
@@ -1679,17 +1682,40 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     }
   })
   
+
+  #save gene name for naming of saved graph file
+  selected_gene_name <- reactive({
+    # Check if 'ddcq' is selected
+    if (input$select_dcq_or_ddcq == "ddcq") {
+      # Assume `input$select_gene` holds the gene name for 'ddcq'
+      # Clean the gene name if needed
+      clean_gene_name <- gsub("^dcq_", "", input$select_gene)
+    } else {
+      # For 'dcq' and other conditions, return the selected column from `fc_dcq_column`
+      clean_gene_name <- gsub("^fc_dcq_", "", input$fc_dcq_column)
+    }
+    return(clean_gene_name)
+  })
   
+  #download graph with dynamic names, formats etc
   output$downloadGraph <- downloadHandler(
     filename = function() {
-      paste("your_graph_filename", ".", input$file_format, sep = "")
+      # Call the reactive expression to get the current gene name
+      current_gene <- selected_gene_name()
+      
+      # Ensure there's a default value for the gene name
+      gene_name <- ifelse(is.null(current_gene) || current_gene == "", "Gene", current_gene)
+      
+      # Generate the filename
+      paste("Graph_", gene_name, "_", Sys.Date(), ".", input$file_format, sep = "")
     },
     content = function(file) {
-      # Use the `ggsave` function to save the plot as an SVG file
+      # Save the plot as before
       ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
-    })
+    }
+  )
   
- 
+  
 }
 
 # Run the application 
