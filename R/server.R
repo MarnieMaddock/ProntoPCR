@@ -359,8 +359,13 @@ server <- function(input, output, session) {
     average_dcq()
   }, options = list(pageLength = 5))
   
-  downloadServer("download_ddcq_data", ddcq_data, function(input, session) {
-    paste("DDCQ_processed_data_", Sys.Date(), ".csv", sep = "")
+  #save the condition to use in string for saving csv file
+  gene_for_download <- reactive({
+    input$select_gene
+  })
+  
+  downloadServer("download_ddcq_data", average_dcq, function(input, session) {
+    paste("DDCQ_processed_data_", gene_for_download(), "_", Sys.Date(), ".csv", sep = "")
   })
   
   values <- reactiveValues(ddcqDataSaved = FALSE)
@@ -394,8 +399,8 @@ server <- function(input, output, session) {
     rep_avg_data_ddcq()
   }, options = list(pageLength = 5))
   
-  downloadServer("download_ddcq_avg_data", rep_avg_table_ddcq, function(input, session) {
-    paste("DDCq_processed_replicate_data_", Sys.Date(), ".csv", sep = "")
+  downloadServer("download_ddcq_avg_data", rep_avg_data_ddcq, function(input, session) {
+    paste("DDCq_processed_replicate_data_", gene_for_download(), "_", Sys.Date(), ".csv", sep = "")
   })
   
   #Stats
@@ -1477,10 +1482,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       plot <- plot +
         scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
     }
-    # Set font based on user selection
-    font_family <- input$font_selector
-    plot <- plot + theme(text = element_text(family = font_family))
-    plot <- plot + theme(axis.title.y = element_markdown())
+
     
     
     # Customize x-axis and y-axis label font size using numeric input
@@ -1510,8 +1512,14 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       axis_label_theme2 <- axis_label_theme2 + theme(axis.text.y = element_text(size = input$y_axis_label_font_size))
     }
     
+    
     # Apply axis label theme to the plot
     plot <- plot + axis_label_theme2
+    
+    # Set font based on user selection
+    font_family <- input$font_selector
+    plot <- plot + theme(text = element_text(family = font_family))
+    plot <- plot + theme(axis.title.y = element_markdown())
     
     if(input$add_significance == "asterix"){
       num_groups <- length(unique(shapiro_data_reactive()$cell))

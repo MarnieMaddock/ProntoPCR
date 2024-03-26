@@ -5,8 +5,7 @@ theme_Marnie <- theme(axis.line.y = element_line(colour = "black", linewidth = 0
                       panel.background = element_rect(fill = "white"),
                       panel.border = element_blank(),
                       axis.title.x = element_text(size = 16, margin = margin(5,0,0,0)),
-                      axis.title.y = element_text(size =16, margin = margin(0,10,0,0)),
-                      
+                      axis.title.y = element_text(size = 16, margin = margin(0,10,0,0)),
                       axis.text = element_text(size = 16, colour = "black"),
                       axis.text.x = element_text(margin = margin(t=5), size=14),
                       axis.text.y = element_text(size=14),
