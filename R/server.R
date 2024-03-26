@@ -627,18 +627,27 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     })
   })
   
-  output$qqPlot <- renderPlot({
+  # Define a reactive expression that generates the QQ plot
+  qqPlot_reactive <- reactive({
     req("qqplot" %in% input$normality_test, !is.null(input$columnInput))
     qqplot_data <- shapiro_data_reactive()
+    
     # Generate the plot
     ggplot(qqplot_data, aes(sample = !!as.symbol(input$columnInput))) +
       geom_qq() + geom_qq_line() +
       facet_wrap(~cell, scales = "free_y") +
       labs(title = "QQ Plot", x = "Theoretical Quantiles", y = "Sample Quantiles") +
       theme_Marnie
+    
   })
   
-  output$densityPlot <- renderPlot({
+  # Use the reactive expression for rendering the plot in the Shiny app
+  output$qqPlot <- renderPlot({
+    req(qqPlot_reactive())  # Make sure the reactive expression has been evaluated
+    qqPlot_reactive()  # Return the plot created by the reactive expression
+  })
+  
+  densityPlot_reactive <- reactive({
     req(input$normality_test == "density", input$columnInput)
     density_data <- shapiro_data_reactive()
     p <- density_data %>% 
@@ -648,6 +657,11 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       labs(title = "Density Plot", x = "Value", y = "Density") +
       theme_Marnie
     return(p)
+  })
+  
+  output$densityPlot <- renderPlot({
+    req(densityPlot_reactive())
+    densityPlot_reactive()
   })
   
   output$qqPlotUI <- renderUI({
@@ -667,8 +681,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       h4(HTML("<b>Homogeneity of Variance Test</b>"))  # Display the heading
     }
   })
-  
-  output$levene <- renderDataTable({
+  levene_reactive <- reactive({
     req(input$variance == TRUE, input$columnInput)
     levene_test_data <- shapiro_data_reactive()
     test_result <- leveneTest(levene_test_data[[input$columnInput]] ~ levene_test_data$cell)
@@ -696,16 +709,16 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     summary_df
   })
   
+  output$levene <- renderDataTable({
+    req(levene_reactive())
+    levene_reactive()
+  })
   
   output$leveneUI <- renderUI({
     if(input$variance == TRUE) { # Check if the user wants to see the Levene's test results
       dataTableOutput("levene")
     }
   })
-  
-  
-
-  
   
   comparisonResults <- reactive({
     # Ensure necessary inputs are available
@@ -745,11 +758,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         }else if (input$postHocTest == "bonferroni"){
           try({
             # Validate conditions
-            results <- performPostHoc(data = shapiro_data_reactive(),
-              p_adjust_method = "bonferroni",
-              input_column = input$columnInput,
-              sample_sizes = sampleSizeTable()
-            )
+            results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput, sample_sizes = sampleSizeTable())
             # You can then access each dataframe like this:
             post_hoc_df <- results$post_hoc_df
             
@@ -1714,8 +1723,177 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
     }
   )
+#STATISTICS REPORT
+  #save gene name for statistics report.
+  selected_gene_name_stats <- reactive({
+    # Determine which input to use based on the condition selected
+    if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
+      selected_gene_cleaned <- gsub("^fc_dcq_", "", input$columnInput)  # Clean the gene name for dcq
+    } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
+      selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)  # Clean the gene name for ddcq
+    }
+    return(selected_gene_cleaned)
+  })
   
+  #names for group comparisons
+  testName <- reactive({
+    req(input$sampleInput, input$columnInput, input$group_comparison)
+    data <- shapiro_data_reactive() # Assuming this returns your dataset
+    
+    num_groups <- length(unique(data$cell))
+    
+    if (num_groups == 2) {
+      if (input$group_comparison == "parametric") {
+        "Independent T-Test"
+      } else {
+        "Mann-Whitney U Test"
+      }
+    } else if (num_groups > 2) {
+      if (input$group_comparison == "parametric") {
+        "One-Way ANOVA"
+      } else {
+        "Kruskal-Wallis Test"
+      }
+    } else {
+      "Not enough groups" # Default message or handle as required
+    }
+  })
   
+  # Define named vectors for the mappings
+  fullPostHocTests <- c(tukey = "Tukey's HSD", 
+                        dunn = "Dunn's", 
+                        conover = "Conover-Iman"
+                        # Add other mappings as necessary
+  )
+  
+  fullCorrectionMethods <- c(bonferroni = "Bonferroni",
+                             sidak = "Šidák",
+                             holm = "Holm",
+                             hs = "Holm-Šidák",
+                             bh = "Benjamini-Hochberg",
+                             hochberg = "Hochberg"
+  )
+  
+  postHocTestDescription <- reactive({
+    req(input$sampleInput, input$columnInput, input$group_comparison)
+    data <- shapiro_data_reactive() 
+    num_groups <- length(unique(data$cell))
+    
+
+    # Logic to determine the test description based on the inputs
+    if (num_groups > 2) { # Ensuring there are more than 2 groups
+      if (input$group_comparison == "parametric") {
+        switch(input$postHocTest,
+               "tukey" = "You selected a Tukey's HSD Post-hoc test.",
+               "bonferroni" = "You selected a Pairwise t-test with Bonferroni adjustment.",
+               "holm" = "You selected a Pairwise t-test with Holm adjustment.",
+               "bh" = "You selected a Pairwise t-test with Benjamini-Hochberg adjustment.",
+               "scheffe" = "You selected a Scheffé's Post-hoc test.",
+               # Add other parametric tests as needed
+               "Not a valid parametric post-hoc test"
+        )
+      } else if (input$group_comparison == "non_parametric") {
+        postHocTestFullName <- fullPostHocTests[input$postHocTest]
+        correctionMethodFullName <- fullCorrectionMethods[input$correctionMethod]
+        paste("You selected a ", postHocTestFullName, " test with ", correctionMethodFullName, " adjustment.")
+      } else {
+        "Not a valid test type."
+      }
+    } else {
+      "Not enough groups for post-hoc tests."
+    }
+  })
+  
+  #download stats report of html Rmarkdown file
+  output$downloadStats <- downloadHandler(
+    filename = function() {
+      #load the filename
+      paste("StatisticsReport-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep="")
+    },
+    content = function(file) {
+      # Print dcq or ddcq
+      analysisHTML <- if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
+        "2<sup>-(ΔCq)</sup>"
+      } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
+        "2<sup>-(ΔΔCq)</sup>"
+      } else {
+        ""  # Default or error case
+      }
+      # Get the cleaned gene name
+      cleanedGeneName <- isolate(selected_gene_name_stats())
+      
+      # Only attempt to retrieve the sample size data if that component is selected
+      # Generate the sample size table data
+      sampleSizeData <- if(input$sample_size){
+        sampleSizeTable()  # Ensure this is not reactive here, or use isolate() if needed
+      } else {
+        NULL
+      }
+      #generate the shapiro-wilk table data
+      shapiroTable <- if("shapiro" %in% input$normality_test){
+        isolate(test_results_shapiro()) 
+      } else {
+        NULL
+      }
+      #generate the qq plot
+      qqPlot <- if("qqplot" %in% input$normality_test){
+        isolate(qqPlot_reactive())
+      } else {
+        NULL
+      }
+      #denisty plot
+      den <- if("density" %in% input$normality_test){
+        isolate(densityPlot_reactive())
+      } else {
+        NULL
+      }
+      
+      lev <- if(input$variance == TRUE){
+        isolate(levene_reactive())
+      } else {
+        NULL
+      }
+      
+      comparisonResultsData <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+        isolate(comparisonResults())
+      } else {
+        NULL
+      }
+      
+      testNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+        isolate(testName())
+      } else {
+        NULL
+      }
+      postHocNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+        isolate(postHocTestDescription())
+      } else {
+        NULL
+      }
+      # Specify the path to your R Markdown template
+      rmdTemplate <- "StatisticsReport.Rmd"
+      
+      # Render the Rmd file, passing the sample size table data as a parameter
+      rmarkdown::render(input = rmdTemplate, 
+                        output_file = file,
+                        params = list(
+                          analysisType = analysisHTML,
+                          selectedSamples = input$sampleInput,
+                          selectedGene = cleanedGeneName,
+                          sampleSizeTable = sampleSizeData,
+                          shapiroData = shapiroTable,
+                          qqPlotGraph = qqPlot,
+                          densityPlot = den,
+                          leveneData = lev,
+                          logTransformed = input$log_transform,
+                          testResultData = comparisonResultsData$test,
+                          cldData = comparisonResultsData$cld,
+                          posthocData = comparisonResultsData$posthoc,
+                          testName = testNames,
+                          postHocName = postHocNames))
+    }
+  )
+
 }
 
 # Run the application 

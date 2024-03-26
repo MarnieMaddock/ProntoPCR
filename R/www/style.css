@@ -102,7 +102,8 @@ textarea:hover {
 #download_rep_avg_filtered_data-download,
 #download_ddcq_data-download,
 #download_ddcq_avg_data-download,
-#downloadGraph {
+#downloadGraph,
+#downloadStats {
     background-color: white; /* Light blue background by default */
     color: #17141fff; /* Text color */
     border-color: #d3d3d3ff;
@@ -118,7 +119,8 @@ textarea:hover {
 #download_rep_avg_filtered_data-download:hover,
 #download_ddcq_data-download:hover,
 #download_ddcq_avg_data-download:hover,
-#downloadGraph:hover {
+#downloadGraph:hover,
+#downloadStats:hover {
     background-color: #00359bff; /* Slightly different or the same as the default state */
     /*text colour*/
     color: white;
@@ -134,7 +136,8 @@ textarea:hover {
 #download_rep_avg_filtered_data-download:active,
 #download_ddcq_data-download:active,
 #download_ddcq_avg_data-download:active,
-#downloadGraph:active {
+#downloadGraph:active,
+#downloadStats:active {
     background-color: #00359bff; /* Darker blue when clicked */
     color: white;
 }
@@ -148,7 +151,8 @@ textarea:hover {
 #download_rep_avg_filtered_data-download:focus,
 #download_ddcq_data-download:focus,
 #download_ddcq_avg_data-download:focus,
-#downloadGraph:focus {
+#downloadGraph:focus,
+#downloadStats:focus {
     background-color: #00359bff; /* This could match the default or be a unique style */
     color: white;
 }

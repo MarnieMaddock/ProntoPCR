@@ -1,0 +1,179 @@
+---
+title: "Statistics Report"
+output: html_document
+params:
+  analysisType: NA
+  selectedSamples: NA
+  selectedGene: NA
+  sampleSizeTable: NA
+  shapiroData: NA
+  qqPlotGraph: NA
+  densityPlot: NA
+  leveneData: NA
+  logTransformed: NA
+  testResultData: NA
+  cldData: NA
+  posthocData: NA
+  testName: NA
+  postHocName: NA
+---
+```{r setup, include=FALSE}
+#packages for app
+library(shiny)
+library(rmarkdown)
+library(readr)
+library(DT)
+library(tidyverse)
+library(datawizard)
+library(purrr)
+library(ggplot2)
+library(ggbeeswarm)
+library(ggpubr)
+library(bslib)
+library(ggtext)
+library(shinyjs)
+library(car) 
+library(multcomp) 
+library(dplyr)
+library(rlang)
+library(broom)
+library(DescTools)
+library(FSA)
+library(conover.test)
+library(multcompView)
+
+source("module_download.R")
+source("utils_downloadGraphHandler.R")
+source("about.R")
+source("example_data_text.R")
+source("utils_getColourSchemes.R")
+#Stats functions
+source("utils_performComparisonTests.R")
+source("utils_performCLD.R")
+source("utils_performTukeyPostHoc.R")
+source("utils_performPostHoc.R")
+source("utils_performDunnPostHoc.R")
+source("utils_performConoverPostHoc.R")
+#Graph functions
+source("utils_graphTheme.R")
+source("utils_getColourSchemes.R")
+#packages for rmakrdown
+library(kableExtra)
+```
+### **FASTqPCR**
+
+All statistics within the FASTqPCR app were performed in the R programming language. For more detailed information on the statistical tests used, please refer to the documentation provided in the associated github page, or refer to the souce code.
+
+### **Your Data**
+
+This is the statistics report for the following: `r params$analysisType`, samples: `r paste(params$selectedSamples, collapse = ", ")`, and gene: `r params$selectedGene`.
+
+### **Sample Size Table**
+```{r tableOutput, echo = FALSE, results='asis'}
+if (!is.null(params$sampleSizeTable)) {
+knitr::kable(params$sampleSizeTable, "html") %>% 
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Sample size not selected.")
+}
+```
+
+
+### **Normality Tests**
+
+
+#### **Shapiro-Wilk Test**
+```{r shapiroTable, echo = FALSE, results='asis'}
+if (!is.null(params$shapiroData)) {
+knitr::kable(params$shapiroData, format = "html") %>%
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Shapiro-Wilk test not selected.")
+}
+```
+
+
+#### **QQ-Plot**
+```{r qqPlot, echo = FALSE, results='asis'}
+if (!is.null(params$qqPlotGraph)) {
+  print(params$qqPlotGraph)
+} else {
+  cat("QQ-Plot not selected.")
+}
+```
+
+
+#### **Density Plot**
+```{r densityPlot, echo = FALSE, results='asis'}
+if (!is.null(params$densityPlot)) {
+  print(params$densityPlot)
+} else {
+  cat("Density plot not selected.")
+}
+```
+
+
+### **Homogeneity of Variance**
+
+#### **Levene's Test**
+```{r leveneTable, echo = FALSE, results='asis'}
+if (!is.null(params$leveneData)) {
+  knitr::kable(params$leveneData, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Levene's test not selected.")
+}
+```
+
+
+### **Log transformation?**
+
+```{r log-transform-message, echo=FALSE, results='asis'}
+if (!params$logTransformed) {
+  cat("This data was ***not*** log transformed.")
+} else {
+  cat("This data was log transformed.")
+}
+```
+
+
+### **Group Comparisons**
+You selected a `r params$testName` test.
+
+
+```{r comparison-results, echo=FALSE, results='asis'}
+if (!is.null(params$testResultData)) {
+  knitr::kable(params$testResultData, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+}
+```
+
+
+### **Post-Hoc Tests**
+Reminder, post-hoc tests are only valid if the group comparison test has a p value < 0.05. `r params$postHocName`
+```{r posthoc, echo=FALSE, results='asis'}
+if (!is.null(params$posthocData)) {
+  knitr::kable(params$posthocData, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+}
+```
+
+
+#### **Compact Letter Notation**
+Groups with the same letter are not significantly different from each other.
+```{r cldTable, echo=FALSE, results='asis'}
+if (!is.null(params$cldData)) {
+  knitr::kable(params$cldData, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+}
+```
+
+
+### **Contact**
+
+If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au)
+
+![](www/footer.svg)
+
+
+
