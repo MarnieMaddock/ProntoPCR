@@ -49,7 +49,9 @@ ui <- fluidPage(
       # About tab
       conditionalPanel(condition = "input.tabselected==1", 
                        tags$h3("Contact"),
-                       tags$p("If you have found this application useful please share with your networks. If this is used in any capacity in a publication, please cite the journal article associated with this software (a lot of work goes into making software like this!). If there any questions, or have any suggestions for improvement, please contact the team at mlm715@uowmail.edu.au, mmaddock@uow.edu.au, mdottori@uow.edu.au."),
+                       tags$p(HTML("If you have found this application useful please share with your networks. If this is used in any capacity in a publication, please cite the journal article associated with this software (a lot of work goes into making software like this!). If there are any questions, or if you have any suggestions for improvement, please contact the 
+<a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Feedback&body=Hi, I have some feedback for FASTqPCR:'>development team</a>, or raise an issue/request on 
+<a href='https://github.com/MarnieMaddock/FASTqPCR/issues'>GitHub</a>.")),
                        tags$h3("Citation"),
                        tags$div(style = "height: 150px;"),
                        tags$div(tags$img(src = "dottori_lab.svg", height = "auto", width = 300), style = "text-align: center;")
@@ -239,7 +241,8 @@ ui <- fluidPage(
                                           selected = character(0)),
                        uiOutput("postHocOptions"),
                        uiOutput("correctionOptions"),
-                       verbatimTextOutput("shapiroOutput"))
+                       uiOutput("downloadButtonUI"),
+                       verbatimTextOutput("shapiroOutput")),
     ),
     
     
@@ -345,7 +348,8 @@ ui <- fluidPage(
                             uiOutput("postHocTableUI"),
                             uiOutput("cldHeading"),
                             uiOutput("cld_tableUI"),
-                            downloadButton("downloadStats", "Download Statistics Report"),
+                            tags$br(),
+                            tags$br()
                    )
                  )
         ),
@@ -379,6 +383,8 @@ ui <- fluidPage(
                           downloadButton("downloadGraph", "Download Graph")
                    )
                  ),
+                 tags$br(),
+                 p(HTML("Note: Colour Scheme suggestions for graphs can be sent to <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:'>Marnie</a>.")),
                  tags$br(),
                  tags$br()
                 ),

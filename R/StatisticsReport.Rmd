@@ -62,7 +62,7 @@ library(kableExtra)
 ```
 ### **FASTqPCR**
 
-All statistics within the FASTqPCR app were performed in the R programming language. For more detailed information on the statistical tests used, please refer to the documentation provided in the associated github page, or refer to the souce code.
+All statistics within the FASTqPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated github page (INSERT VIGNETTE HERE), or refer to the source code [GitHub](https://github.com/MarnieMaddock/FASTqPCR).
 
 ### **Your Data**
 
@@ -145,6 +145,8 @@ You selected a `r params$testName` test.
 if (!is.null(params$testResultData)) {
   knitr::kable(params$testResultData, format = "html") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Group comparison test not selected.")
 }
 ```
 
@@ -155,6 +157,8 @@ Reminder, post-hoc tests are only valid if the group comparison test has a p val
 if (!is.null(params$posthocData)) {
   knitr::kable(params$posthocData, format = "html") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Post-hoc test not selected.")
 }
 ```
 
@@ -165,13 +169,14 @@ Groups with the same letter are not significantly different from each other.
 if (!is.null(params$cldData)) {
   knitr::kable(params$cldData, format = "html") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Compact Letter Notation not selected.")
 }
 ```
 
-
 ### **Contact**
 
-If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au)
+If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/FASTqPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
 
 ![](www/footer.svg)
 

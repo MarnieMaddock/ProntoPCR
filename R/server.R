@@ -725,7 +725,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive() # Assuming this returns your dataset
     num_groups <- length(unique(data$cell))
-    
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
         #perform t-test
@@ -1706,6 +1705,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     return(clean_gene_name)
   })
   
+
+
+  
   #download graph with dynamic names, formats etc
   output$downloadGraph <- downloadHandler(
     filename = function() {
@@ -1803,6 +1805,16 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       "Not enough groups for post-hoc tests."
     }
   })
+  
+  output$downloadButtonUI <- renderUI({
+    # Check if group comparison has been selected
+    if (!is.null(input$group_comparison) && input$group_comparison %in% c("parametric", "non_parametric")) {
+      # Render the download button if a group comparison is selected
+      downloadButton("downloadStats", "Download Statistics Report")
+    }
+  })
+  
+
   
   #download stats report of html Rmarkdown file
   output$downloadStats <- downloadHandler(
