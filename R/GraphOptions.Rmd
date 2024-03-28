@@ -1,0 +1,101 @@
+---
+title: "Selected Graph Options"
+output: html_document
+params:
+  rotateXLabels: NA
+  yAxisLabel: NA
+  xAxisLabel: NA
+  font: NA
+  xAxisTitleFontSize: NA
+  yAxisTitleFontSize: NA
+  xAxisTextFontSize: NA
+  yAxisTextFontSize: NA
+  colourScheme: NA
+  plotType: NA
+  significance: NA
+  yPositionSignificance: NA
+  labelSize: NA
+  bracketThickness: NA
+  tipLength: NA
+  stepIncrease: NA
+  hideNS: NA
+  pValuePrefix: NA
+  pValueDecimals: NA
+  removeLeadingZero: NA
+  errorBarType: NA
+  startAtZero: NA
+  errorBarWidth: NA
+  errorBarWidthdot: NA
+  errorBarThickness: NA
+  errorBarThicknessdot: NA
+  averageLineWidth: NA
+  averageLineThickness: NA
+  fillOrBorder: NA
+  pointSize: NA
+  pointSizedot: NA
+  pointSpacing: NA
+  changeToPairedShapes: NA
+  shapeOutlineThickness: NA
+  pointSpread: NA
+  seedNumber: NA
+  fileFormat: NA
+  dpi: NA
+  width: NA
+  height: NA
+---
+
+### Your selected graph options:
+
+* Rotate x-axis labels: `r params$rotateXLabels`
+* Y-axis label: `r params$yAxisLabel`
+* X-axis label: `r params$xAxisLabel`
+* Font: `r params$font`
+* X-axis title font size: `r params$xAxisTitleFontSize`
+* Y-axis title font size: `r params$yAxisTitleFontSize`
+* X-axis text font size: `r params$xAxisTextFontSize`
+* Y-axis text font size: `r params$yAxisTextFontSize`
+* Colour scheme: `r params$colourScheme`
+* Plot type: `r params$plotType`
+
+#### Significance options
+
+* Significance?: `r params$significance`
+* Y position of significance: `r params$yPositionSignificance`
+* Label size: `r params$labelSize`
+* Bracket thickness: `r params$bracketThickness`
+* Tip length: `r params$tipLength`
+* Step increase: `r params$stepIncrease`
+* Hide ns: `r params$hideNS`
+* P value prefix: `r params$pValuePrefix`
+* P value decimals: `r params$pValueDecimals`
+* Remove leading 0: `r params$removeLeadingZero`
+
+#### Error Bars
+
+* Error bar type: `r params$errorBarType`
+* Start at y = 0: `r params$startAtZero`
+* Error bar width (column graph): `r params$errorBarWidth`
+* Error bar thickness (column graph): `r params$errorBarThickness`
+* Error bar width (dot graph): `r params$errorBarWidthdot`
+* Error bar thickness (dot graph): `r params$errorBarThicknessdot`
+* Average line width (dot graph): `r params$averageLineWidth`
+* Average line thickness (dot graph): `r params$averageLineThickness`
+
+#### Point Design
+
+* Fill or Border: `r params$fillOrBorder`
+* Point size (column graph): `r params$pointSize`
+* Point size (dot graph): `r params$pointSizedot`
+* Point Spacing: `r params$pointSpacing`
+* Change to paired shapes: `r params$changeToPairedShapes`
+* Shape outline thickness: `r params$shapeOutlineThickness`
+* Point spread: `r params$pointSpread`
+* Seed number: `r params$seedNumber`
+
+#### Download Options
+
+* File format: `r params$fileFormat`
+* DPI: `r params$dpi`
+* Width (in): `r params$width`
+* Height (in): `r params$height`
+

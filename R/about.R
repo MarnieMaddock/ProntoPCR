@@ -1,6 +1,6 @@
 about_text <- div(
     h3("About FASTqPCR"),
-    p("STATqPCR has been developed to simplify and accerlate the analysis of qPCR data (which is known to be a repetitive and time-consuming task). All caluclations, statistics and graphing can be performed in under 1 minute*.
+    p("FASTqPCR has been developed to simplify and accerlate the analysis of qPCR data (which is known to be a repetitive and time-consuming task). All caluclations, statistics and graphing can be performed in under 1 minute*.
       The web application is designed to do the following:"),
     shiny::tags$ul(
       tags$li("Instant calculations such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq and fold change (i.e. 2^-ΔCq/2^-ΔΔCq)"),
@@ -9,10 +9,10 @@ about_text <- div(
     ),
     p("Calculations can be downloaded as a .csv file if the user wishes to analyse the data in another application. 
       All graphs also have the option to be saved as an .svg so that aesthetics can be further modified in other programs such as Illustrator and Inkscape (which is free!).
-      Additionally, all statistics and analysis can be saved as a report in .pdf format (which is useful for writing up result sections)."),
+      Additionally, all statistics and analysis can be saved as a report in .html format (which is useful for writing up result sections)."),
     
     h5("Preparing your data"),
-    p("For STATqPCR to work, the data must be in a specific (but simple) format. The data must be in a .csv file. Note this is compatible directly with the output of QuantStudio Design and Analysis Software Results (just go to the Quality Check tab, selecte Replicate Group on the right hand side, select the three dots and export the data:"),
+    p("For FASTqPCR to work, the data must be in a specific (but simple) format. The data must be in a .csv file. Note this is compatible directly with the output of QuantStudio Design and Analysis Software Results (just go to the Quality Check tab, selecte Replicate Group on the right hand side, select the three dots and export the data:"),
     tags$img(src = "quantstudio.svg", height = "350px", width = "auto"),
     p("The data columns should include (ensure correct spelling, capitalisations and no spaces - use . instead):"),
     shiny::tags$ul(

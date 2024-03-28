@@ -42,17 +42,16 @@ ui <- fluidPage(
   div(id = "logo2", tags$img(src = "UOW.png")),
   #shinyjs::useShinyjs(),
   # Application title
-  div(tags$h1("FASTqPCR v1.0.2", style = "margin-left: 65px;")),
+  div(tags$h1("FASTqPCR v1.1.0", style = "margin-left: 65px;")),
   sidebarLayout(
     sidebarPanel(
       style = "height: 85vh; overflow-y: auto;",
       # About tab
       conditionalPanel(condition = "input.tabselected==1", 
                        tags$h3("Contact"),
-                       tags$p(HTML("If you have found this application useful please share with your networks. If this is used in any capacity in a publication, please cite the journal article associated with this software (a lot of work goes into making software like this!). If there are any questions, or if you have any suggestions for improvement, please contact the 
+                       tags$p(HTML("If you have found this application useful please share with your networks. If there are any questions, or if you have any suggestions for improvement, please contact the 
 <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Feedback&body=Hi, I have some feedback for FASTqPCR:'>development team</a>, or raise an issue/request on 
 <a href='https://github.com/MarnieMaddock/FASTqPCR/issues'>GitHub</a>.")),
-                       tags$h3("Citation"),
                        tags$div(style = "height: 150px;"),
                        tags$div(tags$img(src = "dottori_lab.svg", height = "auto", width = 300), style = "text-align: center;")
       ),
@@ -97,12 +96,10 @@ ui <- fluidPage(
         fluidRow(
           column(width = 5, uiOutput("select_control")),
           column(width = 5, uiOutput("select_samples")),
-          column(width = 5, uiOutput("select_condition")),
           column(width = 5, uiOutput("column_selector2"))),
         actionButton("save_ddcq_data", "Save ΔΔCq Data"),
       ),
       conditionalPanel(condition = "input.tabselected == 5",
-                       #graphing_sidebarUI("sidebar"),
                        h4(HTML("<b>Create Graph</b>")),
                        radioButtons("select_dcq_or_ddcq", HTML("Select whether to graph 2<sup>-(ΔCq)</sup> or 2<sup>-(ΔΔCq)</sup>:"),
                                     choices = c("ΔCq" = "dcq", "∆ΔCq" = "ddcq"),
@@ -122,7 +119,7 @@ ui <- fluidPage(
                        checkboxInput("rotate_labels", "Rotate x-axis labels", value = FALSE),
                        uiOutput("dynamic_y_label_input"),
                        textInput("x_label", "Enter X-axis Label", value = "Group"),
-                       selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Helvetica", "Georgia", "Comic Sans MS", "Century Gothic",  "Courier New")),
+                       selectInput("font_selector", "Select Font", choices = c("Arial", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma", "Verdana", "Courier New")),
                        fluidRow(
                          column(
                            width = 6,
@@ -378,9 +375,13 @@ ui <- fluidPage(
                    column(2,
                           numericInput("height", "Height (inches):", 5)
                    ),
-                   column(12,
+                   column(4,
                           # Add a download button
                           downloadButton("downloadGraph", "Download Graph")
+                   ),
+                   column(4,
+                          # Add a download button
+                          downloadButton("downloadGraphOptions", "Download Selected Graph Options")
                    )
                  ),
                  tags$br(),

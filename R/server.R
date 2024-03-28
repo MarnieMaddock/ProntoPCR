@@ -264,21 +264,21 @@ server <- function(input, output, session) {
   # DELTADELTA 
   #
   #
-  output$select_condition <- renderUI({
-    req(wrangled_data())
-    selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
-  })
+  # output$select_condition <- renderUI({
+  #   req(wrangled_data())
+  #   selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
+  # })
   
   output$select_control <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$group))
+    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$cell))
   })
   
   output$select_samples <- renderUI({
     req(wrangled_data())  # Ensure data is available
     
-    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$group), multiple = T)
+    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell), multiple = T)
   })
   
   output$column_selector2 <- renderUI({
@@ -295,19 +295,21 @@ server <- function(input, output, session) {
     req(wrangled_data())
     req(input$select_gene)
     
-    condition2 <- input$select_condition
+    #condition2 <- input$select_condition
     control <- input$select_control
     samples <- input$select_samples
     selected_gene <- input$select_gene
     
     ddcq_data <- wrangled_data() %>% 
-      filter((group == control) | (group %in% samples)) %>% 
-      filter(condition == condition2) %>%
-      dplyr::select(group, condition, all_of(selected_gene))
+      filter((cell == control) | (cell %in% samples)) %>% 
+      #filter(condition == condition2) %>%
+      dplyr::select(cell, all_of(selected_gene))
     
     # Resetting levels of factors to only include selected options
-    ddcq_data$group <- factor(ddcq_data$group, levels = unique(c(as.character(control), as.character(samples))))
-    ddcq_data$condition <- factor(ddcq_data$condition, levels = condition2)
+    ddcq_data$cell <- factor(ddcq_data$cell, levels = unique(c(as.character(control), as.character(samples))))
+    #add cell column
+    #ddcq_data$cell <- paste(ddcq_data$condition, ddcq_data$group, sep = "_")
+    #ddcq_data$condition <- factor(ddcq_data$condition, levels = condition2)
     return(ddcq_data)
   })
   
@@ -318,19 +320,19 @@ server <- function(input, output, session) {
     req(input$select_gene)
     req(input$select_control)
     
-    condition3 <- input$select_condition
+    #condition3 <- input$select_condition
     selected_gene2 <- input$select_gene
     control2 <- input$select_control
     samples2 <- input$select_samples
     
     # Calculate the average delta cq for the selected gene in the control samples
     avg_dcq_ctrl <- ddcq_filtered_data() %>%
-      filter(group == control2) %>%
-      group_by(group, condition) %>%
+      filter(cell == control2) %>%
+      group_by(cell) %>%
       summarise(dcq_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
     
     # Left join the original dataframe with the summarised dataframe
-    avg_dcq_ctrl <- left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = c("group", "condition"))
+    avg_dcq_ctrl <- left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = "cell")
     
     # Calculate the mean value
     mean_val <- mean(avg_dcq_ctrl$dcq_ctrl_avg, na.rm = TRUE)
@@ -348,9 +350,9 @@ server <- function(input, output, session) {
     avg_dcq_ctrl$fc_ddcq <- 2^(-avg_dcq_ctrl$ddcq)
     
     # Resetting levels of factors to only include selected options
-    avg_dcq_ctrl$group <- factor(avg_dcq_ctrl$group, levels = unique(c(as.character(control2), as.character(samples2))))
-    avg_dcq_ctrl$condition <- factor(avg_dcq_ctrl$condition, levels = condition3)
-    avg_dcq_ctrl$cell <- paste(avg_dcq_ctrl$condition, avg_dcq_ctrl$group, sep = "_")
+    avg_dcq_ctrl$cell <- factor(avg_dcq_ctrl$cell, levels = unique(c(as.character(control2), as.character(samples2))))
+    #avg_dcq_ctrl$condition <- factor(avg_dcq_ctrl$condition, levels = condition3)
+    #avg_dcq_ctrl$cell <- paste(avg_dcq_ctrl$condition, avg_dcq_ctrl$group, sep = "_")
     return(avg_dcq_ctrl)
   })
   
@@ -383,14 +385,9 @@ server <- function(input, output, session) {
     req(average_dcq())
     
     rep_avg_ddcq <- average_dcq() %>%
-      group_by(condition, group) %>%
+      group_by(cell) %>%
       summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop")
     
-    #add column cell
-    rep_avg_ddcq$cell <- paste(rep_avg_ddcq$condition, rep_avg_ddcq$group, sep = "_")
-    rep_avg_ddcq$cell <- as.factor(rep_avg_ddcq$cell)
-    #Move column
-    rep_avg_ddcq <- data_relocate(rep_avg_ddcq, select = "cell", after = "group")
     return(rep_avg_ddcq)
   })
   
@@ -1310,7 +1307,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   
   
   output$plot <- renderPlot({
-    req(input$select_dcq_or_ddcq, input$y_label, input$x_label, input$fc_dcq_column)
+    req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
     set.seed(input$seed_input)
     
     if(input$select_dcq_or_ddcq == "dcq"){
@@ -1519,7 +1516,31 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     # Set font based on user selection
     font_family <- input$font_selector
     plot <- plot + theme(text = element_text(family = font_family))
+    #allow markdown on y axis
     plot <- plot + theme(axis.title.y = element_markdown())
+    
+    
+    #Add significance to graph
+    discrepancy_detected <- reactive({
+      req(input$group_comparison)
+      # Logic to detect discrepancy between stats and graphs selected gene
+      selected_stat_column <- input$columnInput
+      selected_plot_column <- if(input$select_dcq_or_ddcq == "dcq") input$fc_dcq_column else input$fc_ddcq
+      
+      selected_stat_column != selected_plot_column
+    })
+    
+    #use observe to reactively display an error message
+    observe({
+      if(discrepancy_detected()) {
+        showModal(modalDialog(
+          title = "Discrepancy Detected",
+          "The selected gene for statistics does not match the gene for graphing. Please adjust your selections to ensure that the correct p-values are added to your graph.",
+          easyClose = TRUE,
+          footer = modalButton("Close")
+        ))
+      }
+    })
     
     if(input$add_significance == "asterix"){
       num_groups <- length(unique(shapiro_data_reactive()$cell))
@@ -1666,14 +1687,16 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
           column(12, numericInput("yPos", "Y position", value = 1))
         ),
         fluidRow(
-          column(6, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
+          column(4, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
           if(input$add_significance != "cld") {
-            column(6, numericInput("bracketSize", "Bracket Thickness", min = 0, max = 10, value = 0.8, step = 0.1))
+            tagList(
+            column(4, numericInput("bracketSize", "Bracket Thickness", min = 0, max = 10, value = 0.8, step = 0.1)),
+            column(4, numericInput("stepIncrease", "Step Increase", max = 20, value = 0.1, step = 0.1))
+            )
           }
         ),
         if(input$add_significance != "cld" && num_groups() > 2) {
           fluidRow(
-            column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
             column(6, checkboxInput("hideNS", "Hide ns", value = FALSE))
           )
         },
@@ -1684,20 +1707,57 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
               column(6, numericInput("pValueDecimals", "Decimal Places for P-value", value = 2, min = 0, max = 10)),
             ),
             fluidRow(
+              #column(6, numericInput("stepIncrease", "Step Increase", min = 0, max = 20, value = 0.1, step = 0.1)),
               column(6, checkboxInput("remove0", "Remove leading zero from P-value", value = FALSE))
             )
+          )
+        },
+        if(input$add_significance == "cld"){
+          fluidRow(
+            column(6, numericInput("stepIncrease", "Step Increase", max = 20, value = 0.1, step = 0.1))
           )
         },
         # Tip Length is applicable for all scenarios except "cld"
         if(input$add_significance != "cld") {
           fluidRow(
-            column(12, numericInput("tipLength", "Tip Length", min = 0, max = 20, value = 0.02, step = 0.01))
+            column(12, numericInput("tipLength", "Tip Length", max = 20, value = 0.02, step = 0.01))
           )
         }
       )
     }
   })
   
+  #If the user changes between dcq and ddcq the options clear. 
+  observeEvent(input$select_dcq_or_ddcq,{
+    if (input$select_dcq_or_ddcq == "dcq") {
+      # For DCQ: Render the dynamic selectInput for choosing conditions and columns
+      output$condition_selector <- renderUI({
+        req(wrangled_data())  # Ensure data is available
+        
+        selectInput("selected_condition", "Select Samples", choices = unique(wrangled_data()$cell),
+                    multiple = TRUE)
+      })
+      
+      output$column_selector <- renderUI({
+        req(wrangled_data())  # Ensure data is available
+        
+        # Filter column names to include only those starting with "fc_dcq"
+        fc_dcq_columns <- grep("^fc_dcq", colnames(wrangled_data()), value = TRUE)
+        
+        selectInput("fc_dcq_column", "Select Gene", choices = fc_dcq_columns)
+      })
+    } else {
+      # For DDCQ: Hide the condition and column selectors
+      output$condition_selector <- renderUI(NULL)
+      output$column_selector <- renderUI(NULL)
+      
+      # Future adjustments for DDCQ can be added here
+      # E.g., if later you decide to show different options for DDCQ, you can implement that logic in this section.
+    }
+  })
+  
+  
+
 
   #save gene name for naming of saved graph file
   selected_gene_name <- reactive({
@@ -1712,8 +1772,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     }
     return(clean_gene_name)
   })
-  
-
 
   
   #download graph with dynamic names, formats etc
@@ -1914,6 +1972,65 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     }
   )
 
+  
+  output$downloadGraphOptions <- downloadHandler(
+    filename = function() {
+      #load the filename
+      paste("GraphOptions-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep="")
+    },
+    content = function(file) {
+      # Specify the path to your R Markdown template
+      rmdTemplate <- "GraphOptions.Rmd"
+      
+      # Render the Rmd file, passing the sample size table data as a parameter
+      rmarkdown::render(input = rmdTemplate, 
+                        output_file = file,
+                        params = list(
+                          rotateXLabels = input$rotate_labels,
+                          yAxisLabel = input$y_label,
+                          xAxisLabel = input$x_label,
+                          font = input$font_selector,
+                          xAxisTitleFontSize = input$x_axis_title_font_size,
+                          yAxisTitleFontSize = input$y_axis_title_font_size,
+                          xAxisTextFontSize = input$x_axis_label_font_size,
+                          yAxisTextFontSize = input$y_axis_label_font_size,
+                          colourScheme = input$color_scheme_select,
+                          plotType = input$plot_type,
+                          significance = input$add_significance,
+                          yPositionSignificance = input$yPos,
+                          labelSize = input$sigSize,
+                          bracketThickness = input$bracketSize,
+                          tipLength = input$tipLength,
+                          stepIncrease = input$stepIncrease,
+                          hideNS = input$hideNS,
+                          pValuePrefix = input$pValuePrefix,
+                          pValueDecimals = input$pValueDecimals,
+                          removeLeadingZero = input$remove0,
+                          errorBarType = input$error_type,
+                          startAtZero = input$start_at_zero,
+                          errorBarWidth = input$errorbar_width, 
+                          errorBarThickness = input$errorbar_thickness, 
+                          errorBarWidthdot = input$error_bar_width,
+                          errorBarThicknessdot = input$error_bar_thickness,
+                          averageLineWidth = input$average_line_width,
+                          averageLineThickness = input$average_line_thickness,
+                          fillOrBorder = input$fill_color_toggle,
+                          pointSize = input$dot_size, 
+                          pointSizedot = input$point_size,
+                          pointSpacing = input$dot_spacing,
+                          changeToPairedShapes = input$change_shapes,
+                          shapeOutlineThickness = input$stroke_thickness,
+                          pointSpread = input$jitter_amount,
+                          seedNumber = input$seed_input,
+                          fileFormat = input$file_format,
+                          dpi = input$dpi,
+                          width = input$width,
+                          height = input$height))
+    }
+  )
+  
+  
+  
 }
 
 # Run the application 

@@ -102,6 +102,18 @@ textarea:hover {
   border-color: #00359bff;
 }
 
+/* Change the border color to yellow when the text box is focused */
+input[type="text"]:focus {
+    border-color: #00359bff; /* Yellow */
+    outline-color: #00359bff; /* Yellow */
+}
+
+/* Optional: if you also want to change the text box border while clicking (active state) */
+input[type="text"]:active {
+    border-color: #00359bff; /* Yellow */
+}
+
+
 /* Default state */
 #save_btn, 
 #save_ddcq_data,
@@ -112,7 +124,8 @@ textarea:hover {
 #download_ddcq_data-download,
 #download_ddcq_avg_data-download,
 #downloadGraph,
-#downloadStats {
+#downloadStats,
+#downloadGraphOptions {
     background-color: white; /* Light blue background by default */
     color: #17141fff; /* Text color */
     border-color: #d3d3d3ff;
@@ -129,7 +142,8 @@ textarea:hover {
 #download_ddcq_data-download:hover,
 #download_ddcq_avg_data-download:hover,
 #downloadGraph:hover,
-#downloadStats:hover {
+#downloadStats:hover,
+#downloadGraphOptions:hover {
     background-color: #00359bff; /* Slightly different or the same as the default state */
     /*text colour*/
     color: white;
@@ -146,7 +160,8 @@ textarea:hover {
 #download_ddcq_data-download:active,
 #download_ddcq_avg_data-download:active,
 #downloadGraph:active,
-#downloadStats:active {
+#downloadStats:active,
+#downloadGraphOptions:active {
     background-color: #00359bff; /* Darker blue when clicked */
     color: white;
 }
@@ -161,7 +176,8 @@ textarea:hover {
 #download_ddcq_data-download:focus,
 #download_ddcq_avg_data-download:focus,
 #downloadGraph:focus,
-#downloadStats:focus {
+#downloadStats:focus,
+#downloadGraphOptions:focus {
     background-color: #00359bff; /* This could match the default or be a unique style */
     color: white;
 }
@@ -193,12 +209,24 @@ textarea:hover {
 
 /*Search bar of tables colour */
 .dataTables_wrapper .dataTables_filter input:focus {
-  border-color: #00359bff; /* or your specific shade of yellow */
+  border-color: #00359bff; 
 }
 
 .btn:active {
-  background-color: yellow; /* Change this to the specific shade of yellow you desire */
-  border-color: yellow; /* If the border color also needs to change */
+  background-color: #00359bff; 
+  border-color: #00359bff; /* If the border color also needs to change */
 }
+
+.selectize-control.multi .selectize-input > div.active {
+    background: #00359bff;
+    color: white; 
+    border: 0px solid rgba(0, 0, 0, 0); /* This remains unchanged */
+}
+
+
+
+
+
+
 
 
