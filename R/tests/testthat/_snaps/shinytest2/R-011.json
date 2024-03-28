@@ -1,0 +1,3654 @@
+{
+  "input": {
+    "DataTables_Table_10_length": "10",
+    "DataTables_Table_13_length": "10",
+    "DataTables_Table_8_length": "10",
+    "add_significance": "asterix",
+    "average_line_thickness": 1,
+    "average_line_width": 0.15,
+    "bracketSize": 0.8,
+    "calculations_table_cell_clicked": {
+
+    },
+    "calculations_table_cells_selected": [
+
+    ],
+    "calculations_table_columns_selected": null,
+    "calculations_table_rows_all": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25
+    ],
+    "calculations_table_rows_current": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "calculations_table_rows_selected": null,
+    "calculations_table_search": "",
+    "calculations_table_state": {
+      "start": 0,
+      "length": 5,
+      "order": [
+
+      ],
+      "search": {
+        "search": "",
+        "smart": true,
+        "regex": false,
+        "caseInsensitive": true
+      },
+      "columns": [
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        }
+      ]
+    },
+    "change_shapes": false,
+    "cld_table_cell_clicked": {
+
+    },
+    "cld_table_cells_selected": [
+
+    ],
+    "cld_table_columns_selected": null,
+    "cld_table_rows_all": [
+      1,
+      2
+    ],
+    "cld_table_rows_current": [
+      1,
+      2
+    ],
+    "cld_table_rows_selected": null,
+    "cld_table_search": "",
+    "cld_table_state": [
+      "1711601796074",
+      "0",
+      "10",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "color_scheme_select": "custom",
+    "columnInput": "fc_dcq_IL6",
+    "condition": "N",
+    "dataTable_cell_clicked": {
+
+    },
+    "dataTable_cells_selected": [
+
+    ],
+    "dataTable_columns_selected": null,
+    "dataTable_rows_all": 1,
+    "dataTable_rows_current": 1,
+    "dataTable_rows_selected": null,
+    "dataTable_search": "",
+    "dataTable_state": [
+      "1711601796080",
+      "0",
+      "5",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "dot_size": 1.5,
+    "dot_spacing": 2.7,
+    "dpi": 500,
+    "error_bar_thickness": 1.5,
+    "error_bar_width": 0.2,
+    "error_type": "se",
+    "errorbar_thickness": 1,
+    "errorbar_width": 0.2,
+    "fc_dcq_column": "fc_dcq_IL6",
+    "file": {
+      "name": [
+        "exampledata.csv"
+      ],
+      "size": [
+        6827
+      ],
+      "type": [
+        "text/csv"
+      ],
+      "datapath": [
+        "0.csv"
+      ]
+    },
+    "file_format": "svg",
+    "fill_color_toggle": "color",
+    "filtered_table_cell_clicked": {
+
+    },
+    "filtered_table_cells_selected": [
+
+    ],
+    "filtered_table_columns_selected": null,
+    "filtered_table_rows_all": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "filtered_table_rows_current": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "filtered_table_rows_selected": null,
+    "filtered_table_search": "",
+    "filtered_table_state": {
+      "start": 0,
+      "length": 5,
+      "order": [
+
+      ],
+      "search": {
+        "search": "",
+        "smart": true,
+        "regex": false,
+        "caseInsensitive": true
+      },
+      "columns": [
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        }
+      ]
+    },
+    "font_selector": "Arial",
+    "group1": "PPIA",
+    "group2": "B2M",
+    "group3": "GAPDH",
+    "group_comparison": "parametric",
+    "height": 4,
+    "housekeepers": 3,
+    "jitter_amount": 0.2,
+    "label_N": "N",
+    "label_N_": "N_",
+    "label_N_sampl": "N_sampl",
+    "label_N_sample": "N_sample",
+    "label_N_sample1": "N_sample1",
+    "label_SC_sample": "SC_sample",
+    "label_SC_sample1": "SC_sample1",
+    "levene_cell_clicked": {
+
+    },
+    "levene_cells_selected": [
+
+    ],
+    "levene_columns_selected": null,
+    "levene_rows_all": 1,
+    "levene_rows_current": 1,
+    "levene_rows_selected": null,
+    "levene_search": "",
+    "levene_state": [
+      "1711601794259",
+      "0",
+      "10",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "log_transform": true,
+    "nTable_cell_clicked": {
+
+    },
+    "nTable_cells_selected": [
+
+    ],
+    "nTable_columns_selected": null,
+    "nTable_rows_all": [
+      1,
+      2
+    ],
+    "nTable_rows_current": [
+      1,
+      2
+    ],
+    "nTable_rows_selected": null,
+    "nTable_search": "",
+    "nTable_state": {
+      "start": 0,
+      "length": 5,
+      "order": [
+
+      ],
+      "search": {
+        "search": "",
+        "smart": true,
+        "regex": false,
+        "caseInsensitive": true
+      },
+      "columns": [
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        },
+        {
+          "visible": true,
+          "search": {
+            "search": "",
+            "smart": true,
+            "regex": false,
+            "caseInsensitive": true
+          }
+        }
+      ]
+    },
+    "normalityTable_cell_clicked": {
+
+    },
+    "normalityTable_cells_selected": [
+
+    ],
+    "normalityTable_columns_selected": null,
+    "normalityTable_rows_all": [
+      1,
+      2
+    ],
+    "normalityTable_rows_current": [
+      1,
+      2
+    ],
+    "normalityTable_rows_selected": null,
+    "normalityTable_search": "",
+    "normalityTable_state": [
+      "1711601794240",
+      "0",
+      "10",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "normality_test": [
+      "shapiro",
+      "qqplot",
+      "density"
+    ],
+    "option1": false,
+    "option2": false,
+    "option3": false,
+    "option4": false,
+    "option5": false,
+    "option6": false,
+    "option7": false,
+    "option8": false,
+    "plot_type": "column",
+    "point_size": 3,
+    "rep_avg_filtered_table_cell_clicked": {
+
+    },
+    "rep_avg_filtered_table_cells_selected": [
+
+    ],
+    "rep_avg_filtered_table_columns_selected": null,
+    "rep_avg_filtered_table_rows_all": [
+      1,
+      2,
+      3
+    ],
+    "rep_avg_filtered_table_rows_current": [
+      1,
+      2,
+      3
+    ],
+    "rep_avg_filtered_table_rows_selected": null,
+    "rep_avg_filtered_table_search": "",
+    "rep_avg_filtered_table_state": [
+      "1711601738196",
+      "0",
+      "5",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "rep_avg_table_cell_clicked": {
+
+    },
+    "rep_avg_table_cells_selected": [
+
+    ],
+    "rep_avg_table_columns_selected": null,
+    "rep_avg_table_rows_all": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "rep_avg_table_rows_current": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "rep_avg_table_rows_selected": null,
+    "rep_avg_table_search": "",
+    "rep_avg_table_state": [
+      "1711601738218",
+      "0",
+      "5",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "rotate_labels": true,
+    "sampleInput": [
+      "N_sample1",
+      "SC_sample1"
+    ],
+    "sample_size": true,
+    "save_btn": 1,
+    "save_ddcq_data": 0,
+    "seed_input": 123,
+    "select_dcq_or_ddcq": "dcq",
+    "select_dcq_or_ddcq_stats": "dcq_stats",
+    "selected_condition": [
+      "N_sample1",
+      "SC_sample1"
+    ],
+    "sigSize": 5,
+    "start_at_zero": true,
+    "stepIncrease": 0.1,
+    "stroke_thickness": 1.5,
+    "subCalc": "2",
+    "subCalc2": "3",
+    "subInput": "2.1",
+    "subPanel": "3.1",
+    "subStats": "2",
+    "table_cell_clicked": {
+
+    },
+    "table_cells_selected": [
+
+    ],
+    "table_columns_selected": null,
+    "table_rows_all": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112,
+      113,
+      114,
+      115,
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      122,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      129,
+      130,
+      131,
+      132,
+      133,
+      134,
+      135,
+      136,
+      137,
+      138,
+      139,
+      140,
+      141,
+      142,
+      143,
+      144
+    ],
+    "table_rows_current": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "table_rows_selected": null,
+    "table_search": "",
+    "table_state": [
+      "1711601699871",
+      "0",
+      "5",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE",
+      "TRUE",
+      "",
+      "TRUE",
+      "FALSE",
+      "TRUE"
+    ],
+    "tabselected": "5",
+    "tipLength": 0.02,
+    "variance": true,
+    "width": 4,
+    "x_axis_label_font_size": 12,
+    "x_axis_positions": "N_sample1,SC_sample1",
+    "x_axis_title_font_size": 14,
+    "x_label": "Group",
+    "yPos": 1,
+    "y_axis_label_font_size": 12,
+    "y_axis_title_font_size": 14,
+    "y_label": "Relative *IL6* mRNA (2<sup>-ΔCq<\/sup>)"
+  },
+  "output": {
+    "calculations_table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sample<\/th>\n      <th>condition<\/th>\n      <th>group<\/th>\n      <th>cell<\/th>\n      <th>PPIA<\/th>\n      <th>B2M<\/th>\n      <th>GAPDH<\/th>\n      <th>mean_hk<\/th>\n      <th>IL6<\/th>\n      <th>TP53<\/th>\n      <th>ISL1<\/th>\n      <th>dcq_IL6<\/th>\n      <th>dcq_TP53<\/th>\n      <th>dcq_ISL1<\/th>\n      <th>fc_dcq_IL6<\/th>\n      <th>fc_dcq_TP53<\/th>\n      <th>fc_dcq_ISL1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "scrollX": true,
+          "scrollY": "200px",
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Sample",
+              "targets": 1
+            },
+            {
+              "name": "condition",
+              "targets": 2
+            },
+            {
+              "name": "group",
+              "targets": 3
+            },
+            {
+              "name": "cell",
+              "targets": 4
+            },
+            {
+              "name": "PPIA",
+              "targets": 5
+            },
+            {
+              "name": "B2M",
+              "targets": 6
+            },
+            {
+              "name": "GAPDH",
+              "targets": 7
+            },
+            {
+              "name": "mean_hk",
+              "targets": 8
+            },
+            {
+              "name": "IL6",
+              "targets": 9
+            },
+            {
+              "name": "TP53",
+              "targets": 10
+            },
+            {
+              "name": "ISL1",
+              "targets": 11
+            },
+            {
+              "name": "dcq_IL6",
+              "targets": 12
+            },
+            {
+              "name": "dcq_TP53",
+              "targets": 13
+            },
+            {
+              "name": "dcq_ISL1",
+              "targets": 14
+            },
+            {
+              "name": "fc_dcq_IL6",
+              "targets": 15
+            },
+            {
+              "name": "fc_dcq_TP53",
+              "targets": 16
+            },
+            {
+              "name": "fc_dcq_ISL1",
+              "targets": 17
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "cldHeading": {
+      "html": "<h4><b>Compact Letter Display<\/b><\/h4>\n<h6>Groups with the same letter are not significantly different from each other.<\/h6>",
+      "deps": [
+
+      ]
+    },
+    "cld_table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Group<\/th>\n      <th>Letters<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "columnDefs": [
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Group",
+              "targets": 1
+            },
+            {
+              "name": "Letters",
+              "targets": 2
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "cld_tableUI": {
+      "html": "<div class=\"datatables html-widget html-widget-output shiny-report-size html-fill-item\" id=\"cld_table\" style=\"width:100%;height:auto;\"><\/div>",
+      "deps": [
+        {
+          "name": "htmlwidgets",
+          "version": "1.6.4",
+          "src": {
+            "href": "htmlwidgets-1.6.4"
+          },
+          "meta": null,
+          "script": "htmlwidgets.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-css",
+          "version": "0.0.0",
+          "src": {
+            "href": "datatables-css-0.0.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "datatables-crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-binding",
+          "version": "0.32",
+          "src": {
+            "href": "datatables-binding-0.32"
+          },
+          "meta": null,
+          "script": "datatables.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "column_selector": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"fc_dcq_column-label\" for=\"fc_dcq_column\">Select Gene<\/label>\n  <div>\n    <select id=\"fc_dcq_column\" class=\"shiny-input-select\"><option value=\"fc_dcq_IL6\" selected>fc_dcq_IL6<\/option>\n<option value=\"fc_dcq_TP53\">fc_dcq_TP53<\/option>\n<option value=\"fc_dcq_ISL1\">fc_dcq_ISL1<\/option><\/select>\n    <script type=\"application/json\" data-for=\"fc_dcq_column\" data-nonempty=\"\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "selectize.min.js",
+            "selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "selectize.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "column_selector2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "comparisonsHeading": {
+      "html": "<h4><b>Independent T-Test<\/b><\/h4>",
+      "deps": [
+
+      ]
+    },
+    "condition_filter": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"condition-label\" for=\"condition\">Select Condition<\/label>\n  <div>\n    <select id=\"condition\" class=\"shiny-input-select\"><option value=\"N\" selected>N<\/option>\n<option value=\"SC\">SC<\/option><\/select>\n    <script type=\"application/json\" data-for=\"condition\" data-nonempty=\"\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "selectize.min.js",
+            "selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "selectize.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "condition_selector": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"selected_condition-label\" for=\"selected_condition\">Select Samples<\/label>\n  <div>\n    <select id=\"selected_condition\" class=\"shiny-input-select\" multiple=\"multiple\"><option value=\"N_sample1\">N_sample1<\/option>\n<option value=\"SC_sample1\">SC_sample1<\/option>\n<option value=\"N_sample2\">N_sample2<\/option>\n<option value=\"SC_sample2\">SC_sample2<\/option>\n<option value=\"N_sample3\">N_sample3<\/option>\n<option value=\"SC_sample3\">SC_sample3<\/option><\/select>\n    <script type=\"application/json\" data-for=\"selected_condition\">{\"plugins\":[\"selectize-plugin-a11y\"]}<\/script>\n  <\/div>\n<\/div>",
+      "deps": [
+        {
+          "name": "selectize",
+          "version": "0.15.2",
+          "src": {
+            "href": "selectize-0.15.2"
+          },
+          "meta": null,
+          "script": [
+            "selectize.min.js",
+            "selectize-plugin-a11y.min.js"
+          ],
+          "stylesheet": "selectize.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        }
+      ]
+    },
+    "correctionOptions": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "dataTable": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>group1<\/th>\n      <th>group2<\/th>\n      <th>t<\/th>\n      <th>df<\/th>\n      <th>P Value (Two-Tailed)<\/th>\n      <th>Significant?<\/th>\n      <th>P Value Summary<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "autoWidth": true,
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "group1",
+              "targets": 1
+            },
+            {
+              "name": "group2",
+              "targets": 2
+            },
+            {
+              "name": "t",
+              "targets": 3
+            },
+            {
+              "name": "df",
+              "targets": 4
+            },
+            {
+              "name": "P Value (Two-Tailed)",
+              "targets": 5
+            },
+            {
+              "name": "Significant?",
+              "targets": 6
+            },
+            {
+              "name": "P Value Summary",
+              "targets": 7
+            }
+          ],
+          "order": [
+
+          ],
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "ddcqMessage": null,
+    "densityPlot": {
+      "src": "[image data hash: f3edec1e996bd4ea3b0a0fae9e8b133f]",
+      "width": 605.328125,
+      "height": 400,
+      "alt": "Plot object",
+      "coordmap": {
+        "panels": [
+          {
+            "panel": 1,
+            "row": 1,
+            "col": 1,
+            "panel_vars": {
+              "panelvar1": "N_sample1"
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": -1.069154666371678,
+              "right": -0.2711073881217976,
+              "bottom": -0.06801708622918999,
+              "top": 1.42835881081299
+            },
+            "mapping": {
+              "y": null,
+              "x": "fc_dcq_IL6",
+              "panelvar1": "cell"
+            },
+            "range": {
+              "left": 54.826724003736,
+              "right": 314.9813200498132,
+              "bottom": 353.8181818181818,
+              "top": 63.72602739726027
+            }
+          },
+          {
+            "panel": 2,
+            "row": 1,
+            "col": 2,
+            "panel_vars": {
+              "panelvar1": "SC_sample1"
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": -1.069154666371678,
+              "right": -0.2711073881217976,
+              "bottom": -0.1071779953986601,
+              "top": 2.250737903371863
+            },
+            "mapping": {
+              "y": null,
+              "x": "fc_dcq_IL6",
+              "panelvar1": "cell"
+            },
+            "range": {
+              "left": 339.3659518991283,
+              "right": 599.5205479452054,
+              "bottom": 353.8181818181818,
+              "top": 63.72602739726027
+            }
+          }
+        ],
+        "dims": {
+          "width": 605.328125,
+          "height": 400
+        }
+      }
+    },
+    "densityPlotUI": {
+      "html": "<div class=\"shiny-plot-output html-fill-item\" id=\"densityPlot\" style=\"width:100%;height:400px;\"><\/div>",
+      "deps": [
+
+      ]
+    },
+    "downloadButtonUI": {
+      "html": "<a id=\"downloadStats\" class=\"btn btn-default shiny-download-link \" href=\"\" target=\"_blank\" download>\n  <i class=\"fas fa-download\" role=\"presentation\" aria-label=\"download icon\"><\/i>\n  Download Statistics Report\n<\/a>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.4.2",
+          "src": {
+            "href": "font-awesome-6.4.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "dynamic_y_label_input": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"y_label-label\" for=\"y_label\">Enter Y-axis Label. Markup is accepted.<\/label>\n  <input id=\"y_label\" type=\"text\" class=\"shiny-input-text form-control\" value=\"Relative *IL6* mRNA (2&lt;sup&gt;-ΔCq&lt;/sup&gt;)\"/>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "filtered_table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sample<\/th>\n      <th>condition<\/th>\n      <th>group<\/th>\n      <th>cell<\/th>\n      <th>PPIA<\/th>\n      <th>B2M<\/th>\n      <th>GAPDH<\/th>\n      <th>mean_hk<\/th>\n      <th>IL6<\/th>\n      <th>TP53<\/th>\n      <th>ISL1<\/th>\n      <th>dcq_IL6<\/th>\n      <th>dcq_TP53<\/th>\n      <th>dcq_ISL1<\/th>\n      <th>fc_dcq_IL6<\/th>\n      <th>fc_dcq_TP53<\/th>\n      <th>fc_dcq_ISL1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "scrollX": true,
+          "scrollY": "200px",
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Sample",
+              "targets": 1
+            },
+            {
+              "name": "condition",
+              "targets": 2
+            },
+            {
+              "name": "group",
+              "targets": 3
+            },
+            {
+              "name": "cell",
+              "targets": 4
+            },
+            {
+              "name": "PPIA",
+              "targets": 5
+            },
+            {
+              "name": "B2M",
+              "targets": 6
+            },
+            {
+              "name": "GAPDH",
+              "targets": 7
+            },
+            {
+              "name": "mean_hk",
+              "targets": 8
+            },
+            {
+              "name": "IL6",
+              "targets": 9
+            },
+            {
+              "name": "TP53",
+              "targets": 10
+            },
+            {
+              "name": "ISL1",
+              "targets": 11
+            },
+            {
+              "name": "dcq_IL6",
+              "targets": 12
+            },
+            {
+              "name": "dcq_TP53",
+              "targets": 13
+            },
+            {
+              "name": "dcq_ISL1",
+              "targets": 14
+            },
+            {
+              "name": "fc_dcq_IL6",
+              "targets": 15
+            },
+            {
+              "name": "fc_dcq_TP53",
+              "targets": 16
+            },
+            {
+              "name": "fc_dcq_ISL1",
+              "targets": 17
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "groups": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group1-label\" for=\"group1\">Enter the name of housekeeper 1<\/label>\n  <input id=\"group1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group2-label\" for=\"group2\">Enter the name of housekeeper 2<\/label>\n  <input id=\"group2\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group3-label\" for=\"group3\">Enter the name of housekeeper 3<\/label>\n  <input id=\"group3\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "levene": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>df (Group)<\/th>\n      <th>df (Error)<\/th>\n      <th>F<\/th>\n      <th>P Value<\/th>\n      <th>Passed Variance Test?<\/th>\n      <th>P Value Summary<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                1,
+                2,
+                3,
+                4
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "df (Group)",
+              "targets": 1
+            },
+            {
+              "name": "df (Error)",
+              "targets": 2
+            },
+            {
+              "name": "F",
+              "targets": 3
+            },
+            {
+              "name": "P Value",
+              "targets": 4
+            },
+            {
+              "name": "Passed Variance Test?",
+              "targets": 5
+            },
+            {
+              "name": "P Value Summary",
+              "targets": 6
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "leveneHeading": {
+      "html": "<h4><b>Homogeneity of Variance Test<\/b><\/h4>",
+      "deps": [
+
+      ]
+    },
+    "leveneUI": {
+      "html": "<div class=\"datatables html-widget html-widget-output shiny-report-size html-fill-item\" id=\"levene\" style=\"width:100%;height:auto;\"><\/div>",
+      "deps": [
+        {
+          "name": "htmlwidgets",
+          "version": "1.6.4",
+          "src": {
+            "href": "htmlwidgets-1.6.4"
+          },
+          "meta": null,
+          "script": "htmlwidgets.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-css",
+          "version": "0.0.0",
+          "src": {
+            "href": "datatables-css-0.0.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "datatables-crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-binding",
+          "version": "0.32",
+          "src": {
+            "href": "datatables-binding-0.32"
+          },
+          "meta": null,
+          "script": "datatables.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "nTable": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sample<\/th>\n      <th>N<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": 2
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Sample",
+              "targets": 1
+            },
+            {
+              "name": "N",
+              "targets": 2
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "normalityHeading": {
+      "html": "<h4><b>Normality Test<\/b><\/h4>",
+      "deps": [
+
+      ]
+    },
+    "normalityTable": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Group<\/th>\n      <th>W<\/th>\n      <th>P Value<\/th>\n      <th>Passed Normality Test?<\/th>\n      <th>P Value Summary<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                2,
+                3
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Group",
+              "targets": 1
+            },
+            {
+              "name": "W",
+              "targets": 2
+            },
+            {
+              "name": "P Value",
+              "targets": 3
+            },
+            {
+              "name": "Passed Normality Test?",
+              "targets": 4
+            },
+            {
+              "name": "P Value Summary",
+              "targets": 5
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "normalityTableUI": {
+      "html": "<div class=\"datatables html-widget html-widget-output shiny-report-size html-fill-item\" id=\"normalityTable\" style=\"width:100%;height:auto;\"><\/div>",
+      "deps": [
+        {
+          "name": "htmlwidgets",
+          "version": "1.6.4",
+          "src": {
+            "href": "htmlwidgets-1.6.4"
+          },
+          "meta": null,
+          "script": "htmlwidgets.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-css",
+          "version": "0.0.0",
+          "src": {
+            "href": "datatables-css-0.0.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "datatables-crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-binding",
+          "version": "0.32",
+          "src": {
+            "href": "datatables-binding-0.32"
+          },
+          "meta": null,
+          "script": "datatables.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "plot": {
+      "src": "[image data hash: f4667da053b60e4b49f76efc86705734]",
+      "width": 400,
+      "height": 400,
+      "alt": "Plot object",
+      "coordmap": {
+        "panels": [
+          {
+            "domain": {
+              "left": -0.04,
+              "right": 1.04,
+              "bottom": -0.04,
+              "top": 1.04
+            },
+            "range": {
+              "left": 0,
+              "right": 400,
+              "bottom": 399,
+              "top": -1
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "mapping": {
+
+            }
+          }
+        ],
+        "dims": {
+          "width": 400,
+          "height": 400
+        }
+      },
+      "error": null
+    },
+    "postHocHeading": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "postHocOptions": null,
+    "postHocTable": {
+      "x": null,
+      "evals": [
+
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "postHocTableUI": {
+      "html": "<div class=\"datatables html-widget html-widget-output shiny-report-size html-fill-item\" id=\"postHocTable\" style=\"width:100%;height:auto;\"><\/div>",
+      "deps": [
+        {
+          "name": "htmlwidgets",
+          "version": "1.6.4",
+          "src": {
+            "href": "htmlwidgets-1.6.4"
+          },
+          "meta": null,
+          "script": "htmlwidgets.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-css",
+          "version": "0.0.0",
+          "src": {
+            "href": "datatables-css-0.0.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "datatables-crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-binding",
+          "version": "0.32",
+          "src": {
+            "href": "datatables-binding-0.32"
+          },
+          "meta": null,
+          "script": "datatables.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "qqPlot": {
+      "src": "[image data hash: b1f17bd96ad19425ea6b0857379c2e44]",
+      "width": 605.328125,
+      "height": 400,
+      "alt": "Plot object",
+      "coordmap": {
+        "panels": [
+          {
+            "panel": 1,
+            "row": 1,
+            "col": 1,
+            "panel_vars": {
+              "panelvar1": "N_sample1"
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": -1.154044537760368,
+              "right": 1.154044537760368,
+              "bottom": -1.120888896350538,
+              "top": -0.2686438533608995
+            },
+            "mapping": {
+              "x": null,
+              "y": null,
+              "sample": "fc_dcq_IL6",
+              "panelvar1": "cell"
+            },
+            "range": {
+              "left": 59.48297400373601,
+              "right": 314.9813200498132,
+              "bottom": 353.8181818181818,
+              "top": 63.72602739726027
+            }
+          },
+          {
+            "panel": 2,
+            "row": 1,
+            "col": 2,
+            "panel_vars": {
+              "panelvar1": "SC_sample1"
+            },
+            "log": {
+              "x": null,
+              "y": null
+            },
+            "domain": {
+              "left": -1.154044537760368,
+              "right": 1.154044537760368,
+              "bottom": -0.9236762324032302,
+              "top": -0.5452011727127442
+            },
+            "mapping": {
+              "x": null,
+              "y": null,
+              "sample": "fc_dcq_IL6",
+              "panelvar1": "cell"
+            },
+            "range": {
+              "left": 344.0222018991283,
+              "right": 599.5205479452054,
+              "bottom": 353.8181818181818,
+              "top": 63.72602739726027
+            }
+          }
+        ],
+        "dims": {
+          "width": 605.328125,
+          "height": 400
+        }
+      }
+    },
+    "qqPlotUI": {
+      "html": "<div class=\"shiny-plot-output html-fill-item\" id=\"qqPlot\" style=\"width:100%;height:400px;\"><\/div>",
+      "deps": [
+
+      ]
+    },
+    "rep_avg_filtered_table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>condition<\/th>\n      <th>group<\/th>\n      <th>cell<\/th>\n      <th>fc_dcq_IL6<\/th>\n      <th>fc_dcq_TP53<\/th>\n      <th>fc_dcq_ISL1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "scrollX": true,
+          "scrollY": "200px",
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "condition",
+              "targets": 1
+            },
+            {
+              "name": "group",
+              "targets": 2
+            },
+            {
+              "name": "cell",
+              "targets": 3
+            },
+            {
+              "name": "fc_dcq_IL6",
+              "targets": 4
+            },
+            {
+              "name": "fc_dcq_TP53",
+              "targets": 5
+            },
+            {
+              "name": "fc_dcq_ISL1",
+              "targets": 6
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "rep_avg_table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>condition<\/th>\n      <th>group<\/th>\n      <th>cell<\/th>\n      <th>fc_dcq_IL6<\/th>\n      <th>fc_dcq_TP53<\/th>\n      <th>fc_dcq_ISL1<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "scrollX": true,
+          "scrollY": "200px",
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                4,
+                5,
+                6
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "condition",
+              "targets": 1
+            },
+            {
+              "name": "group",
+              "targets": 2
+            },
+            {
+              "name": "cell",
+              "targets": 3
+            },
+            {
+              "name": "fc_dcq_IL6",
+              "targets": 4
+            },
+            {
+              "name": "fc_dcq_TP53",
+              "targets": 5
+            },
+            {
+              "name": "fc_dcq_ISL1",
+              "targets": 6
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "sampleSizeHeading": {
+      "html": "<h4><b>Sample Size<\/b><\/h4>",
+      "deps": [
+
+      ]
+    },
+    "select_control": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "select_samples": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "selected_gene_ui": null,
+    "selected_gene_ui_stats": null,
+    "sigUI": {
+      "html": "<div class=\"row\">\n  <div class=\"col-sm-12\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label\" id=\"yPos-label\" for=\"yPos\">Y position<\/label>\n      <input id=\"yPos\" type=\"number\" class=\"shiny-input-number form-control\" value=\"1\"/>\n    <\/div>\n  <\/div>\n<\/div>\n<div class=\"row\">\n  <div class=\"col-sm-4\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label\" id=\"sigSize-label\" for=\"sigSize\">Label Size<\/label>\n      <input id=\"sigSize\" type=\"number\" class=\"shiny-input-number form-control\" value=\"5\" min=\"0\" max=\"20\"/>\n    <\/div>\n  <\/div>\n  <div class=\"col-sm-4\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label\" id=\"bracketSize-label\" for=\"bracketSize\">Bracket Thickness<\/label>\n      <input id=\"bracketSize\" type=\"number\" class=\"shiny-input-number form-control\" value=\"0.8\" min=\"0\" max=\"10\" step=\"0.1\"/>\n    <\/div>\n  <\/div>\n  <div class=\"col-sm-4\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label\" id=\"stepIncrease-label\" for=\"stepIncrease\">Step Increase<\/label>\n      <input id=\"stepIncrease\" type=\"number\" class=\"shiny-input-number form-control\" value=\"0.1\" max=\"20\" step=\"0.1\"/>\n    <\/div>\n  <\/div>\n<\/div>\n<div class=\"row\">\n  <div class=\"col-sm-12\">\n    <div class=\"form-group shiny-input-container\">\n      <label class=\"control-label\" id=\"tipLength-label\" for=\"tipLength\">Tip Length<\/label>\n      <input id=\"tipLength\" type=\"number\" class=\"shiny-input-number form-control\" value=\"0.02\" max=\"20\" step=\"0.01\"/>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "table": {
+      "x": {
+        "style": "bootstrap4",
+        "filter": "none",
+        "vertical": false,
+        "container": "<table class=\"table table-striped table-hover row-border order-column display\">\n  <thead>\n    <tr>\n      <th> <\/th>\n      <th>Sample<\/th>\n      <th>Target<\/th>\n      <th>Num.of.Replicates<\/th>\n      <th>Cq.Mean<\/th>\n      <th>Cq.SD<\/th>\n      <th>Result.Quality.Issues<\/th>\n    <\/tr>\n  <\/thead>\n<\/table>",
+        "options": {
+          "pageLength": 5,
+          "columnDefs": [
+            {
+              "className": "dt-right",
+              "targets": [
+                3,
+                4,
+                5
+              ]
+            },
+            {
+              "orderable": false,
+              "targets": 0
+            },
+            {
+              "name": " ",
+              "targets": 0
+            },
+            {
+              "name": "Sample",
+              "targets": 1
+            },
+            {
+              "name": "Target",
+              "targets": 2
+            },
+            {
+              "name": "Num.of.Replicates",
+              "targets": 3
+            },
+            {
+              "name": "Cq.Mean",
+              "targets": 4
+            },
+            {
+              "name": "Cq.SD",
+              "targets": 5
+            },
+            {
+              "name": "Result.Quality.Issues",
+              "targets": 6
+            }
+          ],
+          "order": [
+
+          ],
+          "autoWidth": false,
+          "orderClasses": false,
+          "lengthMenu": [
+            5,
+            10,
+            25,
+            50,
+            100
+          ],
+          "ajax": {
+            "type": "POST",
+            "data": "function(d) {\nd.search.caseInsensitive = true;\nd.search.smart = true;\nd.escape = true;\nvar encodeAmp = function(x) { x.value = x.value.replace(/&/g, \"%26\"); }\nencodeAmp(d.search);\n$.each(d.columns, function(i, v) {encodeAmp(v.search);});\n}"
+          },
+          "serverSide": true,
+          "processing": true
+        },
+        "selection": {
+          "mode": "multiple",
+          "selected": null,
+          "target": "row",
+          "selectable": null
+        }
+      },
+      "evals": [
+        "options.ajax.data"
+      ],
+      "jsHooks": [
+
+      ],
+      "deps": [
+        {
+          "name": "jquery",
+          "version": "3.6.0",
+          "src": {
+            "href": "jquery-3.6.0"
+          },
+          "meta": null,
+          "script": "jquery-3.6.0.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "dt-core-bootstrap4",
+          "version": "1.13.6",
+          "src": {
+            "href": "dt-core-bootstrap4-1.13.6"
+          },
+          "meta": null,
+          "script": [
+            "js/jquery.dataTables.min.js",
+            "js/dataTables.bootstrap4.min.js"
+          ],
+          "stylesheet": [
+            "css/dataTables.bootstrap4.min.css",
+            "css/dataTables.bootstrap4.extra.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": false
+        },
+        {
+          "name": "bootstrap",
+          "version": "4.6.0",
+          "src": {
+            "href": "bootstrap-4.6.0"
+          },
+          "meta": {
+            "viewport": "width=device-width, initial-scale=1, shrink-to-fit=no"
+          },
+          "script": "bootstrap.bundle.min.js",
+          "stylesheet": "bootstrap.min.css",
+          "head": null,
+          "attachment": null,
+          "package": null,
+          "all_files": true
+        },
+        {
+          "name": "bs3compat",
+          "version": "0.6.1",
+          "src": {
+            "href": "bs3compat-0.6.1"
+          },
+          "meta": null,
+          "script": [
+            "transition.js",
+            "tabs.js",
+            "bs3compat.js"
+          ],
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "testResultTable": {
+      "html": "<div class=\"datatables html-widget html-widget-output shiny-report-size html-fill-item\" id=\"dataTable\" style=\"width:100%;height:auto;\"><\/div>",
+      "deps": [
+        {
+          "name": "htmlwidgets",
+          "version": "1.6.4",
+          "src": {
+            "href": "htmlwidgets-1.6.4"
+          },
+          "meta": null,
+          "script": "htmlwidgets.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-css",
+          "version": "0.0.0",
+          "src": {
+            "href": "datatables-css-0.0.0"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": "datatables-crosstalk.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "datatables-binding",
+          "version": "0.32",
+          "src": {
+            "href": "datatables-binding-0.32"
+          },
+          "meta": null,
+          "script": "datatables.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": false
+        },
+        {
+          "name": "jquery",
+          "version": "3.5.1",
+          "src": {
+            "href": "jquery-3.5.1"
+          },
+          "meta": null,
+          "script": "jquery.min.js",
+          "stylesheet": null,
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        },
+        {
+          "name": "crosstalk",
+          "version": "1.2.1",
+          "src": {
+            "href": "crosstalk-1.2.1"
+          },
+          "meta": null,
+          "script": "js/crosstalk.min.js",
+          "stylesheet": "css/crosstalk.min.css",
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "text1": "You have 3 housekeeper genes. The housekeepers are called PPIA, B2M, GAPDH.",
+    "text2": "Once you have saved the housekeeper gene names, please move to the calculations tab.",
+    "x_axis_labels": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"label_N_sample1-label\" for=\"label_N_sample1\">Label for N_sample1<\/label>\n  <input id=\"label_N_sample1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"N_sample1\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"label_SC_sample1-label\" for=\"label_SC_sample1\">Label for SC_sample1<\/label>\n  <input id=\"label_SC_sample1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"SC_sample1\"/>\n<\/div>",
+      "deps": [
+
+      ]
+    }
+  },
+  "export": {
+
+  }
+}
