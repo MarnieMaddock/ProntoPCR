@@ -58,6 +58,8 @@ getColourSchemes <- function() {
                         vibrant = c("#ff0f7b", "#f89b29" ),
                         vibrant2 = c("#10e0ff", "#0086eb", "#006ee9", "#ffcd00", "#ffef00"),
                         vibrant3 = c("#ff00c1", "#9600ff", "#4900ff", "#00b8ff", "#00fff9"),
+                        marnie = c("#648fff", "#648fff", "#dc267f", "#dc267f", "#ffb000",  "#ffb000","#785ef0","#785ef0" ),
+                        marnie2 = c("#648fff", "#648fff", "#dc267f", "#dc267f", "#ffb000",  "#ffb000","#785ef0","#785ef0", "#fe6100", "#fe6100","#00359c","#00359c","#2ec4b6", "#2ec4b6" ),
                         custom = c("#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de", "#56cfe1","#64dfdf", "#72efdd", "#80ffdb", "#B7D7B9", "#D2C3A8", "#E0B9A0","#EDAF97","#C49792", "#AD91A3", "#9D91A3")
   ))
 }

@@ -148,7 +148,7 @@ ui <- fluidPage(
                                                "Two-tone 1" = "twotone1", "Two-tone 2" = "twotone2", "Two-tone 3" = "twotone3",
                                                "Pastels 1" = "pastels", "Pastels 2" = "pastels2", "Pastels 3" = "pastels3", "Pastels 4" = "pastels4",
                                                "Pastels 5" = "pastels5", "Pastels 6" = "pastels6", "Pastels 7" = "pastels7", "Vibrant 1" = "vibrant",
-                                               "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3"),
+                                               "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3", "Marnie's theme" = "marnie", "Marnie's theme 2" = "marnie2"),
                                    selected = "custom"),
                        selectInput("plot_type", "Choose Plot Type:",
                                    choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
