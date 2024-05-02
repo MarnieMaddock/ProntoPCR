@@ -1527,6 +1527,19 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     } else {
       c(0, NA) # If ymin is not below 0, start the y-axis at 0
     }
+    
+
+    # Reactive for color assignments based on checkbox input
+    dotplot_data_reactive <- reactive({
+      dotplot_data <- filtered_data2
+      if (input$match_colour_error) {
+        dotplot_data$error_bar_color <- dotplot_data[[as.character(x_aes)]]  # Use the same column as x_aes for colors
+      } else {
+        dotplot_data$error_bar_color <- "black"  # Use black when checkbox is unchecked
+      }
+      dotplot_data
+    })
+    
     #Create your plot using ggplot2 with the selected dataset
     if (input$plot_type == "column"){
       if (input$fill_color_toggle == "color"){
@@ -1552,14 +1565,17 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       }
     }else if (input$plot_type == "dot") {
       # Dot plot
-      plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
+      plot <- ggplot(dotplot_data_reactive(), aes(x = !!x_aes, y = !!y_aes)) +
         geom_point(size = input$point_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
                    show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
-        stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width, colour = "black", linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
+        stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width,  aes(colour = error_bar_color), linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
         stat_summary(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg), inherit.aes = FALSE,
                      fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE, colour = "black") +  # Add average line for each column x
         labs(y = input$y_label, x = input$x_label) +
-        scale_color_manual(values = setNames(colors, positions)) +
+        #scale_color_manual(values = base_colours) +
+        scale_color_manual(values = c(setNames(colors, positions), "black" = "black"))+
+        #scale_color_manual(values = setNames(c(colors, "force_black" = "black"), c(positions, "force_black"))) +
+        #scale_color_manual(values = reactive_colors()) +  # Use reactive colors
         scale_shape_manual(values = shapes_reactive()) +
         theme_Marnie +
         scale_x_discrete(limits = positions, labels = user_labels()) +
@@ -1571,8 +1587,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
     }
 
-    
-    
     # Customize x-axis and y-axis label font size using numeric input
     axis_label_theme <- theme()
     

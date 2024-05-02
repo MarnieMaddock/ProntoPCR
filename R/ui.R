@@ -225,7 +225,7 @@ ui <- fluidPage(
                        tags$br(),
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
                        h6(HTML("<b>1. Sample Size</b>")),
-                       checkboxInput("sample_size", "Calculate sample size", value = FALSE),
+                       checkboxInput("sample_size", "Check sample size", value = FALSE),
                        checkboxGroupInput("normality_test", HTML("<b>2. Select normality test:</b>"), choices = c("Shapiro-Wilk" = "shapiro", "QQ-Plot" = "qqplot", "Density Plot" = "density"),
                                           selected = NULL),
                        #verbatimTextOutput("testResults"),
