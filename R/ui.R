@@ -185,15 +185,18 @@ ui <- fluidPage(
       conditionalPanel(
         condition = "input.tabselected == 5 && input.plot_type == 'dot'",
         fluidRow(
-          column(width = 6, 
+          column(width = 3.5, 
                  numericInput("error_bar_width", "Error Bar Width:", value = 0.2, min = 0.05, max = 5, step = 0.1),
                  numericInput("average_line_width", "Average Line Width:", value = 0.15, min = 0.01, step = 0.05)),
-          column(width = 6, 
+          column(width = 3.5, 
                  numericInput("error_bar_thickness", "Error Bar Thickness:", value = 1.5, min = 0.05, step = 0.2),
-                 numericInput("average_line_thickness", "Average Line Thickness:", value = 1, min = 0.05, step = 0.1))
+                 numericInput("average_line_thickness", "Average Line Thickness:", value = 1, min = 0.05, step = 0.1)),
+          column(width = 5,
+                 checkboxInput("match_colour_error", "Match error bar colour with dot points", FALSE),
+                 checkboxInput("match_colour_avg", "Match average line colour with dot points", FALSE)),
         ),
         h5(HTML("<b>Point Design</b>")),
-        numericInput("point_size", "Point Size:", value = 3, min = 1, max = 10, step = 0.5),
+        numericInput("point_size", "Point Size:", value = 4.5, min = 0.5, max = 20, step = 0.5),
         checkboxInput("change_shapes", "Change to paired shapes.", FALSE),
         fluidRow(
           column(width = 6, numericInput("stroke_thickness", "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
