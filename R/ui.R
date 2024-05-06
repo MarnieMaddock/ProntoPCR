@@ -56,11 +56,7 @@ ui <- fluidPage(
       ),
       # Input Data Tab
       conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
-                       checkCSVfileUI("file"),
-                       # fileInput("file", "Choose CSV File", accept = c(".csv")), #input csv files
-                       # helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data Tab. This MUST have the same headings and Sample name structure."),
-                       # helpText("If you also have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset for those instances. Any NA values will be disregarded (i.e. REMOVED)."),
-                       # tags$br(),
+                       checkCSVfileUI("file"), #insert csv file
                        # Add dynamic housekeeper gene names
                        numericInput(
                          "housekeepers",
