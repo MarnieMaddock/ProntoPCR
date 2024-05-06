@@ -5,9 +5,8 @@ account: marniem
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 11562602
-bundleId: 8427506
+bundleId: 8566117
 url: https://marniem.shinyapps.io/FASTqPCR/
 version: 1
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: shinytest

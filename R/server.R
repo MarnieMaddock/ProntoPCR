@@ -1389,6 +1389,20 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     }
   }
   
+  ci <- function(x, confidence_level = 0.95) {
+    n <- sum(!is.na(x))
+    if (n > 1) {
+      sd_x <- sd(x, na.rm = TRUE)
+      mean_x <- mean(x, na.rm = TRUE)
+      z <- qnorm((1 + confidence_level) / 2)  # Calculates the z-value for the specified confidence level
+      error_margin <- z * sd_x / sqrt(n)
+      return(data.frame(y = mean_x, ymin = mean_x - error_margin, ymax = mean_x + error_margin))
+    } else {
+      return(data.frame(y = NA, ymin = NA, ymax = NA))  # Return NA if not enough data
+    }
+  }
+  
+  
   fc_dcq_columns_reactive <- reactive({
     req(wrangled_data())  # Ensure data is available
     grep("^fc_dcq", colnames(wrangled_data()), value = TRUE)
@@ -1510,8 +1524,12 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     # Determine which function to use based on user input
     error_fun <- if(input$error_type == "sd") {
       mean_sd
-    } else {
-      mean_se # Assuming mean_se is defined or available
+    } else if(input$error_type == "se") {
+      mean_se 
+    } else if(input$error_type == "ci") {
+      ci
+    } else{
+      mean_se
     }
     
     # Calculate the y-limits based on the error function
@@ -1538,7 +1556,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         dotplot_data$error_bar_color <- "black"  # Use black when checkbox is unchecked
       }
       dotplot_data
-      print(dotplot_data)
     })
 
     # Reactive for color assignments based on checkbox input for average bars
@@ -1550,7 +1567,6 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
         dotplot_data$avg_bar_color <- "black"  # Use black when checkbox is unchecked
       }
       dotplot_data
-      print(dotplot_data)
     })
     
     
@@ -1780,6 +1796,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
     
     # Set the plot size based on the height of the plot
     shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
+    shinyjs::runjs(paste0('$("#download-container").width($("#plot").width());'))
     # Print the plot
     print(plot)
     

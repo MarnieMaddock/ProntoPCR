@@ -151,8 +151,8 @@ ui <- fluidPage(
                                                "Vibrant 2" = "vibrant2", "Vibrant 3" = "vibrant3", "Marnie's theme" = "marnie", "Marnie's theme 2" = "marnie2"),
                                    selected = "custom"),
                        selectInput("plot_type", "Choose Plot Type:",
-                                   choices = c("Column Graph" = "column", "Dot Plot" = "dot"),
-                                   selected = "column"),
+                                   choices = c("Scatter Plot (Recommended)" = "dot", "Column Graph" = "column"),
+                                   selected = "dot"),
                        h5(HTML("<b>Significance</b>")),
                        radioButtons("add_significance", "If statistics have been performed, add significance to graph.", choices = c("None" = "none", "Asterix Notation" = "asterix", "P Values" = "pval","Compact Letter Display" = "cld"),
                                     selected = "none"),
@@ -160,7 +160,8 @@ ui <- fluidPage(
                        h5(HTML("<b>Error Bars</b>")),
                        radioButtons("error_type", "Choose Error Bar Type:",
                                     choices = list("Standard Deviation" = "sd", 
-                                                   "Standard Error" = "se"),
+                                                   "Standard Error" = "se",
+                                                   "95% Confidence Interval" = "ci"),
                                     selected = "se"),
                        # Add textInputs for custom Y-axis and X-axis labels
                        checkboxInput("start_at_zero", "Start Y-axis at 0: Note this may cut off data points/error bars close to zero.", value = TRUE)
@@ -362,7 +363,9 @@ ui <- fluidPage(
                  tags$br(),
                  tags$br(),
                  h4(HTML("Download Graph")),
-                 h6("SVG graphs are editable in illustrator, inkscape etc."),
+                 h5("Due to differences in computer displays and rendering, the graph downloaded may not look identical to the one displayed here. Please look at the downloaded graph to ensure it meets your requirements."),
+                 tags$br(),
+                 h6("SVG graphs are editable in illustrator, inkscape etc and are the recommended option."),
                  fluidRow(
                    column(4,
                           selectInput("file_format", "Choose File Format:",
@@ -370,10 +373,10 @@ ui <- fluidPage(
                                       selected = "svg")
                    ),
                    column(4,
-                          numericInput("dpi", "DPI:", 500)
+                          numericInput("dpi", "DPI:", 300)
                    ),
                    column(2,
-                          numericInput("width", "Width (inches):", 8)
+                          numericInput("width", "Width (inches):", 7)
                    ),
                    column(2,
                           numericInput("height", "Height (inches):", 5)
@@ -388,7 +391,7 @@ ui <- fluidPage(
                    )
                  ),
                  tags$br(),
-                 p(HTML("Note: Colour Scheme suggestions for graphs can be sent to <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:'>Marnie</a>.")),
+                 p(HTML("Note: Custom colour selection is currently unavailable. However, colour scheme suggestions for graphs can be implemented by sending a request to <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:'>Marnie</a>.")),
                  tags$br(),
                  tags$br()
                 ),
