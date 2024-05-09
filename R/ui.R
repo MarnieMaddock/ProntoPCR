@@ -267,10 +267,12 @@ ui <- fluidPage(
                    selected = 2.1, #display inserted data by the user
                    tabPanel("Data", value = 2.1,
                             h3(HTML("Inserted Data")),
-                            # Display uploaded data using DataTable
+                            #Display uploaded data using DataTable
                             dataTableOutput("table"),
+                            #checkCSVmainpanel("file"),
                             tags$br(),
-                            tags$br()),
+                            tags$br()
+                            ),
                    tabPanel("Example Data", value = 2.2,
                             example_data_text
                             ) #demonstrates an example file

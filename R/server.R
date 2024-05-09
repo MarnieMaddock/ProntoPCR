@@ -1,6 +1,8 @@
 # Load the required libraries
 source("module_checkCSVfile.R")
+source("utils_dataWrangle.R")
 source("module_download.R")
+source("utils_posthocHeadings.R")
 #source("utils_downloadGraphHandler.R")
 
 #Stats functions
@@ -18,37 +20,34 @@ source("utils_getColourSchemes.R")
 server <- function(input, output, session) {
 
 #insert csv file and check that it meets the required formatting
-data <- checkCSVfile()
+data <- checkCSVfile("file")
 
   # Display the inserted csv as a table using DataTable
   output$table <- renderDataTable({
     data()
   }, options = list(pageLength = 5))
-  
-  # Reactive values to store housekeeper names and numeric input value
-  housekeepers_names <- reactiveValues()
-  
+
   # Generate dynamic text input fields based on the number of groups for housekeeper genes
   output$groups <- renderUI({
     housekeepers <- as.integer(input$housekeepers)
     lapply(
-      1:housekeepers, 
+      1:housekeepers,
       function(i){
         textInput(
-          paste0("group", i), 
+          paste0("group", i),
           paste0("Enter the name of housekeeper ", i)
         )
       }
     )
   })
-  
+
   # Save the text inputs as variables when the button is clicked
   saved_variables <- reactiveValues()
   observeEvent(input$save_btn, {
     housekeepers <- as.integer(input$housekeepers)
     saved_variables$names <- sapply(1:housekeepers, function(i) input[[paste0("group", i)]])
   })
-  
+
   # Generate the output text based on the saved variables
   output$text1 <- renderText({
     if (is.null(input$housekeepers)) {
@@ -61,11 +60,12 @@ data <- checkCSVfile()
       "The housekeepers are called ", paste(variables, collapse = ", "), "."
     )
   })
-  
-  
+
+
   output$text2 <- renderText({
     paste("Once you have saved the housekeeper gene names, please move to the calculations tab.")
   })
+
   
   
   # New reactive expression for data wrangling
@@ -74,21 +74,23 @@ data <- checkCSVfile()
     if (is.null(data())) {
       return(NULL)
     }
-    
+
     # Remove Cq.SD and Quality issues columns
     df <- data()[, c(1, 2, 4)]
-    
+
     # Check if 'NTC' is present in the 'Sample' column and remove if present
     df <- df[!grepl('NTC', df$Sample), ]
     # Check if 'NTC' is present in the 'Target' column and remove if present
     df <- df[!grepl('NTC', df$Target), ]
-    
+
     #make the dataframe longer (with targets as columns)
     df <- df[,1:3] %>% pivot_wider(names_from = Target, values_from = Cq.Mean)
-    
+
     # Retrieve the saved variables
     variables <- saved_variables$names
-    
+    # Retrieve saved housekeeper names
+    #variables <- session$housekeepersModule$housekeepers_names$data
+
     # Check if all provided housekeeper names exist as columns
     missing_columns <- setdiff(variables, names(df))
     if (length(missing_columns) > 0) {
@@ -102,37 +104,37 @@ data <- checkCSVfile()
       ))
       return(NULL)  # Return NULL to prevent further processing
     }
-    
+
     #Average the housekeepers
-    df <- df %>% 
-      rowwise() %>% 
+    df <- df %>%
+      rowwise() %>%
       mutate(
         mean_hk = mean(c_across(all_of(variables)), na.rm = TRUE),
       )
     #move columns using datawizard package
     df <- data_relocate(df, select = "mean_hk", after = "Sample")
     df <- data_relocate(df, select = saved_variables$names, after = "Sample")
-    
+
     #Calculate delta Cq for each target
     #which(names(data) == "mean_hk") finds the column index of "mean_hk" in the dataframe.
     #+ 1 increments the index to select the columns directly after "mean_hk".
     #ncol(data) provides the last column index of the dataframe.
-    df <- df %>% 
-      mutate(across((which(names(df) == "mean_hk") + 1):ncol(df), 
-                    list(dcq = ~ ifelse(.x != 0, .x - mean_hk, 0)), 
+    df <- df %>%
+      mutate(across((which(names(df) == "mean_hk") + 1):ncol(df),
+                    list(dcq = ~ ifelse(.x != 0, .x - mean_hk, 0)),
                     .names = "{.fn}_{.col}"))
-    
+
     #calulcate fold change (relative mRNA)
     # Calculate fc, considering the case where the data point is 0
     #supressed warnings as it is inconsequential to the data functionality
-    df <- suppressWarnings({df %>% 
+    df <- suppressWarnings({df %>%
       mutate(across(
         (which(startsWith(names(df), "dcq_"))):ncol(df),
         list(fc = ~ ifelse(.x != 0, 2^(-.x), 0)),
         .names = "{.fn}_{.col}"
       ))
     })
-    
+
     # Make a new column that places each sample as the specified condition
     #regex extracts characters after the last underscore
     df$condition <- gsub(".*_(\\w+)$", "\\1", df$Sample)
@@ -141,7 +143,7 @@ data <- checkCSVfile()
     #regex extracts characters before the first underscore
     df$group <- gsub("^([^_]+)_.*$", "\\1", df$Sample)
     df$group <- as.factor(df$group)
-    
+
     #add combined
     df$cell <- paste(df$condition, df$group, sep = "_")
     df$cell <- as.factor(df$cell)
@@ -149,7 +151,7 @@ data <- checkCSVfile()
     df <- data_relocate(df, select = "group", after = "Sample")
     df <- data_relocate(df, select = "condition", after = "Sample")
     df <- data_relocate(df, select = "cell", after = "group")
-    
+
     return(df)
   })
   
@@ -1086,45 +1088,9 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   output$postHocHeading <- renderUI({
     req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
     data <- shapiro_data_reactive() 
-    num_groups <- length(unique(data$cell))
-    if (input$group_comparison == "parametric" && input$postHocTest == "tukey" && num_groups > 2) {
-      h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "holm" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "bh" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe" && num_groups > 2) {
-      h4(HTML("<b>Scheffé's Post-hoc</b>"))  
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
-    } else {
-      return(NULL)
-    }
+    generatePostHocHeading(input, data)
   })
+  
   
   output$cldHeading <- renderUI({
   req(comparisonResults())
