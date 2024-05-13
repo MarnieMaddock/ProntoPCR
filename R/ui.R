@@ -75,7 +75,6 @@ ui <- fluidPage(
       #Calculations tab:
       #Delta Cq tab
       conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
-                       h6("Note: This step will not work if there is a Sample that has two measurements of the same target. Everything must be unique."),
                        h6("Ensure that each sample has all housekeeper gene measurements (i.e. there are no missing values), or risk plotting the wrong data points."),
                        tags$br(),
                        helpText("mean_hk: Calculates the mean of the houskeepers you specified in the input data tab."),
@@ -269,7 +268,6 @@ ui <- fluidPage(
                             h3(HTML("Inserted Data")),
                             #Display uploaded data using DataTable
                             dataTableOutput("table"),
-                            #checkCSVmainpanel("file"),
                             tags$br(),
                             tags$br()
                             ),
@@ -333,7 +331,7 @@ ui <- fluidPage(
                  ),
         ),
         #statistics tab
-        tabPanel("Stats", value = 4,
+        tabPanel("Statistics", value = 4,
                  tabsetPanel(
                    id = "subStats",
                    selected = 1,

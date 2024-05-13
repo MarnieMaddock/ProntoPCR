@@ -3,8 +3,8 @@ checkCSVfileUI <- function(id) {
   ns <- NS(id)
   tagList(
     fileInput(ns("file"), "Choose CSV File", accept = c(".csv")), #input csv files
-    helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data Tab. This MUST have the same headings and Sample name structure."),
-    helpText("If you also have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset for those instances. Any NA values will be disregarded (i.e. REMOVED)."),
+    helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data Tab."),
+    helpText("If you have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset in the Cq.Mean column. Any NA values will be disregarded (i.e. REMOVED)."),
     tags$br()
   )
 }
