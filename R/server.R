@@ -1,6 +1,5 @@
 # Load the required libraries
 source("module_checkCSVfile.R")
-source("utils_dataWrangle.R")
 source("module_download.R")
 source("utils_posthocHeadings.R")
 #source("utils_downloadGraphHandler.R")
@@ -157,7 +156,7 @@ data <- checkCSVfile("file")
   
   #download processed data as a csv.
   downloadServer("download_processed_data", wrangled_data, function(input, session) {
-    paste("processed_PCR_data_", Sys.Date(), ".csv", sep = "")
+    paste("processed_PCR_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
   # Display the table using DataTable in "Calculations" tab
@@ -199,9 +198,9 @@ data <- checkCSVfile("file")
   
   downloadServer("download_filtered_data", filtered_data, function(input, session) {
     if (!is.null(condition_for_download())) {
-      paste("filtered_PCR_data_", condition_for_download(), "_", Sys.Date(), ".csv", sep = "")
+      paste("filtered_PCR_data_", condition_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
     } else {
-      paste("filtered_PCR_data_", Sys.Date(), ".csv", sep = "")
+      paste("filtered_PCR_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
     }
   })
   
@@ -240,7 +239,7 @@ data <- checkCSVfile("file")
   }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
   
   downloadServer("download_rep_avg_data", rep_avg_data, function(input, session) {
-    paste("Replicate_avg_data_", Sys.Date(), ".csv", sep = "")
+    paste("Replicate_avg_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
   
@@ -265,9 +264,9 @@ data <- checkCSVfile("file")
   
   downloadServer("download_rep_avg_filtered_data", filtered_rep_avg_data, function(input, session) {
     if (!is.null(condition_for_download())) {
-      paste("Replicate_avg_data_", condition_for_download(), "_", Sys.Date(), ".csv", sep = "")
+      paste("Replicate_avg_data_", condition_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
     } else {
-      paste("Replicate_avg_data_filtered_", Sys.Date(), ".csv", sep = "")
+      paste("Replicate_avg_data_filtered_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
     }
   })
   
@@ -306,14 +305,12 @@ data <- checkCSVfile("file")
     req(wrangled_data())
     req(input$select_gene)
     
-    #condition2 <- input$select_condition
     control <- input$select_control
     samples <- input$select_samples
     selected_gene <- input$select_gene
     
     ddcq_data <- wrangled_data() %>% 
       filter((cell == control) | (cell %in% samples)) %>% 
-      #filter(condition == condition2) %>%
       dplyr::select(cell, all_of(selected_gene))
     
     # Resetting levels of factors to only include selected options
@@ -331,7 +328,6 @@ data <- checkCSVfile("file")
     req(input$select_gene)
     req(input$select_control)
     
-    #condition3 <- input$select_condition
     selected_gene2 <- input$select_gene
     control2 <- input$select_control
     samples2 <- input$select_samples
@@ -378,7 +374,7 @@ data <- checkCSVfile("file")
   })
   
   downloadServer("download_ddcq_data", average_dcq, function(input, session) {
-    paste("DDCQ_processed_data_", gene_for_download(), "_", Sys.Date(), ".csv", sep = "")
+    paste("DDCQ_processed_data_", gene_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
   values <- reactiveValues(ddcqDataSaved = FALSE)
@@ -397,8 +393,8 @@ data <- checkCSVfile("file")
     
     rep_avg_ddcq <- average_dcq() %>%
       group_by(cell) %>%
-      summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop")
-    
+      #summarize using geomteric mean
+      summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
     return(rep_avg_ddcq)
   })
   
@@ -408,7 +404,7 @@ data <- checkCSVfile("file")
   }, options = list(pageLength = 5))
   
   downloadServer("download_ddcq_avg_data", rep_avg_data_ddcq, function(input, session) {
-    paste("DDCq_processed_replicate_data_", gene_for_download(), "_", Sys.Date(), ".csv", sep = "")
+    paste("DDCq_processed_replicate_data_", gene_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
   #Stats
@@ -736,7 +732,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   comparisonResults <- reactive({
     # Ensure necessary inputs are available
     req(input$sampleInput, input$columnInput, input$group_comparison)
-    data <- shapiro_data_reactive() # Assuming this returns your dataset
+    data <- shapiro_data_reactive()
     num_groups <- length(unique(data$cell))
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
@@ -1087,9 +1083,51 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   
   output$postHocHeading <- renderUI({
     req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-    data <- shapiro_data_reactive() 
-    generatePostHocHeading(input, data)
+    data <- shapiro_data_reactive()
+    num_groups <- length(unique(data$cell))
+    if (input$group_comparison == "parametric" && input$postHocTest == "tukey" && num_groups > 2) {
+      h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
+    } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni" && num_groups > 2) {
+      h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "parametric" && input$postHocTest == "holm" && num_groups > 2) {
+      h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "parametric" && input$postHocTest == "bh" && num_groups > 2) {
+      h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe" && num_groups > 2) {
+      h4(HTML("<b>Scheffé's Post-hoc</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg" && num_groups > 2) {
+      h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
+    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg" && num_groups > 2) {
+      h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
+    } else {
+      return(NULL)
+    }
   })
+  # output$postHocHeading <- renderUI({
+  #   req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
+  #   data <- shapiro_data_reactive() 
+  #   generatePostHocHeading(input, data)
+  # })
   
   
   output$cldHeading <- renderUI({
@@ -1802,13 +1840,14 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
       gene_name <- ifelse(is.null(current_gene) || current_gene == "", "Gene", current_gene)
       
       # Generate the filename
-      paste("Graph_", gene_name, "_", Sys.Date(), ".", input$file_format, sep = "")
+      paste("Graph_", gene_name, "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".", input$file_format, sep = "")
     },
     content = function(file) {
       # Save the plot as before
       ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
     }
   )
+  
 #STATISTICS REPORT
   #save gene name for statistics report.
   selected_gene_name_stats <- reactive({
