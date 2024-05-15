@@ -28,8 +28,10 @@ params:
   errorBarWidthdot: NA
   errorBarThickness: NA
   errorBarThicknessdot: NA
+  errorBarColour: NA
   averageLineWidth: NA
   averageLineThickness: NA
+  averageLineColour: NA
   fillOrBorder: NA
   pointSize: NA
   pointSizedot: NA
@@ -78,8 +80,10 @@ params:
 * Error bar thickness (column graph): `r params$errorBarThickness`
 * Error bar width (dot graph): `r params$errorBarWidthdot`
 * Error bar thickness (dot graph): `r params$errorBarThicknessdot`
+* Error bar colour: `r params$errorBarColour`
 * Average line width (dot graph): `r params$averageLineWidth`
 * Average line thickness (dot graph): `r params$averageLineThickness`
+* Average line colour (dot graph): `r params$averageLineColour`
 
 #### Point Design
 
