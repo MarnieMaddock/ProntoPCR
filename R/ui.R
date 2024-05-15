@@ -20,6 +20,7 @@ library(broom)
 library(DescTools)
 library(FSA)
 library(conover.test)
+library(rstatix)
 library(multcompView)
 
 #load external modules and functions
@@ -245,7 +246,7 @@ ui <- fluidPage(
                        h6(HTML("<b>4. Log transform data? (Recommended for data that is NOT normally distributed/unequal variance)</b>")),
                        checkboxInput("log_transform", "Log10", value = FALSE),
                        helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
-                       radioButtons("group_comparison", HTML("<b>5. Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric"),
+                       radioButtons("group_comparison", HTML("<b>5. Select the group comparisons to perform:</b>"), choices = c("Parametric Test" = "parametric", "Non-parametric Test" = "non_parametric", "Welch's Test" = "welch"),
                                           selected = character(0)),
                        uiOutput("postHocOptions"), #display post hoc test options
                        uiOutput("correctionOptions"), #display post hoc adjustment methods
