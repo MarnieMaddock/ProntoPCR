@@ -6,6 +6,7 @@ source("utils_posthocHeadings.R")
 
 #Stats functions
 source("utils_sampleSize.R")
+source("utils_normPlots.R")
 source("utils_performComparisonTests.R")
 source("utils_performCLD.R")
 source("utils_performTukeyPostHoc.R")
@@ -488,7 +489,7 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   updateRadioButtons(session, "group_comparison", selected = character(0))
 })
 
-# Use the sampleSize function to dynamically render the heading
+# Use the sampleSize function to dynamically render the heading in the UI
 output$sampleSizeHeading <- render_sample_size_heading(input)
 
 # Use the sampleSize function to calculate sample counts
@@ -608,54 +609,24 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
     })
   })
   
-  # Define a reactive expression that generates the QQ plot
-  qqPlot_reactive <- reactive({
-    req("qqplot" %in% input$normality_test, !is.null(input$columnInput))
-    qqplot_data <- shapiro_data_reactive()
-    
-    # Generate the plot
-    ggplot(qqplot_data, aes(sample = !!as.symbol(input$columnInput))) +
-      geom_qq() + geom_qq_line() +
-      facet_wrap(~cell, scales = "free_y") +
-      labs(title = "QQ Plot", x = "Theoretical Quantiles", y = "Sample Quantiles") +
-      theme_Marnie
-    
-  })
+  # Reactive expression for QQ plot using utils_normPlots.R
+  qqPlot_reactive <- generate_qqPlot_reactive(input, shapiro_data_reactive)
   
-  # Use the reactive expression for rendering the plot in the Shiny app
-  output$qqPlot <- renderPlot({
-    req(qqPlot_reactive())  # Make sure the reactive expression has been evaluated
-    qqPlot_reactive()  # Return the plot created by the reactive expression
-  })
+  # Render the QQ plot using utils_normPlots.R
+  output$qqPlot <- render_qqPlot(qqPlot_reactive)
   
-  densityPlot_reactive <- reactive({
-    req(input$normality_test == "density", input$columnInput)
-    density_data <- shapiro_data_reactive()
-    p <- density_data %>% 
-      ggplot(aes(x = !!as.symbol(input$columnInput))) +
-      geom_density() +
-      facet_wrap(~cell, scales = "free_y") +
-      labs(title = "Density Plot", x = "Value", y = "Density") +
-      theme_Marnie
-    return(p)
-  })
+  # Reactive expression for density plot
+  densityPlot_reactive <- generate_densityPlot_reactive(input, shapiro_data_reactive)
   
-  output$densityPlot <- renderPlot({
-    req(densityPlot_reactive())
-    densityPlot_reactive()
-  })
+  # Render the density plot using utils_normPlots.R
+  output$densityPlot <- render_densityPlot(densityPlot_reactive)
   
-  output$qqPlotUI <- renderUI({
-    if (!is.null(input$normality_test) && length(input$normality_test) > 0 && "qqplot" %in% input$normality_test) {
-      plotOutput("qqPlot")
-    }
-  })
+  # Render UI for QQ plot using utils_normPlots.R
+  output$qqPlotUI <- render_qqPlotUI(input)
   
-  output$densityPlotUI <- renderUI({
-    if (!is.null(input$normality_test) && length(input$normality_test) > 0 && "density" %in% input$normality_test) {
-      plotOutput("densityPlot")
-    }
-  })
+  # Render UI for density plot using utils_normPlots.R
+  output$densityPlotUI <- render_densityPlotUI(input)
+  
   
   output$leveneHeading <- renderUI({
     if (input$variance == TRUE ) {      
