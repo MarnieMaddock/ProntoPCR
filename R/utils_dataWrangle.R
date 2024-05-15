@@ -1,4 +1,5 @@
 # utils_adataWrangling.R
+# caluclations for initial data wrangling and DCQ calculations
 # Function to Display the inserted csv as a table using DataTable
 render_data_table <- function(data){
   renderDataTable({
@@ -142,11 +143,6 @@ wrangle_data <- function(input, data, saved_variables){
 }
 
 
-#download processed data as a csv.
-# downloadServer("download_processed_data", wrangled_data, function(input, session) {
-#   paste("processed_PCR_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
-# })
-
 # Function to render the calculations table
 render_calculations_table <- function(wrangled_data) {
 # Display the table using DataTable in "Calculations" tab
@@ -155,3 +151,110 @@ render_calculations_table <- function(wrangled_data) {
     wrangled_data()
   }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
 }
+
+#filter data wrangled by selected condition (UI component)
+filter_by_conditionUI <- function(wrangled_data, input){
+  renderUI({
+    req(wrangled_data())
+    conditions <- unique(wrangled_data()$condition)
+    selectInput("condition", "Select Condition", choices = conditions)
+  })
+}
+
+
+#Create filtered dataset
+filtered_dataset <- function(wrangled_data, input){
+  reactive({
+    req(wrangled_data())
+    conditions_to_filter <- input$condition
+    
+    if (!is.null(conditions_to_filter)) {
+      filtered_data <- wrangled_data() %>%
+        filter(condition %in% conditions_to_filter)
+      return(filtered_data)
+    } else {
+      return(NULL)
+    }
+  })
+}
+
+# Display the filtered table
+filtered_table_displayUI <- function(filtered_data){
+  renderDataTable({
+      req(filtered_data())
+      filtered_data()
+    }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
+}
+
+#save the condition to use in string for saving csv file
+save_condition_for_download <- function(input){
+  reactive({
+    input$condition
+  })
+}
+
+
+#replicate averages datasets + calcs
+# Calculate replicate averages when data is loaded
+perform_rep_average <- function(wrangled_data){
+  reactive({
+    req(wrangled_data())
+    
+    vars <- colnames(wrangled_data()) %>%
+      grep("^fc_dcq", ., value = TRUE)
+    
+    # Now, the 'vars' object contains the desired column names
+    rep_avg <- wrangled_data() %>%
+      group_by(condition, group) %>%
+      summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
+      gather(key = "Variable", value = "fc_avg", -condition, -group)
+    
+    rep_avg <- rep_avg %>% 
+      pivot_wider(names_from = Variable, values_from = fc_avg)
+    
+    # Remove "_fc_avg" from column names
+    colnames(rep_avg) <- sub("_fc_avg$", "", colnames(rep_avg))
+    
+    #add column cell
+    rep_avg$cell <- paste(rep_avg$condition, rep_avg$group, sep = "_")
+    rep_avg$cell <- as.factor(rep_avg$cell)
+    #Move column
+    rep_avg <- data_relocate(rep_avg, select = "cell", after = "group")
+    
+    return(rep_avg)
+  })
+}
+
+# Display the replicate averages table in "Calculations" tab
+biorep_displayUI <- function(rep_avg_data){
+  renderDataTable({
+    rep_avg_data()
+  }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
+}
+
+# Create filtered replicate data table
+filtered_rep_avg_dataset <- function(rep_avg_data, input){
+  reactive({
+    req(rep_avg_data())
+    conditions_to_filter <- input$condition
+    
+    if (!is.null(conditions_to_filter)) {
+      filtered_data <- rep_avg_data() %>%
+        filter(condition %in% conditions_to_filter)
+      return(filtered_data)
+    } else {
+      return(NULL)
+    }
+  })
+}
+
+# display rep data filtered ouput in the UI
+filtered_rep_displayUI <- function(filtered_rep_avg_data){
+  renderDataTable({
+    req(filtered_rep_avg_data())
+    filtered_rep_avg_data()
+  }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
+}
+
+
+
