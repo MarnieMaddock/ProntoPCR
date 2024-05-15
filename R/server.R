@@ -5,6 +5,7 @@ source("utils_posthocHeadings.R")
 #source("utils_downloadGraphHandler.R")
 
 #Stats functions
+source("utils_sampleSize.R")
 source("utils_performComparisonTests.R")
 source("utils_performCLD.R")
 source("utils_performTukeyPostHoc.R")
@@ -487,47 +488,18 @@ observeEvent(input$select_dcq_or_ddcq_stats, {
   updateRadioButtons(session, "group_comparison", selected = character(0))
 })
 
-  # Dynamically render the heading based on the checkbox
-  output$sampleSizeHeading <- renderUI({
-    if (input$sample_size) {  # Check if the checkbox is ticked
-      h4(HTML("<b>Sample Size</b>"))  # Display the heading
-    }
-  })
-  
-  # Reactive expression to calculate the count of non-NA values for each sample
-  sampleCounts <- reactive({
-    req(input$sampleInput, input$columnInput)  # Ensure the inputs are not NULL
-    # Filter the data based on selected samples
-    selected_data <- stats_data()[stats_data()$cell %in% input$sampleInput, ]
-    # Calculate the count of non-NA entries for the selected fc_dcq_ column for each sample
-    counts <- tapply(selected_data[[input$columnInput]], selected_data$cell, function(x) sum(!is.na(x)))
-    # Return only the counts for the samples selected by the user
-    counts[names(counts) %in% input$sampleInput]
-  })
-  
-  # Reactive expression to create a table with sample sizes
-  sampleSizeTable <- reactive({
-    counts <- sampleCounts()  # Get the sample counts
-    if (is.null(counts) || length(counts) == 0) {
-      return(data.frame(Sample = character(0), N = integer(0)))  # Return an empty dataframe if there are no counts
-    }
-    # Create the dataframe with the sample names and their corresponding counts
-    data.frame(Sample = names(counts), N = counts, stringsAsFactors = FALSE, row.names = NULL)
-  })
-  
-  # Render the table output using the sample size table, only when checkbox is selected
-  output$nTable <- renderDataTable({
-    if (input$sample_size) {  # Check if the checkbox is selected
-      datatable <- sampleSizeTable()  # Get the sample size table
-      if (nrow(datatable) == 0) {
-        return(data.frame(Sample = "No data available", N = NA))  # Display message if no data
-      }
-      datatable  # Render the datatable
-    } else {
-      return(NULL)  # If checkbox is not selected, return NULL (don't render the table)
-    }
-  }, options = list(pageLength = 5))
-  
+# Use the sampleSize function to dynamically render the heading
+output$sampleSizeHeading <- render_sample_size_heading(input)
+
+# Use the sampleSize function to calculate sample counts
+sampleCounts <- calculate_sample_counts(input, stats_data)
+
+# Use the sampleSize function to create sample size table
+sampleSizeTable <- create_sample_size_table(sampleCounts)
+
+# Use the sampleSize function to render the sample size table
+output$nTable <- render_sample_size_table(input, sampleSizeTable)
+
   #shapiro-wilk
   # Dynamically render the heading based on the checkbox
   output$normalityHeading <- renderUI({
