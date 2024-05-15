@@ -1,6 +1,7 @@
 # Load the required libraries
 source("module_checkCSVfile.R")
 source("utils_dataWrangle.R")
+source("utils_deltadelta.R")
 source("module_download.R")
 source("utils_posthocHeadings.R")
 #source("utils_downloadGraphHandler.R")
@@ -23,6 +24,7 @@ server <- function(input, output, session) {
 
   #insert csv file and check that it meets the required formatting
   data <- checkCSVfile("file")
+  
   # Render the data table
   output$table <- render_data_table(data)
   
@@ -50,37 +52,19 @@ server <- function(input, output, session) {
     paste("processed_PCR_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
-  # filter data by condition
-  output$condition_filter <- renderUI({
-    req(wrangled_data())  # Ensure data is available
-    conditions <- unique(wrangled_data()$condition)
-    
-    selectInput("condition", "Select Condition", choices = conditions)
-  })
+  # filter data by condition UI part
+  output$condition_filter <- filter_by_conditionUI(wrangled_data, input)
   
-  filtered_data <- reactive({
-    req(wrangled_data())
-    conditions_to_filter <- input$condition
-    
-    if (!is.null(conditions_to_filter)) {
-      filtered_data <- wrangled_data() %>%
-        filter(condition %in% conditions_to_filter)
-      return(filtered_data)
-    } else {
-      return(NULL)
-    }
-  })
-  # Display the filtered table
-  output$filtered_table <- renderDataTable({
-    req(filtered_data())
-    filtered_data()
-  }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
+  # create filtered dataset
+  filtered_data <- filtered_dataset(wrangled_data, input)
   
-  #save the condition to use in string for saving csv file
-  condition_for_download <- reactive({
-    input$condition
-  })
+  #display filtered data in the UI
+  output$filtered_table <- filtered_table_displayUI(filtered_data)
   
+  #save condition as a string to put in the download handler
+  condition_for_download <- save_condition_for_download(input)
+  
+  # download filtered data
   downloadServer("download_filtered_data", filtered_data, function(input, session) {
     if (!is.null(condition_for_download())) {
       paste("filtered_PCR_data_", condition_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
@@ -89,64 +73,24 @@ server <- function(input, output, session) {
     }
   })
   
-  # Calculate replicate averages when data is loaded
-  rep_avg_data <- reactive({
-    req(wrangled_data())
-    
-    vars <- colnames(wrangled_data()) %>%
-      grep("^fc_dcq", ., value = TRUE)
-    
-    # Now, the 'vars' object contains the desired column names
-    rep_avg <- wrangled_data() %>%
-      group_by(condition, group) %>%
-      summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
-      gather(key = "Variable", value = "fc_avg", -condition, -group)
-    
-    rep_avg <- rep_avg %>% 
-      pivot_wider(names_from = Variable, values_from = fc_avg)
-    
-    # Remove "_fc_avg" from column names
-    colnames(rep_avg) <- sub("_fc_avg$", "", colnames(rep_avg))
-    
-    #add column cell
-    rep_avg$cell <- paste(rep_avg$condition, rep_avg$group, sep = "_")
-    rep_avg$cell <- as.factor(rep_avg$cell)
-    #Move column
-    rep_avg <- data_relocate(rep_avg, select = "cell", after = "group")
-    
-    return(rep_avg)
-  })
+  # Calculate biological replicates for wrangled data
+  rep_avg_data <- perform_rep_average(wrangled_data)
   
+  # display the bio replicate data table in the UI
+  output$rep_avg_table <- biorep_displayUI(rep_avg_data)
   
-  # Display the replicate averages table in "Calculations" tab
-  output$rep_avg_table <- renderDataTable({
-    rep_avg_data()
-  }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
-  
+  # download replicate data
   downloadServer("download_rep_avg_data", rep_avg_data, function(input, session) {
     paste("Replicate_avg_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
   
+  # create filtered rep avg dataset
+  filtered_rep_avg_data <- filtered_rep_avg_dataset(rep_avg_data, input)
   
+  # display rep data filtered output in the UI
+  output$rep_avg_filtered_table <- filtered_rep_displayUI(filtered_rep_avg_data)
   
-  output$rep_avg_filtered_table <- renderDataTable({
-    req(filtered_rep_avg_data())
-    filtered_rep_avg_data()
-  }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
-  
-  filtered_rep_avg_data <- reactive({
-    req(rep_avg_data())
-    conditions_to_filter <- input$condition
-    
-    if (!is.null(conditions_to_filter)) {
-      filtered_data <- rep_avg_data() %>%
-        filter(condition %in% conditions_to_filter)
-      return(filtered_data)
-    } else {
-      return(NULL)
-    }
-  })
-  
+  #download replicate average filtered dataset
   downloadServer("download_rep_avg_filtered_data", filtered_rep_avg_data, function(input, session) {
     if (!is.null(condition_for_download())) {
       paste("Replicate_avg_data_", condition_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
@@ -155,103 +99,20 @@ server <- function(input, output, session) {
     }
   })
   
+  # DELTADELTA Data and calculations
+  # UI components for select control, samples and gene based of user input data
+  output$select_control <- select_controlUI(wrangled_data)
+  output$select_samples <- select_samplesUI(wrangled_data)
+  output$column_selector2 <- select_geneUI(wrangled_data)
+
+  # create ddcq dataset
+  ddcq_filtered_data <- filtered_samples_for_ddcq_data(wrangled_data, input)
   
-  # DELTADELTA 
-  #
-  #
-  # output$select_condition <- renderUI({
-  #   req(wrangled_data())
-  #   selectInput("select_condition", "Select Condition", choices = unique(wrangled_data()$condition))
-  # })
-  
-  output$select_control <- renderUI({
-    req(wrangled_data())  # Ensure data is available
-    
-    selectInput("select_control", "Select the control/untreated sample", choices = unique(wrangled_data()$cell))
-  })
-  
-  output$select_samples <- renderUI({
-    req(wrangled_data())  # Ensure data is available
-    
-    selectInput("select_samples", "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell), multiple = T)
-  })
-  
-  output$column_selector2 <- renderUI({
-    req(wrangled_data())
-    
-    # Filter column names to include only those starting with "dcq"
-    dcq_columns <- grep("^dcq_", colnames(wrangled_data()), value = TRUE)
-    
-    # Generate selectInput for choosing the column dynamically
-    selectInput("select_gene", "Select Gene to calculate ΔΔCq", choices = dcq_columns)
-  })
-  
-  ddcq_filtered_data <- reactive({
-    req(wrangled_data())
-    req(input$select_gene)
-    
-    control <- input$select_control
-    samples <- input$select_samples
-    selected_gene <- input$select_gene
-    
-    ddcq_data <- wrangled_data() %>% 
-      filter((cell == control) | (cell %in% samples)) %>% 
-      dplyr::select(cell, all_of(selected_gene))
-    
-    # Resetting levels of factors to only include selected options
-    ddcq_data$cell <- factor(ddcq_data$cell, levels = unique(c(as.character(control), as.character(samples))))
-    #add cell column
-    #ddcq_data$cell <- paste(ddcq_data$condition, ddcq_data$group, sep = "_")
-    #ddcq_data$condition <- factor(ddcq_data$condition, levels = condition2)
-    return(ddcq_data)
-  })
-  
-  mean_value <- reactiveVal(NULL)
   # Calculate the average delta cq for the selected gene in the control samples
-  average_dcq <- reactive({
-    req(wrangled_data())
-    req(input$select_gene)
-    req(input$select_control)
-    
-    selected_gene2 <- input$select_gene
-    control2 <- input$select_control
-    samples2 <- input$select_samples
-    
-    # Calculate the average delta cq for the selected gene in the control samples
-    avg_dcq_ctrl <- ddcq_filtered_data() %>%
-      filter(cell == control2) %>%
-      group_by(cell) %>%
-      summarise(dcq_ctrl_avg = mean(!!sym(selected_gene2), na.rm = TRUE), .groups = "drop")
-    
-    # Left join the original dataframe with the summarised dataframe
-    avg_dcq_ctrl <- left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = "cell")
-    
-    # Calculate the mean value
-    mean_val <- mean(avg_dcq_ctrl$dcq_ctrl_avg, na.rm = TRUE)
-    
-    # Store the mean value in the reactive value
-    mean_value(mean_val)
-    
-    # Assign the mean value to the entire dcq_ctrl_avg column
-    avg_dcq_ctrl$dcq_ctrl_avg <- mean_val
-    
-    # Create a new column ddcq by subtracting selected_gene2 from dcq_ctrl_avg
-    avg_dcq_ctrl$ddcq <-  avg_dcq_ctrl[[selected_gene2]] - avg_dcq_ctrl$dcq_ctrl_avg
-    
-    # Create a new column fc_ddcq containing 2^(-ddcq)
-    avg_dcq_ctrl$fc_ddcq <- 2^(-avg_dcq_ctrl$ddcq)
-    
-    # Resetting levels of factors to only include selected options
-    avg_dcq_ctrl$cell <- factor(avg_dcq_ctrl$cell, levels = unique(c(as.character(control2), as.character(samples2))))
-    #avg_dcq_ctrl$condition <- factor(avg_dcq_ctrl$condition, levels = condition3)
-    #avg_dcq_ctrl$cell <- paste(avg_dcq_ctrl$condition, avg_dcq_ctrl$group, sep = "_")
-    return(avg_dcq_ctrl)
-  })
-  
-  output$ddcq_data <- renderDataTable({
-    req(average_dcq())
-    average_dcq()
-  }, options = list(pageLength = 5))
+  mean_value <- reactiveVal(NULL)
+  average_dcq <- calc_ddcq_data(wrangled_data, ddcq_filtered_data, input, mean_value)
+  #display ddcq dataset in the UI
+  output$ddcq_data <- render_ddcqUI(average_dcq)
   
   #save the condition to use in string for saving csv file
   gene_for_download <- reactive({
@@ -994,11 +855,6 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
       return(NULL)
     }
   })
-  # output$postHocHeading <- renderUI({
-  #   req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-  #   data <- shapiro_data_reactive() 
-  #   generatePostHocHeading(input, data)
-  # })
   
   
   output$cldHeading <- renderUI({
