@@ -41,7 +41,7 @@ ui <- fluidPage(
   div(id = "logo", tags$img(src = "dottori_lab_pentagon.svg")),
   div(id = "logo2", tags$img(src = "UOW.png")),
   # Application title
-  div(tags$h1("FASTqPCR v1.1.1", style = "margin-left: 65px;")),
+  div(tags$h1("FASTqPCR v1.2.0", style = "margin-left: 65px;")),
   #sidebar options
   sidebarLayout(
     sidebarPanel(
