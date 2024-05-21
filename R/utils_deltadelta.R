@@ -101,4 +101,23 @@ render_ddcqUI <- function(average_dcq){
   }, options = list(pageLength = 5))
 }
 
+# Calculate replicate averages when data is loaded
+calc_rep_avg_ddcq <- function(average_dcq){
+  reactive({
+    req(average_dcq())
+    
+    rep_avg_ddcq <- average_dcq() %>%
+      group_by(cell) %>%
+      #summarize using geomteric mean
+      summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
+    return(rep_avg_ddcq)
+  })
+}
 
+
+# Display the replicate averages table in "Calculations" tab
+render_ddcq_avgUI <- function(rep_avg_data_ddcq){
+  renderDataTable({
+    rep_avg_data_ddcq()
+  }, options = list(pageLength = 5))
+}

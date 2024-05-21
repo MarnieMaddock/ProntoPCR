@@ -9,6 +9,8 @@ source("utils_posthocHeadings.R")
 #Stats functions
 source("utils_sampleSize.R")
 source("utils_normPlots.R")
+source("utils_levenes.R")
+source("utils_shapiro.R")
 source("utils_performComparisonTests.R")
 source("utils_performCLD.R")
 source("utils_performTukeyPostHoc.R")
@@ -19,6 +21,7 @@ source("utils_performConoverPostHoc.R")
 #Graph functions
 source("utils_graphTheme.R")
 source("utils_getColourSchemes.R")
+source("utils_RmarkdownTemps.R")
 
 server <- function(input, output, session) {
 
@@ -132,23 +135,12 @@ server <- function(input, output, session) {
     values$ddcqDataSaved <- TRUE
   })
   
-  # Calculate replicate averages when data is loaded
+  # # Calculate replicate averages when ddcq is calculated
+  rep_avg_data_ddcq <- calc_rep_avg_ddcq(average_dcq)
+  #render result as table in UI
+  output$rep_avg_table_ddcq <- render_ddcq_avgUI(rep_avg_data_ddcq)
   
-  rep_avg_data_ddcq <- reactive({
-    req(average_dcq())
-    
-    rep_avg_ddcq <- average_dcq() %>%
-      group_by(cell) %>%
-      #summarize using geomteric mean
-      summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
-    return(rep_avg_ddcq)
-  })
-  
-  # Display the replicate averages table in "Calculations" tab
-  output$rep_avg_table_ddcq <- renderDataTable({
-    rep_avg_data_ddcq()
-  }, options = list(pageLength = 5))
-  
+  #download button to save replicate values
   downloadServer("download_ddcq_avg_data", rep_avg_data_ddcq, function(input, session) {
     paste("DDCq_processed_replicate_data_", gene_for_download(), "_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
@@ -245,113 +237,16 @@ sampleSizeTable <- create_sample_size_table(sampleCounts)
 # Use the sampleSize function to render the sample size table
 output$nTable <- render_sample_size_table(input, sampleSizeTable)
 
-  #shapiro-wilk
-  # Dynamically render the heading based on the checkbox
-  output$normalityHeading <- renderUI({
-    if (!is.null(input$normality_test) && any(input$normality_test %in% c("shapiro", "ks", "qqplot", "density"))) {      
-      h4(HTML("<b>Normality Test</b>"))  # Display the heading
-    }
-  })
+  # #shapiro-wilk
+  # # Dynamically render the heading based on the checkbox
+output$normalityHeading <- render_shapiroHeading(input)
   
-  shapiro_data_reactive <- reactive({
-    req(input$select_dcq_or_ddcq_stats, input$sampleInput, input$columnInput, stats_data()) 
-      # Initial data filtering and selection
-      data <- stats_data() %>%
-        filter(cell %in% input$sampleInput) %>%
-        dplyr::select(cell, !!as.symbol(input$columnInput)) %>%
-        filter(!is.na(!!as.symbol(input$columnInput))) %>%
-        droplevels()
-      # Apply log10 transformation if the checkbox is checked
-      if (input$log_transform == TRUE) {
-        data <- data %>%
-          mutate(!!as.symbol(input$columnInput) := log10(!!as.symbol(input$columnInput)))
-      }
-      data
-  }) 
-  
+  # reactive dataset for selected samples
+shapiro_data_reactive <- filter_data_stats(input, stats_data)
   
   # Reactive expression for performing the Shapiro-Wilk test
-  test_results_shapiro <- reactive({
-    req(input$normality_test == "shapiro") # Proceed only if Shapiro-Wilk is selected
-    data_for_shapiro <- shapiro_data_reactive() # Use the reactive filtered data
-    
-    # Split the data by the 'cell' factor and perform Shapiro-Wilk test for each group
-    shapiro_col <- input$columnInput
-    grouped_data <- split(data_for_shapiro[[shapiro_col]], data_for_shapiro$cell)
-    
-    # Initialize an empty data frame to store the results
-    results_df <- data.frame(
-      Group = character(),
-      W = numeric(),
-      P_value = numeric(),
-      Passed_normality_test = logical(),
-      P_value_summary = character(),
-      stringsAsFactors = FALSE
-    )
-    
-    # Loop through the list of groups and perform the Shapiro-Wilk test
-    for (group_name in names(grouped_data)) {
-      test_result <- tryCatch({
-        shapiro.test(grouped_data[[group_name]])
-      }, error = function(e) {
-        return(list(statistic = NA, p.value = NA))
-      })
-      
-      # Determine if the group passes the normality test based on the p-value
-      passed_test <- test_result$p.value > 0.05
-      # Determine the p-value summary
-      p_value_summary <- ifelse(test_result$p.value < 0.001, "***", 
-                                ifelse(test_result$p.value < 0.01, "**", 
-                                       ifelse(test_result$p.value > 0.05, "ns", "*")))
-      
-      # Add the results to the data frame
-      results_df <- rbind(results_df, data.frame(
-        Group = group_name,
-        W = test_result$statistic,
-        P_value = test_result$p.value,
-        Passed_normality_test = ifelse(passed_test, "Yes", "No"),
-        P_value_summary = p_value_summary,
-        stringsAsFactors = FALSE
-      ))
-      
-    }
-    rownames(results_df) <- NULL
-    # Return the results data frame
-    return(results_df)
-  })
-  
-  observe({
-    results_shapiro <- test_results_shapiro() # Assumes this reactive expression exists
-    
-    results_shapiro <- results_shapiro %>% 
-      rename("P Value" = P_value, "Passed Normality Test?" = Passed_normality_test, "P Value Summary" = P_value_summary)
-    # Dynamically create or remove the table based on selection
-    output$normalityTableUI <- renderUI({
-      if("shapiro" %in% input$normality_test) {
-        # Check if there's an error in the results and display it, otherwise display the table
-        if (is.list(results_shapiro) && !is.null(results_shapiro$error)) {
-          # Output the error message if present
-          tableOutput("shapiroError")
-        } else {
-          #Construct and render the results table
-          dataTableOutput("normalityTable")
-        }
-      }
-    })
-    
-    # Conditionally render the error message or the results table
-    output$shapiroError <- renderTable({
-      if(is.list(results_shapiro) && !is.null(results_shapiro$error)) {
-        matrix(results_shapiro$error, nrow = 1)
-      }
-    })
-    
-    output$normalityTable <- renderDataTable({
-      if(!is.null(results_shapiro) && is.list(results_shapiro) && is.null(results_shapiro$error)) {
-        results_shapiro
-      }
-    })
-  })
+test_results_shapiro <- perform_shapiro(input, shapiro_data_reactive)
+shapiro_results(input, output, test_results_shapiro)
   
   # Reactive expression for QQ plot using utils_normPlots.R
   qqPlot_reactive <- generate_qqPlot_reactive(input, shapiro_data_reactive)
@@ -371,50 +266,16 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
   # Render UI for density plot using utils_normPlots.R
   output$densityPlotUI <- render_densityPlotUI(input)
   
+  # display levene's heading when checkbox is clicked in sidepanel
+  output$leveneHeading <- render_leveneHeading(input)
   
-  output$leveneHeading <- renderUI({
-    if (input$variance == TRUE ) {      
-      h4(HTML("<b>Homogeneity of Variance Test</b>"))  # Display the heading
-    }
-  })
-  levene_reactive <- reactive({
-    req(input$variance == TRUE, input$columnInput)
-    levene_test_data <- shapiro_data_reactive()
-    test_result <- leveneTest(levene_test_data[[input$columnInput]] ~ levene_test_data$cell)
-    # Extracting values from the test_result
-    df_group <- test_result$Df[1] # Degrees of freedom for group
-    df_error <- test_result$Df[2] # Degrees of freedom for error/residuals
-    f_value <- test_result$`F value`[1] # Correct access for F value
-    p_value <- test_result$`Pr(>F)`[1]
-    # Construct summary data frame
-    summary_df <- data.frame(
-      DF_Group = df_group,
-      DF_Error = df_error,
-      F_Value = f_value,
-      P_Value = p_value,
-      Passed_variance_test = ifelse(p_value > 0.05, "Yes", "No"),
-      P_value_summary = ifelse(p_value < 0.001, "***", 
-                               ifelse(p_value < 0.01, "**", 
-                                      ifelse(p_value > 0.05, "ns", "*")))
-    )
-    summary_df <- summary_df %>% 
-      rename("df (Group)" = DF_Group, "df (Error)" = DF_Error, "F" = F_Value, 
-             "P Value" = P_Value, "Passed Variance Test?" = Passed_variance_test, "P Value Summary" = P_value_summary)
-    rownames(summary_df) <- ""
-    # Return the new summary data frame
-    summary_df
-  })
+  #calculate levenes results and create dataframe
+  levene_reactive <- calc_levenes(input, shapiro_data_reactive)
   
-  output$levene <- renderDataTable({
-    req(levene_reactive())
-    levene_reactive()
-  })
-  
-  output$leveneUI <- renderUI({
-    if(input$variance == TRUE) { # Check if the user wants to see the Levene's test results
-      dataTableOutput("levene")
-    }
-  })
+  # display levene's test
+  output$levene <- levene_table(levene_reactive)
+  output$leveneUI <- render_leveneUI(input, levene)
+ 
   comparisonResults <- reactive({
     # Ensure necessary inputs are available
     req(input$sampleInput, input$columnInput, input$group_comparison)
@@ -518,7 +379,7 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
           group_sizes <- table(df$cell)
           if (any(group_sizes < 3)) {
             # Not enough data points in one or more groups
-            post_hoc_df <- data.frame(Message = "Unable to compute Games-Howell test. Ensure that each group has >= 3 observations.")
+            post_hoc_df <- data.frame(Message = "Unable to compute Games-Howell test. Ensure that each group has ≥ 3 observations.")
             cld_df <- NULL
           } else {
           # Construct the formula as a string
@@ -865,475 +726,6 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
     )
   })
   
-  # comparisonResults <- reactive({
-  #   # Ensure necessary inputs are available
-  #   req(input$sampleInput, input$columnInput, input$group_comparison)
-  #   data <- shapiro_data_reactive()
-  #   num_groups <- length(unique(data$cell))
-  #   if (num_groups == 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       #perform t-test
-  #       test_result <- performComparisonTests(test_type = "t-test", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #       test_result_df <- test_result$test_result_df
-  #       #compact letter display
-  #       cld_df <- performCLD(data = test_result_df, p_colname = "P Value (Two-Tailed)",  remove_NA = FALSE)
-  #     } else if (input$group_comparison == "nonparametric") {
-  #       test_result <- performComparisonTests(test_type = "wilcox", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #       test_result_df <- test_result$test_result_df
-  #       #compact letter display
-  #       cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
-  #     } else if (input$group_comparison == "welch"){
-  #       test_result <- performComparisonTests(test_type = "welch_t", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #       test_result_df <- test_result$test_result_df
-  #       #compact letter display
-  #       cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
-  #     }
-  #     return(list(test = test_result_df, cld = cld_df))
-  #   } else if (num_groups > 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       test_result <- performComparisonTests(test_type = "ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #       test_result_df <- test_result$test_result_df
-  #       aov_result  <- test_result$aov_result
-  #       
-  #       if(input$postHocTest == "tukey"){
-  #         results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if (input$postHocTest == "bonferroni"){
-  #         try({
-  #           # Validate conditions
-  #           results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput, sample_sizes = sampleSizeTable())
-  #           # You can then access each dataframe like this:
-  #           post_hoc_df <- results$post_hoc_df
-  #           
-  #           #compact letter display
-  #           cld_df <- results$cld_df
-  #           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-  #         }, silent = TRUE)
-  #         
-  # 
-  #       }else if (input$postHocTest == "holm"){
-  #         try({
-  #           # Validate conditions
-  #           results <- performPostHoc(
-  #             data = shapiro_data_reactive(),
-  #             p_adjust_method = "holm",
-  #             input_column = input$columnInput,
-  #             sample_sizes = sampleSizeTable()
-  #           )
-  #           # You can then access each dataframe like this:
-  #           post_hoc_df <- results$post_hoc_df
-  #           
-  #           #compact letter display
-  #           cld_df <- results$cld_df
-  #           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-  #         }, silent = TRUE)
-  #         
-  #       }else if (input$postHocTest == "bh"){
-  #         try({
-  #           # Validate conditions
-  #           results <- performPostHoc(
-  #             data = shapiro_data_reactive(),
-  #             p_adjust_method = "BH",
-  #             input_column = input$columnInput,
-  #             sample_sizes = sampleSizeTable()
-  #           )
-  #           # You can then access each dataframe like this:
-  #           post_hoc_df <- results$post_hoc_df
-  #           
-  #           #compact letter display
-  #           cld_df <- results$cld_df
-  #           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-  #         }, silent = TRUE)
-  #       }else if (input$postHocTest == "scheffe"){
-  #         results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "scheffe", input_column = input$columnInput, sample_sizes = sampleSizeTable())
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         cld_df <- results$cld_df
-  #         #compact letter display
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #       }
-  #       
-  #     } else if (input$group_comparison == "nonparametric") {
-  #       test_result <- performComparisonTests(test_type = "kw", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #       test_result_df <- test_result$test_result_df
-  #       post_hoc_df <- NULL
-  #       if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "bonferroni",
-  #           input_column = input$columnInput
-  #         )
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-  #         
-  #       }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "sidak",
-  #           input_column = input$columnInput
-  #         )
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "dunn" && input$correctionMethod == "hs"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "hs",
-  #           input_column = input$columnInput
-  #         )
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "dunn" && input$correctionMethod == "holm"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "holm",
-  #           input_column = input$columnInput
-  #         )
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "dunn" && input$correctionMethod == "bh"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "bh",
-  #           input_column = input$columnInput
-  #         )
-  #         # You can then access each dataframe like this:
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
-  #         # Validate conditions
-  #         results <- performDunnPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "hochberg",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "bonferroni",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "sidak"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "sidak",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "holm"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "holm",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "bh"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "bh",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "hs"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "hs",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #         
-  #       }else if(input$postHocTest == "conover" && input$correctionMethod == "hochberg"){
-  #         results <-performConoverPostHoc(
-  #           data = shapiro_data_reactive(),
-  #           p_adjust_method = "hochberg",
-  #           input_column = input$columnInput
-  #         )
-  #         post_hoc_df <- results$post_hoc_df
-  #         #compact letter display
-  #         cld_df <- results$cld_df
-  #         cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-  #       }
-  #       
-  #   } else if (input$group_comparison == "welch") {
-  #     # # Perform one-way ANOVA
-  #     # # Construct the formula as a string
-  #     # formula_str <- paste(input$columnInput, "~ cell")
-  #     # # Convert the string to a formula object
-  #     # aov_formula <- as.formula(formula_str)
-  #     # # Perform the ANOVA
-  #     # oneway.test(fc_dcq_GAPDH ~ cell, data = shapiro_data_reactive(), var.equal = FALSE)
-  #     # aov_result <- oneway.test(input$columnInput ~ cell, data = shapiro_data_reactive(), var.equal = FALSE)
-  #     # print(aov_result)
-  #     # summary_aov <- summary(aov_result) # Storing the summary for potential display
-  #     # print(summary_aov)
-  #     # test_result_df <- as.data.frame(summary_aov[[1]])
-  #     # test_result_df$Significant <- ifelse(test_result_df$`Pr(>F)` < 0.05, "Yes", "No")
-  #     # test_result_df$P_value_summary <- ifelse(test_result_df$`Pr(>F)` < 0.001, "***",
-  #     #                                          ifelse(test_result_df$`Pr(>F)` < 0.01, "**",
-  #     #                                                 ifelse(test_result_df$`Pr(>F)` > 0.05, "ns", "*")))
-  #     # test_result_df <- test_result_df %>% 
-  #     #   rename("P Value" = `Pr(>F)`, "Significant?" = Significant, "P Value Summary" = P_value_summary)
-  #     # post_hoc_df <- NULL
-  #     # print(test_result_df)
-  #     # cld_df <- NULL
-  #     test_result <- performComparisonTests(test_type = "welch_ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
-  #     test_result_df <- test_result$test_result_df
-  #     print(test_result_df)
-  #     post_hoc_df <- NULL
-  #     cld_df <- NULL
-  #   }
-  #     return(list(test = test_result_df, posthoc = post_hoc_df, cld = cld_df))
-  #     
-  #   }else {
-  #     return(NULL) # Handle the case where there are not enough groups
-  #   }
-  #   return(list(test = test_result_df, posthoc = post_hoc_df, cld = cld_df))
-  # })
-  # 
-  # # Render the dataframe using DT::renderDataTable
-  # output$dataTable <- renderDataTable({
-  #   req(comparisonResults()) # Ensure the dataframe is ready
-  #   datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE)) 
-  # })
-  # 
-  # # Use renderUI to dynamically generate dataTableOutput
-  # output$testResultTable <- renderUI({
-  #   # Dynamically create a dataTableOutput element
-  #   dataTableOutput("dataTable")
-  # })
-  # 
-  # 
-  # output$postHocTableUI <- renderUI({
-  #   # Dynamically create a dataTableOutput element
-  #   dataTableOutput("postHocTable")
-  # })
-  # 
-  # output$postHocTable <- renderDataTable({
-  #   req(comparisonResults())  # Ensure the post-hoc results are available
-  #   if (!is.null(comparisonResults()$posthoc)) {
-  #     datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
-  #   }
-  # })
-  # 
-  # # Render the dataframe using DT::renderDataTable
-  # output$cld_table <- renderDataTable({
-  #   req(comparisonResults()) # Ensure the dataframe is ready
-  #   datatable(comparisonResults()$cld) 
-  # })
-  # 
-  # 
-  # # Use renderUI to dynamically generate dataTableOutput
-  # output$cld_tableUI <- renderUI({
-  #   # Dynamically create a dataTableOutput element
-  #   dataTableOutput("cld_table")
-  # })
-  # 
-  # output$comparisonsHeading <- renderUI({
-  #   req(input$sampleInput, input$columnInput, input$group_comparison)
-  #   data <- shapiro_data_reactive() # Assuming this returns your dataset
-  #   
-  #   num_groups <- length(unique(data$cell))
-  #   
-  #   if (num_groups == 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       h4(HTML("<b>Independent T-Test</b>"))
-  #     } else if (input$group_comparison == "nonparametric") {
-  #       h4(HTML("<b>Mann-Whitney U Test</b>"))
-  #     } else if (input$group_comparison == "welch") {
-  #       h4(HTML("<b>Welch's T-Test</b>"))
-  #     }else{
-  #       return(NULL)
-  #     }
-  #   } else if (num_groups > 2) {
-  #     if (input$group_comparison == "parametric") {
-  #       h4(HTML("<b>One-Way ANOVA</b>"))
-  #     } else if (input$group_comparison == "nonparametric"){
-  #       h4(HTML("<b>Kruskal-Wallis Test</b>"))
-  #     } else if (input$group_comparison == "welch"){
-  #       h4(HTML("<b>Welch's ANOVA</b>"))
-  #     }
-  #   } else {
-  #     return(NULL) # Handle the case where there are not enough groups
-  #   }
-  # })
-  # 
-  # # Dynamically generate UI for post hoc options based on the type of test and number of groups
-  # output$postHocOptions <- renderUI({
-  #   # Ensure we have more than 2 groups for post hoc tests to make sense
-  #   req(input$sampleInput, input$columnInput, input$group_comparison)
-  #   data <- shapiro_data_reactive() 
-  #   num_groups <- length(unique(data$cell))
-  #   
-  #   if (input$group_comparison == "parametric" && num_groups > 2) {
-  #     # Parametric post hoc test options
-  #     radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
-  #                  choices = list("Tukey's HSD" = "tukey",
-  #                                 "Bonferroni Correction" = "bonferroni",
-  #                                 "Holm Correction" = "holm",
-  #                                 "Benjamini-Hochberg Correction" = "bh",
-  #                                 "Scheffé's Test" = "scheffe"))
-  #   } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
-  #     # Nonparametric post hoc test options
-  #     radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
-  #                  choices = list("Dunn's Test" = "dunn",
-  #                                 "Conover-Iman Test" = "conover"))
-  #   } else if (input$group_comarison == "welch" && num_groups > 2) {
-  #     radioButtons("postHocTest", HTML("<b>Select a post hoc test for Welch's ANOVA (if <i>p</i> < 0.05):</b>"),
-  #                  choices = list("Tukey's HSD" = "tukey",
-  #                                 "Bonferroni Correction" = "bonferroni",
-  #                                 "Holm Correction" = "holm",
-  #                                 "Benjamini-Hochberg Correction" = "bh",
-  #                                 "Scheffé's Test" = "scheffe"))
-  #     
-  #   } else {
-  #     return(NULL) 
-  #   }
-  # })
-  # 
-  # 
-  # 
-  # output$correctionOptions <- renderUI({
-  #   num_groups <- length(unique(shapiro_data_reactive()$cell))
-  #   # Ensure we have more than 2 groups for post hoc tests to make sense
-  #   req(input$sampleInput, input$columnInput, input$group_comparison, num_groups > 2)
-  #   if (!is.null(input$postHocTest) && (input$postHocTest == "dunn" || input$postHocTest == "conover")) {
-  #     radioButtons("correctionMethod", HTML("<b>Select a correction method for Dunn's test:</b>"),
-  #                  choices = list("Bonferroni" = "bonferroni",
-  #                                 "Šidák" = "sidak",
-  #                                 "Holm" = "holm",
-  #                                 "Holm-Šidák" = "hs",
-  #                                 "Benjamini-Hochberg" = "bh",
-  #                                 "Hochberg's Step-up" = "hochberg"))
-  #   }else{
-  #     return(NULL)
-  #   }
-  # })
-  # 
-  # output$postHocHeading <- renderUI({
-  #   req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-  #   data <- shapiro_data_reactive()
-  #   num_groups <- length(unique(data$cell))
-  #   if (input$group_comparison == "parametric" && input$postHocTest == "tukey" && num_groups > 2) {
-  #     h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
-  #   } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "parametric" && input$postHocTest == "holm" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "parametric" && input$postHocTest == "bh" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe" && num_groups > 2) {
-  #     h4(HTML("<b>Scheffé's Post-hoc</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg" && num_groups > 2) {
-  #     h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg" && num_groups > 2) {
-  #     h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "Welch" && input$postHocTest == "tukey" && num_groups > 2) {
-  #     h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
-  #   } else if (input$group_comparison == "Welch" && input$postHocTest == "bonferroni" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "Welch" && input$postHocTest == "holm" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "Welch" && input$postHocTest == "bh" && num_groups > 2) {
-  #     h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-  #   } else if (input$group_comparison == "Welch" && input$postHocTest == "scheffe" && num_groups > 2) {
-  #     h4(HTML("<b>Scheffé's Post-hoc</b>"))
-  #   } else {
-  #     return(NULL)
-  #   }
-  # })
-  # # output$postHocHeading <- renderUI({
-  # #   req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-  # #   data <- shapiro_data_reactive() 
-  # #   generatePostHocHeading(input, data)
-  # # })
-  # 
-  # 
-  # output$cldHeading <- renderUI({
-  # req(comparisonResults())
-  #   tagList(
-  #     tags$h4(HTML("<b>Compact Letter Display</b>")),
-  #     tags$h6(HTML("Groups with the same letter are not significantly different from each other."))
-  #   )
-  # })
-
-  
-
   # Graphing dcq or ddcq  
   # Define a reactive expression to switch between datasets
   dcq_or_ddcq <- reactive({
@@ -2123,167 +1515,15 @@ output$nTable <- render_sample_size_table(input, sampleSizeTable)
     }
   })
   
-  output$downloadButtonUI <- renderUI({
-    # Check if group comparison has been selected
-    if (!is.null(input$group_comparison) && input$group_comparison %in% c("parametric", "non_parametric")) {
-      # Render the download button if a group comparison is selected
-      downloadButton("downloadStats", "Download Statistics Report")
-    }
-  })
+  #download button UI for statistics results report
+  output$downloadButtonUI <- downloadStatsButton(input)
   
+  #download stats results as a report in HTML file
+  create_downloadStatsReport(input, output, selected_gene_name_stats, sampleSizeTable, test_results_shapiro, 
+                             qqPlot_reactive, densityPlot_reactive, levene_reactive, comparisonResults, testName, postHocTestDescription)
 
-  
-  #download stats report of html Rmarkdown file
-  output$downloadStats <- downloadHandler(
-    filename = function() {
-      #load the filename
-      paste("StatisticsReport-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep="")
-    },
-    content = function(file) {
-      # Print dcq or ddcq
-      analysisHTML <- if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
-        "2<sup>-(ΔCq)</sup>"
-      } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
-        "2<sup>-(ΔΔCq)</sup>"
-      } else {
-        ""  # Default or error case
-      }
-      # Get the cleaned gene name
-      cleanedGeneName <- isolate(selected_gene_name_stats())
-      
-      # Only attempt to retrieve the sample size data if that component is selected
-      # Generate the sample size table data
-      sampleSizeData <- if(input$sample_size){
-        sampleSizeTable()  # Ensure this is not reactive here, or use isolate() if needed
-      } else {
-        NULL
-      }
-      #generate the shapiro-wilk table data
-      shapiroTable <- if("shapiro" %in% input$normality_test){
-        isolate(test_results_shapiro()) 
-      } else {
-        NULL
-      }
-      #generate the qq plot
-      qqPlot <- if("qqplot" %in% input$normality_test){
-        isolate(qqPlot_reactive())
-      } else {
-        NULL
-      }
-      #denisty plot
-      den <- if("density" %in% input$normality_test){
-        isolate(densityPlot_reactive())
-      } else {
-        NULL
-      }
-      
-      lev <- if(input$variance == TRUE){
-        isolate(levene_reactive())
-      } else {
-        NULL
-      }
-      
-      comparisonResultsData <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
-        isolate(comparisonResults())
-      } else {
-        NULL
-      }
-      
-      testNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
-        isolate(testName())
-      } else {
-        NULL
-      }
-      postHocNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
-        isolate(postHocTestDescription())
-      } else {
-        NULL
-      }
-      # Specify the path to your R Markdown template
-      rmdTemplate <- "StatisticsReport.Rmd"
-      
-      # Render the Rmd file, passing the sample size table data as a parameter
-      rmarkdown::render(input = rmdTemplate, 
-                        output_file = file,
-                        params = list(
-                          analysisType = analysisHTML,
-                          selectedSamples = input$sampleInput,
-                          selectedGene = cleanedGeneName,
-                          sampleSizeTable = sampleSizeData,
-                          shapiroData = shapiroTable,
-                          qqPlotGraph = qqPlot,
-                          densityPlot = den,
-                          leveneData = lev,
-                          logTransformed = input$log_transform,
-                          testResultData = comparisonResultsData$test,
-                          cldData = comparisonResultsData$cld,
-                          posthocData = comparisonResultsData$posthoc,
-                          testName = testNames,
-                          postHocName = postHocNames))
-    }
-  )
-
-  
-  output$downloadGraphOptions <- downloadHandler(
-    filename = function() {
-      #load the filename
-      paste("GraphOptions-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep="")
-    },
-    content = function(file) {
-      # Specify the path to your R Markdown template
-      rmdTemplate <- "GraphOptions.Rmd"
-      
-      # Render the Rmd file, passing the sample size table data as a parameter
-      rmarkdown::render(input = rmdTemplate, 
-                        output_file = file,
-                        params = list(
-                          rotateXLabels = input$rotate_labels,
-                          yAxisLabel = input$y_label,
-                          xAxisLabel = input$x_label,
-                          font = input$font_selector,
-                          xAxisTitleFontSize = input$x_axis_title_font_size,
-                          yAxisTitleFontSize = input$y_axis_title_font_size,
-                          xAxisTextFontSize = input$x_axis_label_font_size,
-                          yAxisTextFontSize = input$y_axis_label_font_size,
-                          colourScheme = input$color_scheme_select,
-                          plotType = input$plot_type,
-                          significance = input$add_significance,
-                          yPositionSignificance = input$yPos,
-                          labelSize = input$sigSize,
-                          bracketThickness = input$bracketSize,
-                          tipLength = input$tipLength,
-                          stepIncrease = input$stepIncrease,
-                          hideNS = input$hideNS,
-                          pValuePrefix = input$pValuePrefix,
-                          pValueDecimals = input$pValueDecimals,
-                          removeLeadingZero = input$remove0,
-                          errorBarType = input$error_type,
-                          errorBarColour = input$match_colour_error,
-                          startAtZero = input$start_at_zero,
-                          errorBarWidth = input$errorbar_width, 
-                          errorBarThickness = input$errorbar_thickness, 
-                          errorBarWidthdot = input$error_bar_width,
-                          errorBarThicknessdot = input$error_bar_thickness,
-                          averageLineWidth = input$average_line_width,
-                          averageLineThickness = input$average_line_thickness,
-                          averageLineColour = input$match_colour_avg,
-                          fillOrBorder = input$fill_color_toggle,
-                          pointSize = input$dot_size, 
-                          pointSizedot = input$point_size,
-                          pointSpacing = input$dot_spacing,
-                          changeToPairedShapes = input$change_shapes,
-                          shapeOutlineThickness = input$stroke_thickness,
-                          pointSpread = input$jitter_amount,
-                          seedNumber = input$seed_input,
-                          fileFormat = input$file_format,
-                          dpi = input$dpi,
-                          width = input$width,
-                          height = input$height))
-    }
-  )
-  
-  
-  
+ #download graph options as html file
+  create_downloadGraphOptions(input, output)
 }
 
 # Run the application 
