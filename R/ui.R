@@ -233,7 +233,7 @@ ui <- fluidPage(
                        selectInput("sampleInput", "Select Sample:", choices = NULL, multiple = TRUE), #select samples
                        uiOutput("ddcqMessage"), #displays error message if ddcq stats has not been performed/saved yet.
                        uiOutput("selected_gene_ui_stats"), #displays "You are currently performing stats on gene: if ddcq is selected"
-                       selectInput("columnInput", "Select Gene:", choices = NULL), #select gene if dcq is selected
+                        selectInput("columnInput", "Select Gene:", choices = NULL), #select gene if dcq is selected)
                        tags$br(),
                        h5(HTML("<b>Select the statistical tests to perform.</b>")),
                        h6(HTML("<b>1. Sample Size</b>")),
