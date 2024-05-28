@@ -376,6 +376,8 @@ performComparisonTests <- function(test_type, data, column_input = input$columnI
       rename("P Value" = P_value, "Significant?" = Significant, "P Value Summary" = P_value_summary)
     
     
+  } else {
+    return(NULL)
   }
   return(list(test_result_df = test_result_df, aov_result = aov_result))
 }

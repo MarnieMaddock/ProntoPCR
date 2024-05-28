@@ -244,7 +244,19 @@ shapiro_results(input, output, test_results_shapiro)
     # Ensure necessary inputs are available
     req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive()
-    num_groups <- length(unique(data$cell))
+
+    
+    if (is.null(data) || nrow(data) == 0) {
+      return(NULL)
+    }
+    
+    num_groups <- as.numeric(length(unique(data$cell)))
+
+    test_result <- NULL
+    test_result_df <- NULL
+    post_hoc_df <- NULL
+    cld_df <- NULL
+    
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
         #perform t-test
@@ -257,82 +269,87 @@ shapiro_results(input, output, test_results_shapiro)
         test_result_df <- test_result$test_result_df
         #compact letter display
         cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
-      } else {
+      } else if (input$group_comparison == "non_parametric"){
         test_result <- performComparisonTests(test_type = "wilcox", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         #compact letter display
         cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
+      } else {
+        return(NULL)
       }
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
-      if (input$group_comparison == "parametric") {
+      print(paste("correctionMethod:", input$correctionMethod))
+      if (isTRUE(input$group_comparison == "parametric")) {
         test_result <- performComparisonTests(test_type = "ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         aov_result  <- test_result$aov_result
         
-        if(input$postHocTest == "tukey"){
-          results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
-          # You can then access each dataframe like this:
-          post_hoc_df <- results$post_hoc_df
-          
-          #compact letter display
-          cld_df <- results$cld_df
-          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-          
-        }else if (input$postHocTest == "bonferroni"){
-          try({
-            # Validate conditions
-            results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput, sample_sizes = sampleSizeTable())
-            # You can then access each dataframe like this:
-            post_hoc_df <- results$post_hoc_df
-            
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          }, silent = TRUE)
-          
-          
-        }else if (input$postHocTest == "holm"){
-          try({
-            # Validate conditions
-            results <- performPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "holm",
-              input_column = input$columnInput,
-              sample_sizes = sampleSizeTable()
-            )
-            # You can then access each dataframe like this:
-            post_hoc_df <- results$post_hoc_df
-            
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          }, silent = TRUE)
-          
-        }else if (input$postHocTest == "bh"){
-          try({
-            # Validate conditions
-            results <- performPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "BH",
-              input_column = input$columnInput,
-              sample_sizes = sampleSizeTable()
-            )
-            # You can then access each dataframe like this:
-            post_hoc_df <- results$post_hoc_df
-            
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
-          }, silent = TRUE)
-        }else if (input$postHocTest == "scheffe"){
-          results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "scheffe", input_column = input$columnInput, sample_sizes = sampleSizeTable())
-          # You can then access each dataframe like this:
-          post_hoc_df <- results$post_hoc_df
-          cld_df <- results$cld_df
-          #compact letter display
-          cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-        }
+            if(input$postHocTest == "tukey"){
+              results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
+              # You can then access each dataframe like this:
+              post_hoc_df <- results$post_hoc_df
+              
+              #compact letter display
+              cld_df <- results$cld_df
+              cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+              
+            }else if (input$postHocTest == "bonferroni"){
+              try({
+                # Validate conditions
+                results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "bonferroni", input_column = input$columnInput, sample_sizes = sampleSizeTable())
+                # You can then access each dataframe like this:
+                post_hoc_df <- results$post_hoc_df
+                
+                #compact letter display
+                cld_df <- results$cld_df
+                cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+              }, silent = TRUE)
+              
+              
+            }else if (input$postHocTest == "holm"){
+              try({
+                # Validate conditions
+                results <- performPostHoc(
+                  data = shapiro_data_reactive(),
+                  p_adjust_method = "holm",
+                  input_column = input$columnInput,
+                  sample_sizes = sampleSizeTable()
+                )
+                # You can then access each dataframe like this:
+                post_hoc_df <- results$post_hoc_df
+                
+                #compact letter display
+                cld_df <- results$cld_df
+                cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+              }, silent = TRUE)
+              
+            }else if (input$postHocTest == "bh"){
+              try({
+                # Validate conditions
+                results <- performPostHoc(
+                  data = shapiro_data_reactive(),
+                  p_adjust_method = "BH",
+                  input_column = input$columnInput,
+                  sample_sizes = sampleSizeTable()
+                )
+                # You can then access each dataframe like this:
+                post_hoc_df <- results$post_hoc_df
+                
+                #compact letter display
+                cld_df <- results$cld_df
+                cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+              }, silent = TRUE)
+            }else if (input$postHocTest == "scheffe"){
+              results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "scheffe", input_column = input$columnInput, sample_sizes = sampleSizeTable())
+              # You can then access each dataframe like this:
+              post_hoc_df <- results$post_hoc_df
+              cld_df <- results$cld_df
+              #compact letter display
+              cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+            }else{
+              return(NULL)
+            }
       } else if (input$group_comparison == "welch"){
         test_result <- performComparisonTests(test_type = "welch_ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
@@ -364,8 +381,10 @@ shapiro_results(input, output, test_results_shapiro)
                                                        ifelse(`P Value (Tukey Adj)` > 0.05, "ns", "*"))))
           cld_df <- performCLD(data = post_hoc_df, p_colname = "P Value (Tukey Adj)",  remove_NA = FALSE)
           }
+        }else{
+          return(NULL)
         }
-      } else {
+      } else if (isTRUE(input$group_comparison == "non_parametric")){
         test_result <- performComparisonTests(test_type = "kw", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         post_hoc_df <- NULL
@@ -514,19 +533,30 @@ shapiro_results(input, output, test_results_shapiro)
           #compact letter display
           cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
+        }else{
+          return(NULL)
         }
         
+      } else {
+        return(NULL) # Handle the case where there are not enough groups
       }
+      
       return(list(test = test_result_df, posthoc = post_hoc_df, cld = cld_df))
     } else {
       return(NULL) # Handle the case where there are not enough groups
     }
   })
   
+
+  
   # Render the dataframe using DT::renderDataTable
   output$dataTable <- renderDataTable({
     req(comparisonResults()) # Ensure the dataframe is ready
-    datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE)) 
+    if (!is.null(comparisonResults()$test)) {
+      datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE))
+    } else {
+      datatable(data.frame(Message = "No test results available"), options = list(pageLength = 5, autoWidth = TRUE))
+    }
   })
   
   # Use renderUI to dynamically generate dataTableOutput
@@ -536,22 +566,26 @@ shapiro_results(input, output, test_results_shapiro)
   })
   
   
+  output$postHocTable <- renderDataTable({
+    req(comparisonResults())  # Ensure the post-hoc results are available
+    if (!is.null(comparisonResults()$posthoc)) {
+      datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
+    } 
+  })
+  
   output$postHocTableUI <- renderUI({
     # Dynamically create a dataTableOutput element
     dataTableOutput("postHocTable")
   })
   
-  output$postHocTable <- renderDataTable({
-    req(comparisonResults())  # Ensure the post-hoc results are available
-    if (!is.null(comparisonResults()$posthoc)) {
-      datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
-    }
-  })
-  
   # Render the dataframe using DT::renderDataTable
   output$cld_table <- renderDataTable({
     req(comparisonResults()) # Ensure the dataframe is ready
-    datatable(comparisonResults()$cld) 
+    if (!is.null(comparisonResults()$cld)) {
+      datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
+    } else {
+      datatable(data.frame(Message = "No compact letter display results available"), options = list(pageLength = 5, autoWidth = TRUE))
+    }
   })
   
   
@@ -616,7 +650,6 @@ shapiro_results(input, output, test_results_shapiro)
       return(NULL) 
     }
   })
-  
   
   
   output$correctionOptions <- renderUI({
