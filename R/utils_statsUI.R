@@ -31,7 +31,7 @@ display_statsSamplesUI <- function(input, session, values, wrangled_data, averag
     # Check if avg_dcq_df is not NULL and has the expected columns
     if (!is.null(values$ddcqDataSaved) && values$ddcqDataSaved) {
       updateSelectInput(session, "sampleInput", choices = unique(average_dcq()$cell))
-      updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
+      updateSelectInput(session, "columnInput", choices = grep("^fc_ddcq", names(average_dcq()), value = TRUE))
     } else {
       updateSelectInput(session, "sampleInput", choices=character(0), selected = character(0))  # Clear the sampleInput choices
       updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
@@ -62,7 +62,7 @@ choose_stats_df <- function(input, values, wrangled_data, average_dcq){
       wrangled_data()
     } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && values$ddcqDataSaved) {
       average_dcq()
-    } else{
+    } else {
       return(NULL)
     }
   })
