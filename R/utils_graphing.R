@@ -1,18 +1,72 @@
 # utils_graphing.R
+#display message if ddcq dataset hasn't been created yet
+ddcq_not_calculated_msg_graphs <- function(input, values){
+  renderUI({
+    # Check if 'ddcq_stats' is selected and data is not saved yet
+    if (input$select_dcq_or_ddcq == "ddcq" && !values$ddcqDataSaved) {
+      # Return a UI element with the message
+      tagList(
+        HTML('<h5>Please go to the 2<sup>-(∆∆Cq)</sup> Calculations tab to create your ∆∆Cq dataset.</h5>'),
+        tags$p("You need to save your ∆∆Cq dataset before proceeding.")
+      )
+    } else {
+      # Return NULL or an empty UI element if conditions are not met
+      return()
+    }
+  })
+}
 
 select_dcq_ddcq_data <- function(input, wrangled_data, average_dcq){
   # Graphing dcq or ddcq  
-  # Define a reactive expression to switch between datasets
-  reactive({
-    if (input$select_dcq_or_ddcq == "dcq") {
-      # If 'dcq' is selected, return wrangled_data()
-      return(wrangled_data())
-      
-    } else {
-      # If 'ddcq' is selected, return average_dcq()
-      return(average_dcq())
-    }
+  # Reactive values to store user selections
+  selected_stats <- reactive({
+    sub("_stats", "", input$select_dcq_or_ddcq_stats)
   })
+  selected_graphs <- reactive({
+    input$select_dcq_or_ddcq
+  })
+  # Reactive expression to check for consistency
+  data_consistency <- reactive({
+    selected_stats() == selected_graphs()
+  })
+  
+
+  
+  reactive({
+    if (!data_consistency()) {
+      showModal(modalDialog(
+        title = "Data Selection Mismatch",
+        "Please ensure that the selected data type for stats and graphs are the same.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
+      return(NULL)
+    } else {
+      if (input$select_dcq_or_ddcq == "dcq") {
+        # If 'dcq' is selected, return wrangled_data()
+        return(wrangled_data())
+        
+      } else {
+        # If 'ddcq' is selected, return average_dcq()
+        return(average_dcq())
+      }
+    }
+
+  })
+  
+
+  
+  # Define a reactive expression to switch between datasets
+  # reactive({
+  #     if (input$select_dcq_or_ddcq == "dcq") {
+  #       # If 'dcq' is selected, return wrangled_data()
+  #       return(wrangled_data())
+  #       
+  #     } else {
+  #       # If 'ddcq' is selected, return average_dcq()
+  #       return(average_dcq())
+  #     }
+  # })
 }
 
 
@@ -180,9 +234,6 @@ add_sigUI <- function(input, num_groups){
     if(input$add_significance == "asterix" || input$add_significance == "cld" || input$add_significance == "pval"){
       tagList(
         fluidRow(
-          column(12, numericInput("yPos", "Y position", value = 1))
-        ),
-        fluidRow(
           column(4, numericInput("sigSize", "Label Size", min = 0, max = 20, value = 5)),
           if(input$add_significance != "cld") {
             tagList(
@@ -229,6 +280,7 @@ add_sigUI <- function(input, num_groups){
 ## EXTENISVE code fro generating customisable graphs:
 create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci){
   renderPlot({
+    
     req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
     set.seed(input$seed_input)
     
@@ -487,17 +539,34 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
       }
     })
     
+
+    observe({
+      req(input$add_significance != "none")
+      if (is.null(input$group_comparison) || input$group_comparison == "" && input$add_significance != "none") {
+        showModal(modalDialog(
+          title = "Statistics Error",
+          "Statistics have not been performed: Please select a group comparison test in the statistics tab before adding significance to the graph.",
+          easyClose = TRUE,
+          footer = NULL
+        ))
+        return(NULL)
+      }
+    })
+    
+    max_y <- max(filtered_data2[[y_aes]], na.rm = TRUE)
+    y_position_auto <- max_y + (0.1 * max_y)
+    
     if(input$add_significance == "asterix"){
       num_groups <- length(unique(shapiro_data_reactive()$cell))
       if(num_groups > 2){
         comparisonResults_posthoc_renamed <- comparisonResults()$posthoc %>%
           rename(p.signif = `P Value Summary`)
-        plot <- plot + stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
+        plot <- plot + stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                           step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
       }else{
         comparisonResults_renamed <- comparisonResults()$test %>%
           rename(p.signif = `P Value Summary`)
-        plot <- plot + stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
+        plot <- plot + stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                           step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
       }
       
@@ -509,7 +578,7 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
         mutate(group1 = Group, 
                group2 = Group)
       
-      plot <- plot + stat_pvalue_manual(cld_data, label = "Letters", y.position = input$yPos, label.size = input$sigSize, bracket.size = input$bracketSize, 
+      plot <- plot + stat_pvalue_manual(cld_data, label = "Letters", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                         step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
     }else if(input$add_significance == "pval"){
       num_groups <- length(unique(shapiro_data_reactive()$cell))
@@ -554,7 +623,7 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
           plot_data$`p.signif` <- unlist(formatted_pvalues)
           # Finally, add the formatted p-values to the plot
           plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
-                                            y.position = input$yPos, label.size = input$sigSize, 
+                                            y.position = y_position_auto, label.size = input$sigSize, 
                                             bracket.size = input$bracketSize, 
                                             step.increase = input$stepIncrease, hide.ns = input$hideNS, 
                                             tip.length = input$tipLength, na.rm = TRUE, 
@@ -596,7 +665,7 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
         plot_data$`p.signif` <- unlist(formatted_pvalues)
         # Finally, add the formatted p-values to the plot
         plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
-                                          y.position = input$yPos, label.size = input$sigSize, 
+                                          y.position = y_position_auto, label.size = input$sigSize, 
                                           bracket.size = input$bracketSize, 
                                           step.increase = input$stepIncrease, hide.ns = input$hideNS, 
                                           tip.length = input$tipLength, na.rm = TRUE, 
