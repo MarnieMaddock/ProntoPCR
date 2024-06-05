@@ -169,7 +169,7 @@ server <- function(input, output, session) {
   #error messgae if DDCQ calculations havent occurred yet
   output$ddcqMessage <- ddcq_not_calculated_msg(input, values)
   #chose to use dcq or ddcq dataframes
-  stats_data <-choose_stats_df(input, values, wrangled_data, average_dcq)
+  stats_data <- choose_stats_df(input, values, wrangled_data, average_dcq)
 
 # Observe changes in the selection between dcq and ddcq
 observeEvent(input$select_dcq_or_ddcq_stats, {
@@ -252,10 +252,13 @@ shapiro_results(input, output, test_results_shapiro)
     
     num_groups <- as.numeric(length(unique(data$cell)))
 
-    test_result <- NULL
-    test_result_df <- NULL
-    post_hoc_df <- NULL
-    cld_df <- NULL
+    test_result <- data.frame()
+    test <- data.frame()
+    test_result_df <- data.frame()
+    posthoc <- data.frame()
+    post_hoc_df <- data.frame()
+    cld_df <- data.frame()
+    cld <- data.frame()
     
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
@@ -275,23 +278,22 @@ shapiro_results(input, output, test_results_shapiro)
         #compact letter display
         cld_df <- performCLD(data = test_result_df, p_colname = "P Value",  remove_NA = FALSE)
       } else {
-        return(NULL)
+        #return(NULL)
+        return(list(test = test_result_df, cld = cld_df))
       }
       return(list(test = test_result_df, cld = cld_df))
     } else if (num_groups > 2) {
-      print(paste("correctionMethod:", input$correctionMethod))
       if (isTRUE(input$group_comparison == "parametric")) {
         test_result <- performComparisonTests(test_type = "ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         aov_result  <- test_result$aov_result
-        
             if(input$postHocTest == "tukey"){
               results <- performTukeyPostHoc(aov_df = aov_result, p_adjust_method = "tukey")
               # You can then access each dataframe like this:
               post_hoc_df <- results$post_hoc_df
               
               #compact letter display
-              cld_df <- results$cld_df
+              #cld_df <- results$cld_df
               cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
               
             }else if (input$postHocTest == "bonferroni"){
@@ -302,7 +304,7 @@ shapiro_results(input, output, test_results_shapiro)
                 post_hoc_df <- results$post_hoc_df
                 
                 #compact letter display
-                cld_df <- results$cld_df
+                #cld_df <- results$cld_df
                 cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
               }, silent = TRUE)
               
@@ -348,9 +350,10 @@ shapiro_results(input, output, test_results_shapiro)
               #compact letter display
               cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
             }else{
-              return(NULL)
+              #return(NULL)
+              return(list(test = test_result_df, cld = cld_df))
             }
-      } else if (input$group_comparison == "welch"){
+      } else if (isTRUE(input$group_comparison == "welch")){
         test_result <- performComparisonTests(test_type = "welch_ANOVA", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         post_hoc_df <- NULL
@@ -376,19 +379,21 @@ shapiro_results(input, output, test_results_shapiro)
                           `Confidence Low` = conf.low,
                           `Confidence High` = conf.high,
                           `P Value (Tukey Adj)` = p.adj) %>%
-            dplyr::mutate(Significance = ifelse(`P Value (Tukey Adj)` < 0.001, "***",
-                                                ifelse(`P Value (Tukey Adj)` < 0.01, "**",
+            dplyr::mutate(Significance = ifelse(`P Value (Tukey Adj)` <= 0.001, "***",
+                                                ifelse(`P Value (Tukey Adj)` <= 0.01, "**",
                                                        ifelse(`P Value (Tukey Adj)` > 0.05, "ns", "*"))))
           cld_df <- performCLD(data = post_hoc_df, p_colname = "P Value (Tukey Adj)",  remove_NA = FALSE)
           }
         }else{
-          return(NULL)
+          #return(NULL)
+          return(list(test = test_result_df, cld = cld_df))
         }
       } else if (isTRUE(input$group_comparison == "non_parametric")){
         test_result <- performComparisonTests(test_type = "kw", data = shapiro_data_reactive(), column_input = input$columnInput)
         test_result_df <- test_result$test_result_df
         post_hoc_df <- NULL
         if(input$postHocTest == "dunn" && input$correctionMethod == "bonferroni"){
+          try({
           # Validate conditions
           results <- performDunnPostHoc(
             data = shapiro_data_reactive(),
@@ -401,6 +406,7 @@ shapiro_results(input, output, test_results_shapiro)
           #compact letter display
           cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = TRUE)
+          }, silent = TRUE)
           
         }else if(input$postHocTest == "dunn" && input$correctionMethod == "sidak"){
           # Validate conditions
@@ -534,11 +540,13 @@ shapiro_results(input, output, test_results_shapiro)
           cld_df <- results$cld_df
           cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
         }else{
-          return(NULL)
+          #return(NULL)
+          return(list(test = test_result_df, cld = cld_df))
         }
         
       } else {
-        return(NULL) # Handle the case where there are not enough groups
+        #return(NULL) # Handle the case where there are not enough groups
+        return(list(test = test_result_df, cld = cld_df))
       }
       
       return(list(test = test_result_df, posthoc = post_hoc_df, cld = cld_df))
@@ -551,7 +559,7 @@ shapiro_results(input, output, test_results_shapiro)
   
   # Render the dataframe using DT::renderDataTable
   output$dataTable <- renderDataTable({
-    req(comparisonResults()) # Ensure the dataframe is ready
+    req(!is.null(comparisonResults()$test)) # Ensure the dataframe is ready
     if (!is.null(comparisonResults()$test)) {
       datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE))
     } else {
@@ -567,10 +575,12 @@ shapiro_results(input, output, test_results_shapiro)
   
   
   output$postHocTable <- renderDataTable({
-    req(comparisonResults())  # Ensure the post-hoc results are available
+    req(!is.null(comparisonResults()$posthoc))  # Ensure the post-hoc results are available
     if (!is.null(comparisonResults()$posthoc)) {
       datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
-    } 
+    } else {
+      return(NULL)
+    }
   })
   
   output$postHocTableUI <- renderUI({
@@ -580,7 +590,7 @@ shapiro_results(input, output, test_results_shapiro)
   
   # Render the dataframe using DT::renderDataTable
   output$cld_table <- renderDataTable({
-    req(comparisonResults()) # Ensure the dataframe is ready
+    req(!is.na(comparisonResults()$cld)) # Ensure the dataframe is ready
     if (!is.null(comparisonResults()$cld)) {
       datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
     } else {
@@ -716,7 +726,7 @@ shapiro_results(input, output, test_results_shapiro)
   
   
   output$cldHeading <- renderUI({
-    req(comparisonResults())
+    req(!is.null(comparisonResults()$cld))
     tagList(
       tags$h4(HTML("<b>Compact Letter Display</b>")),
       tags$h6(HTML("Groups with the same letter are not significantly different from each other."))
@@ -724,15 +734,51 @@ shapiro_results(input, output, test_results_shapiro)
   })
   
   # # Graphing dcq or ddcq  
+  # #ensure that if dcq is selected in stats, dcq is graphed. Error if there is a mismatch
+  # # Reactive values to store user selections
+  # selected_stats <- reactive({
+  #   sub("_stats", "", input$select_dcq_or_ddcq_stats)
+  # })
+  # selected_graphs <- reactive({
+  #   input$select_dcq_or_ddcq
+  # })
+  # 
+  # # Reactive expression to check for consistency
+  # data_consistency <- reactive({
+  #   selected_stats() != "" && selected_graphs() != "" && selected_stats() == selected_graphs()
+  # })
+  # 
+  # # Check consistency for stats
+  # observe({
+  #   if (!data_consistency()) {
+  #     showModal(modalDialog(
+  #       title = "Data Selection Mismatch",
+  #       "Please ensure that the selected data normalisations for stats and graphs are the same. i.e. if you performed stats on 2^-(ΔCq) calculations, that you graph 2^-(ΔCq).",
+  #       easyClose = TRUE,
+  #       footer = NULL
+  #     ))N_
+  #   }_
+  # })
+  
+  # Reactive value to track if the graph has been generated
+  graph_generated <- reactiveVal(FALSE)
+  
+  output$ddcqMessage_graphs <- ddcq_not_calculated_msg_graphs(input, values)
   # # Define a reactive expression to switch between datasets
   dcq_or_ddcq <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
-  
+  observe({
+    data_info  <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
+    print(data_info$discrepancy_detected() )
+    
+  })
   #display UI components depending on if dcq or ddcq is selcted
   dcq_ddcq_UI(input, output, wrangled_data)
   ddcq_UI(input, output, wrangled_data)
   
   # Define the text output for displaying the selected gene
   output$selected_gene_message <- displayGeneUI(input)
+  
+
   
   #dynamically change Y axis according to selected gene
   output$dynamic_y_label_input <- dynamic_YLabel(input)
@@ -792,8 +838,16 @@ shapiro_results(input, output, test_results_shapiro)
   output$sigUI <- add_sigUI(input, num_groups)
   
   # render plot according to user input options
-  output$plot <- create_graph(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci)
+  output$plot <- create_graph(input, graph_generated, selected_stats = dcq_or_ddcq$selected_stats, selected_graphs = dcq_or_ddcq$selected_graphs, dcq_or_ddcq = dcq_or_ddcq$data, col_discrepancy = dcq_or_ddcq$col_discrepancy, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci)
   
+  # Observe changes in data selection to reset the graph_generated flag
+  observeEvent(input$select_dcq_or_ddcq, {
+    graph_generated(FALSE)
+  })
+  
+  observeEvent(input$select_dcq_or_ddcq_stats, {
+    graph_generated(FALSE)
+  })
   
   #If the user changes between dcq and ddcq different options appear 
   observeEvent(input$select_dcq_or_ddcq,{

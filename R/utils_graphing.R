@@ -30,45 +30,50 @@ select_dcq_ddcq_data <- function(input, wrangled_data, average_dcq){
     selected_stats() == selected_graphs()
   })
   
-
-  
-  reactive({
-    if (!data_consistency()) {
-      showModal(modalDialog(
-        title = "Data Selection Mismatch",
-        "Please ensure that the selected data type for stats and graphs are the same.",
-        easyClose = TRUE,
-        footer = NULL
-      ))
-      return(NULL)
-    } else {
-      if (input$select_dcq_or_ddcq == "dcq") {
-        # If 'dcq' is selected, return wrangled_data()
-        return(wrangled_data())
-        
-      } else {
-        # If 'ddcq' is selected, return average_dcq()
-        return(average_dcq())
-      }
-    }
-
+  col_discrepancy <- reactive({
+    selected_stat_column <- input$columnInput
+    selected_plot_column <- if(input$select_dcq_or_ddcq == "dcq") input$fc_dcq_column else input$fc_ddcq
+    !is.null(selected_stat_column) && !is.null(selected_plot_column) && selected_stat_column != selected_plot_column
+    #selected_stat_column != selected_plot_column
   })
   
-
-  
-  # Define a reactive expression to switch between datasets
-  # reactive({
-  #     if (input$select_dcq_or_ddcq == "dcq") {
-  #       # If 'dcq' is selected, return wrangled_data()
-  #       return(wrangled_data())
-  #       
-  #     } else {
-  #       # If 'ddcq' is selected, return average_dcq()
-  #       return(average_dcq())
-  #     }
-  # })
+  list(
+    data = reactive({
+      if (!data_consistency()) {
+        showModal(modalDialog(
+          title = "Data Selection Mismatch",
+          "Please ensure that the selected data type for stats and graphs are the same. i.e. ∆Cq vs ∆ΔCq.",
+          easyClose = TRUE,
+          footer = NULL
+        ))
+        return(NULL)
+      } else {
+        if (input$select_dcq_or_ddcq == "dcq") {
+          # If 'dcq' is selected, return wrangled_data()
+          return(wrangled_data())
+        } else {
+          # If 'ddcq' is selected, return average_dcq()
+          return(average_dcq())
+        }
+      }
+    }),
+    selected_stats = selected_stats,
+    selected_graphs = selected_graphs,
+    data_consistency = data_consistency,
+    col_discrepancy = col_discrepancy,
+    discrepancy_detected  = reactive({
+      if(col_discrepancy()) {
+        showModal(modalDialog(
+          title = "Discrepancy Detected",
+          "The selected gene for statistics does not match the gene for graphing. Please adjust your selections to ensure that the correct p-values are added to your graph.",
+          easyClose = TRUE,
+          footer = modalButton("Close")
+        ))
+      }
+    })
+  )
 }
-
+  
 
 dcq_ddcq_UI <- function(input, output, wrangled_data){
   observeEvent(input$select_dcq_or_ddcq,{
@@ -277,11 +282,26 @@ add_sigUI <- function(input, num_groups){
 
 
 # PLOT CODE
-## EXTENISVE code fro generating customisable graphs:
-create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci){
+## EXTENISVE code for generating customisable graphs:
+create_graph <- function(input, graph_generated, selected_stats, selected_graphs, dcq_or_ddcq, col_discrepancy, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci){
   renderPlot({
-    
     req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
+    # Check if the graph has been generated and the data selection has changed
+    if (graph_generated() && selected_stats() != selected_graphs()) {
+      showNotification("Data selection has changed: Please re-generate the graph after selecting the correct data type.", type = "error")
+      return(NULL)
+    }
+    # Call col_discrepancy to check for discrepancies
+    if (col_discrepancy()) {
+      showModal(modalDialog(
+        title = "Discrepancy Detected",
+        "The selected gene for statistics does not match the gene for graphing. Please adjust your selections to ensure that the correct p-values are added to your graph.",
+        easyClose = TRUE,
+        footer = modalButton("Close")
+      ))
+      return(NULL)
+    }
+    
     set.seed(input$seed_input)
     
     if(input$select_dcq_or_ddcq == "dcq"){
@@ -516,30 +536,6 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
     #allow markdown on y axis
     plot <- plot + theme(axis.title.y = element_markdown())
     
-    
-    #Add significance to graph
-    discrepancy_detected <- reactive({
-      req(input$group_comparison)
-      # Logic to detect discrepancy between stats and graphs selected gene
-      selected_stat_column <- input$columnInput
-      selected_plot_column <- if(input$select_dcq_or_ddcq == "dcq") input$fc_dcq_column else input$fc_ddcq
-      
-      selected_stat_column != selected_plot_column
-    })
-    
-    #use observe to reactively display an error message
-    observe({
-      if(discrepancy_detected()) {
-        showModal(modalDialog(
-          title = "Discrepancy Detected",
-          "The selected gene for statistics does not match the gene for graphing. Please adjust your selections to ensure that the correct p-values are added to your graph.",
-          easyClose = TRUE,
-          footer = modalButton("Close")
-        ))
-      }
-    })
-    
-
     observe({
       req(input$add_significance != "none")
       if (is.null(input$group_comparison) || input$group_comparison == "" && input$add_significance != "none") {
@@ -678,9 +674,10 @@ create_graph <- function(input, dcq_or_ddcq, rep_avg_data, rep_avg_data_ddcq, er
     # Set the plot size based on the height of the plot
     shinyjs::runjs(paste0('$("#download-container").height($("#plot").height());'))
     shinyjs::runjs(paste0('$("#download-container").width($("#plot").width());'))
+
     # Print the plot
     print(plot)
-    
+    graph_generated(TRUE)
   },
   width = function() {
     input$width * 100  # Adjust the multiplier as needed

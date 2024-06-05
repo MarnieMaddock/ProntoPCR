@@ -105,6 +105,7 @@ ui <- fluidPage(
                        radioButtons("select_dcq_or_ddcq", HTML("Select whether to graph 2<sup>-(ΔCq)</sup> or 2<sup>-(ΔΔCq)</sup>:"),
                                     choices = c("ΔCq" = "dcq", "∆ΔCq" = "ddcq"),
                                     selected = "dcq"),
+                       uiOutput("ddcqMessage_graphs"),
                        uiOutput("selected_gene_ui"), # Display the gene selection message if ddcq is being graphed
                        tags$br(),
                        fluidRow(
