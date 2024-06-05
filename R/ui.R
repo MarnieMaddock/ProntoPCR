@@ -31,6 +31,9 @@ source("about.R")
 source("example_data_text.R")
 source("utils_getColourSchemes.R")
 
+#Set the locale to ensure it handles UTF-8 encoding properly:
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
 
 # Define UI for application
 ui <- fluidPage(
@@ -41,7 +44,7 @@ ui <- fluidPage(
   div(id = "logo", tags$img(src = "dottori_lab_pentagon.svg")),
   div(id = "logo2", tags$img(src = "UOW.png")),
   # Application title
-  div(tags$h1("FASTqPCR v1.2.0", style = "margin-left: 65px;")),
+  div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
   #sidebar options
   sidebarLayout(
     sidebarPanel(
@@ -50,8 +53,8 @@ ui <- fluidPage(
       conditionalPanel(condition = "input.tabselected==1", 
                        tags$h3("Contact"),
                        tags$p(HTML("If you have found this application useful please share with your networks. If there are any questions, or if you have any suggestions for improvement, please contact the 
-                        <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Feedback&body=Hi, I have some feedback for FASTqPCR:'>development team</a>, or raise an issue/request on 
-                        <a href='https://github.com/MarnieMaddock/FASTqPCR/issues'>GitHub</a>.")),
+                        <a href='mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Feedback&body=Hi, I have some feedback for ProntoPCR:'>development team</a>, or raise an issue/request on 
+                        <a href='https://github.com/MarnieMaddock/ProntoPCR/issues'>GitHub</a>.")),
                        tags$div(style = "height: 150px;"),
                        tags$div(tags$img(src = "dottori_lab.svg", height = "auto", width = 300), style = "text-align: center;") #logo
       ),
@@ -402,7 +405,7 @@ ui <- fluidPage(
                    )
                  ),
                  tags$br(),
-                 p(HTML("Note: Custom colour selection is currently unavailable. SVG graphs allow the user to alter graph aesthetics. However, colour scheme suggestions for graphs can be also be implemented by sending a request to <a href='mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:'>Marnie</a>.")),
+                 p(HTML("Note: Custom colour selection is currently unavailable. SVG graphs allow the user to alter graph aesthetics. However, colour scheme suggestions for graphs can be also be implemented by sending a request to <a href='mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:'>Marnie</a>.")),
                  tags$br(),
                  tags$br()
                 ),

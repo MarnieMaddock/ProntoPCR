@@ -1,45 +1,14 @@
 about_text <- div(
-    h3("About FASTqPCR"),
-    p("FASTqPCR has been developed to simplify and accerlate the analysis of qPCR data (which is known to be a repetitive and time-consuming task). All caluclations, statistics and graphing can be performed in under 1 minute*.
-      The web application is designed to do the following:"),
+    h3("About ProntoPCR"),
+    p("Pronto PCR has been developed to simplify and accelerate the analysis of qPCR data, including performing calculations, statistics and graphing (which is known to be a repetitive and time-consuming task). The application is designed to do the following:"),
     shiny::tags$ul(
-      tags$li("Instant calculations such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq and fold change (i.e. 2^-ΔCq/2^-ΔΔCq)"),
+      tags$li("Instant calculations such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq and fold change (i.e. 2^-ΔCq / 2^-ΔΔCq)"),
       tags$li("Perform statistical analysis such as testing for normality, homogeneity of variance, performing parametric/non-parametric tests for comparing groups, and giving mulitple options for post-hoc analysis"),
       tags$li("Graph the data and alter the aesthetics to the users preferences. There is also the option to add the results of the statistical analysis to the graph"),
     ),
-    p("Calculations can be downloaded as a .csv file if the user wishes to analyse the data in another application. 
+    p("All calculations can be downloaded as a .csv file if the user wishes to analyse the data in another application. 
       All graphs also have the option to be saved as an .svg so that aesthetics can be further modified in other programs such as Illustrator and Inkscape (which is free!).
-      Additionally, all statistics and analysis can be saved as a report in .html format (which is useful for writing up result sections)."),
-    
-    h5("Preparing your data"),
-    p("For FASTqPCR to work, the data must be in a specific (but simple) format. The data must be in a .csv file. Note this is compatible directly with the output of QuantStudio Design and Analysis Software Results (just go to the Quality Check tab, selecte Replicate Group on the right hand side, select the three dots and export the data:"),
-    tags$img(src = "quantstudio.svg", height = "350px", width = "auto"),
-    p("The data columns should include (ensure correct spelling, capitalisations and no spaces - use . instead):"),
-    shiny::tags$ul(
-      tags$li("Sample"),
-      tags$li("Target"),
-      tags$li("Num.of.Replicates"),
-      tags$li("Cq.Mean"),
-      tags$li("Cq.SD"),
-      tags$li("Result.Quality.Issues"),
-    ),
-    p("The Sample column should be formatted as follows:"),
-    tags$img(src = "Sample.svg", height = "200px", width = "auto"),
-    p("Where grouping1 is your main group that you are comparing e.g. diseased and control cell lines, or different drugs, the number refers to the biological replicate number, and grouping2 is an additional grouping factor e.g. different cell types. This is useful if you have similar grouping1 names over different experiments, and do not want the data to merge. A second grouping is not a requirement, and can be combined into grouping1 e.g. DrugA1uM. Please write NIL if there is not second grouping variable, do not leave this blank.
-      Note: If you set up your PCR experiments using this format, this step is very easy. E.g. Plate set-up of a PCR experiment (In Quantstudio software)."),
-    tags$img(src="plate_setup.svg", height = "300px", width = "auto"),
-      # If you are unsure of how to format your data, please refer to the example data provided in the 'Example Data' tab. 
-      # If you are still unsure, please refer to the 'Contact' tab."),
-    p("Refer to Input Data Tab for another example."),
-    h5("Notes"),
-    p("This application is designed for qPCR data that has been normalised to housekeeper genes."),
-    p("P Values are given as:"),
-      shiny::tags$ul(
-        tags$li(HTML("<i>p</i> < 0.05 = *")),
-        tags$li(HTML("<i>p</i> < 0.01 = **")),
-        tags$li(HTML("<i>p</i> < 0.001 = ***")),
-        tags$li(HTML("<i>p</i> > 0.05 = ns")),
-        tags$li(HTML("However, in most instances it is more appropriate to report the numeric <i>p</i> values. This can be found in the statistics report. This is important if data is used in future meta-analyses.")),
-      ),
-    p("*Once the user is familar with the user interface, you can expect to perform all calculations and analysis in under 1 minute. This estimate does not include the time it takes to pre-format and load the data."),
+      Additionally, all statistics and analysis can be saved as a report in .html format."),
+    p("We request that users of ProntoPCR cite the associated journal article if the application has been used in analysis. The citation is as follows:"),
+    p("Please refer to the user guide and video tutorial for more information on how to use the application."),
   )

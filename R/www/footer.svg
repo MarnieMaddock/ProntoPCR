@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="183.2114mm"
-   height="47.528389mm"
-   viewBox="0 0 183.2114 47.528389"
+   width="184.3918mm"
+   height="45.412949mm"
+   viewBox="0 0 184.3918 45.412949"
    version="1.1"
    id="svg540"
    xml:space="preserve"
@@ -26,14 +26,14 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="1.9720632"
-     inkscape:cx="507.84376"
-     inkscape:cy="-18.001451"
+     inkscape:cx="512.40751"
+     inkscape:cy="-17.494368"
      inkscape:window-width="2880"
      inkscape:window-height="1526"
      inkscape:window-x="2869"
      inkscape:window-y="-11"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" /><defs
+     inkscape:current-layer="g1895" /><defs
      id="defs537"><radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient996"
@@ -116,7 +116,7 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(10.347543,-3.1409821)"><image
+     transform="translate(11.527949,-3.1409821)"><image
        width="68.493294"
        height="23.893005"
        preserveAspectRatio="none"
@@ -706,11 +706,11 @@
            inkscape:transform-center-x="2.8254386e-06" /></g><text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.1111px;line-height:0.9;font-family:Perpetua;-inkscape-font-specification:'Perpetua, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;letter-spacing:-1.01878px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.27634;stroke-linecap:round;stroke-dasharray:none;stroke-opacity:1"
-         x="21.724293"
+         x="21.724295"
          y="60.006737"
          id="text10383-8"><tspan
            sodipodi:role="line"
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.1111px;font-family:Montserrat;-inkscape-font-specification:'Montserrat, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke-width:2.27631"
            x="21.214905"
            y="60.006737"
-           id="tspan10385-2">FASTqPCR</tspan></text></g></g></svg>
+           id="tspan10385-2">ProntoPCR</tspan></text></g></g></svg>

@@ -3,7 +3,6 @@ source("module_checkCSVfile.R")
 source("utils_dataWrangle.R")
 source("utils_deltadelta.R")
 source("module_download.R")
-source("utils_posthocHeadings.R")
 #source("utils_downloadGraphHandler.R")
 
 #Stats functions
@@ -25,8 +24,14 @@ source("utils_graphing.R")
 source("utils_getColourSchemes.R")
 source("utils_RmarkdownTemps.R")
 
+library(shinyscreenshot)
 server <- function(input, output, session) {
-
+  
+  screenshot(
+    scale = 3,
+    timer = 400,
+    filename = "screenshot_graph"
+  )
   #insert csv file and check that it meets the required formatting
   data <- checkCSVfile("file")
   
@@ -103,7 +108,7 @@ server <- function(input, output, session) {
       paste("Replicate_avg_data_filtered_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
     }
   })
-  
+
   # DELTADELTA Data and calculations
   # UI components for select control, samples and gene based of user input data
   output$select_control <- select_controlUI(wrangled_data)
@@ -588,15 +593,18 @@ shapiro_results(input, output, test_results_shapiro)
     dataTableOutput("postHocTable")
   })
   
-  # Render the dataframe using DT::renderDataTable
-  output$cld_table <- renderDataTable({
-    req(!is.na(comparisonResults()$cld)) # Ensure the dataframe is ready
-    if (!is.null(comparisonResults()$cld)) {
-      datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
-    } else {
-      datatable(data.frame(Message = "No compact letter display results available"), options = list(pageLength = 5, autoWidth = TRUE))
-    }
+  suppressWarnings({
+    # Render the dataframe using DT::renderDataTable
+    output$cld_table <- renderDataTable({
+      req(!is.na(comparisonResults()$cld)) # Ensure the dataframe is ready
+      if (!is.null(comparisonResults()$cld)) {
+        datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
+      } else {
+        datatable(data.frame(Message = "No compact letter display results available"), options = list(pageLength = 5, autoWidth = TRUE))
+      }
+    })
   })
+
   
   
   # Use renderUI to dynamically generate dataTableOutput
@@ -732,33 +740,6 @@ shapiro_results(input, output, test_results_shapiro)
       tags$h6(HTML("Groups with the same letter are not significantly different from each other."))
     )
   })
-  
-  # # Graphing dcq or ddcq  
-  # #ensure that if dcq is selected in stats, dcq is graphed. Error if there is a mismatch
-  # # Reactive values to store user selections
-  # selected_stats <- reactive({
-  #   sub("_stats", "", input$select_dcq_or_ddcq_stats)
-  # })
-  # selected_graphs <- reactive({
-  #   input$select_dcq_or_ddcq
-  # })
-  # 
-  # # Reactive expression to check for consistency
-  # data_consistency <- reactive({
-  #   selected_stats() != "" && selected_graphs() != "" && selected_stats() == selected_graphs()
-  # })
-  # 
-  # # Check consistency for stats
-  # observe({
-  #   if (!data_consistency()) {
-  #     showModal(modalDialog(
-  #       title = "Data Selection Mismatch",
-  #       "Please ensure that the selected data normalisations for stats and graphs are the same. i.e. if you performed stats on 2^-(ΔCq) calculations, that you graph 2^-(ΔCq).",
-  #       easyClose = TRUE,
-  #       footer = NULL
-  #     ))N_
-  #   }_
-  # })
   
   # Reactive value to track if the graph has been generated
   graph_generated <- reactiveVal(FALSE)

@@ -60,9 +60,9 @@ source("utils_getColourSchemes.R")
 #packages for rmakrdown
 library(kableExtra)
 ```
-### **FASTqPCR**
+### **ProntoPCR**
 
-All statistics within the FASTqPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated github page (INSERT VIGNETTE HERE), or refer to the source code [GitHub](https://github.com/MarnieMaddock/FASTqPCR).
+All statistics within the ProntoPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated github page (INSERT VIGNETTE HERE), or refer to the source code [GitHub](https://github.com/MarnieMaddock/ProntoPCR).
 
 ### **Your Data**
 
@@ -176,7 +176,7 @@ if (!is.null(params$cldData)) {
 
 ### **Contact**
 
-If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/FASTqPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=FASTqPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
+If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
 
 ![](www/footer.svg)
 
