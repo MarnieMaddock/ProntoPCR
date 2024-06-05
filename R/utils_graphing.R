@@ -452,13 +452,13 @@ create_graph <- function(input, graph_generated, selected_stats, selected_graphs
       }
       dotplot_data
     })
-    
+
     
     #Create your plot using ggplot2 with the selected dataset
     if (input$plot_type == "column"){
       if (input$fill_color_toggle == "color"){
         plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
           stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, aes(color = !!x_aes), linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
           geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
           labs(y = input$y_label, x = input$x_label) +
@@ -468,7 +468,7 @@ create_graph <- function(input, graph_generated, selected_stats, selected_graphs
           x_axis_theme 
       }else if (input$fill_color_toggle == "fill"){
         plot <- ggplot(filtered_data2, aes(x = !!x_aes, y = !!y_aes)) +
-          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", size = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+          geom_bar(data = filtered_rep_avg_data2, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
           stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, color = "black", linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
           geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
           labs(y = input$y_label, x = input$x_label) +
@@ -485,7 +485,7 @@ create_graph <- function(input, graph_generated, selected_stats, selected_graphs
                    show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
         stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width,  aes(colour = error_bar_color), linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
         stat_summary(data = dotplot_data_reactive_avg(), aes(x = !!x_aes, y = !!y_aes_avg, color = avg_bar_color), inherit.aes = FALSE,
-                     fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE) +  # Add average line for each column x
+                     fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE, na.rm = TRUE) +  # Add average line for each column x
         labs(y = input$y_label, x = input$x_label) +
         scale_color_manual(values = c(setNames(colors, positions), "black" = "black"))+
         scale_shape_manual(values = shapes_reactive()) +

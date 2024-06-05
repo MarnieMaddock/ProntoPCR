@@ -764,21 +764,20 @@ shapiro_results(input, output, test_results_shapiro)
   graph_generated <- reactiveVal(FALSE)
   
   output$ddcqMessage_graphs <- ddcq_not_calculated_msg_graphs(input, values)
+  
   # # Define a reactive expression to switch between datasets
+  # displays error msg if dcq and ddcq don't match, or if gene name doesn't match between graphs and stats tab
   dcq_or_ddcq <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
   observe({
     data_info  <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
-    print(data_info$discrepancy_detected() )
     
   })
-  #display UI components depending on if dcq or ddcq is selcted
+  #display UI components depending on if dcq or ddcq is selected
   dcq_ddcq_UI(input, output, wrangled_data)
   ddcq_UI(input, output, wrangled_data)
   
   # Define the text output for displaying the selected gene
   output$selected_gene_message <- displayGeneUI(input)
-  
-
   
   #dynamically change Y axis according to selected gene
   output$dynamic_y_label_input <- dynamic_YLabel(input)
