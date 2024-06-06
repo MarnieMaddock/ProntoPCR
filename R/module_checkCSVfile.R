@@ -3,9 +3,31 @@ checkCSVfileUI <- function(id) {
   ns <- NS(id)
   tagList(
     fileInput(ns("file"), "Choose CSV File", accept = c(".csv")), #input csv files
-    helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data Tab."),
+    helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data."),
     helpText("If you have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset in the Cq.Mean column. Any NA values will be disregarded (i.e. REMOVED)."),
-    tags$br()
+    tags$br(),
+    downloadLink(ns("download_example"), "Download Example Data"),
+    tags$br(),
+    tags$br(),
+  )
+}
+
+
+downloadExampleData <- function(id, dataset_path = "www/exampledata.csv") {
+  moduleServer(
+    id,
+    function(input, output, session) {
+      output$download_example  <- downloadHandler(
+        filename = function() {
+          "exampledata.csv"
+        },
+        content = function(file) {
+          file.copy(dataset_path, file)
+          # If the dataset is generated within the app, use something like this:
+          # write.csv(dataset, file, row.names = FALSE)
+        }
+      )
+    }
   )
 }
 

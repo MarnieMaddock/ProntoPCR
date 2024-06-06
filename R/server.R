@@ -29,7 +29,7 @@ server <- function(input, output, session) {
   
   #insert csv file and check that it meets the required formatting
   data <- checkCSVfile("file")
-  
+  downloadExampleData("file", dataset_path = "www/exampledata.csv")
   # Render the data table
   output$table <- render_data_table(data)
   
