@@ -1,4 +1,53 @@
 # utils_RmarkdownTemps.R
+#save gene name for statistics report.
+
+clean_geneName <- function(input){
+  reactive({
+    # Determine which input to use based on the condition selected
+    if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
+      selected_gene_cleaned <- gsub("^fc_dcq_", "", input$columnInput)  # Clean the gene name for dcq
+    } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
+      selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)  # Clean the gene name for ddcq
+    }
+    return(selected_gene_cleaned)
+  })
+}
+ 
+
+create_postHocDescription <- function(input, shapiro_data_reactive, fullPostHocTests, fullCorrectionMethods){
+  reactive({
+    req(input$sampleInput, input$columnInput, input$group_comparison)
+    data <- shapiro_data_reactive() 
+    num_groups <- length(unique(data$cell))
+    
+    
+    # Logic to determine the test description based on the inputs
+    if (num_groups > 2) { # Ensuring there are more than 2 groups
+      if (input$group_comparison == "parametric" || input$group_comparison == "welch") {
+        switch(input$postHocTest,
+               "tukey" = "You selected a Tukey's HSD Post-hoc test.",
+               "bonferroni" = "You selected a Pairwise t-test with Bonferroni adjustment.",
+               "holm" = "You selected a Pairwise t-test with Holm adjustment.",
+               "bh" = "You selected a Pairwise t-test with Benjamini-Hochberg adjustment.",
+               "scheffe" = "You selected a Scheffé's Post-hoc test.",
+               "games_howell" = "You selected a Games-Howell Post-hoc test with Tukey adjustment.",
+               # Add other parametric tests as needed
+               "Not a valid parametric post-hoc test"
+        )
+      } else if (input$group_comparison == "non_parametric") {
+        postHocTestFullName <- fullPostHocTests[input$postHocTest]
+        correctionMethodFullName <- fullCorrectionMethods[input$correctionMethod]
+        paste("You selected a ", postHocTestFullName, " test with ", correctionMethodFullName, " adjustment.")
+      } else {
+        "Not a valid test type."
+      }
+    } else {
+      "Not enough groups for post-hoc tests."
+    }
+  })
+}
+
+
 
 #download stats button
 
@@ -65,18 +114,18 @@ create_downloadStatsReport <- function(input, output, selected_gene_name_stats, 
         NULL
       }
       
-      comparisonResultsData <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+      comparisonResultsData <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric" || input$group_comparison == "welch"){
         isolate(comparisonResults())
       } else {
         NULL
       }
       
-      testNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+      testNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric" || input$group_comparison == "welch"){
         isolate(testName())
       } else {
         NULL
       }
-      postHocNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric"){
+      postHocNames <- if(input$group_comparison == "parametric" || input$group_comparison == "non_parametric" || input$group_comparison == "welch"){
         isolate(postHocTestDescription())
       } else {
         NULL

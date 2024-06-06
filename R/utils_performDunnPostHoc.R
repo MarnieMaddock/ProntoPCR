@@ -22,10 +22,10 @@ performDunnPostHoc <- function(data, p_adjust_method, input_column = input$colum
     post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
     rownames(post_hoc_df) <- NULL
     post_hoc_df$Significant <- ifelse(is.na(post_hoc_df$P.adj), "NA",
-                                      ifelse(post_hoc_df$P.adj < 0.05, "Yes", "No"))
+                                      ifelse(post_hoc_df$P.adj <= 0.05, "Yes", "No"))
     # Add a summary of the p-value
-    post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj < 0.001, "***",
-                                          ifelse(post_hoc_df$P.adj < 0.01, "**",
+    post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adj <= 0.001, "***",
+                                          ifelse(post_hoc_df$P.adj <= 0.01, "**",
                                                  ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
 
     post_hoc_df <- post_hoc_df %>%

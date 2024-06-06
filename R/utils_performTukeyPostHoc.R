@@ -6,13 +6,13 @@ performTukeyPostHoc <- function(p_adjust_method, aov_df){
     post_hoc_result <- TukeyHSD(aov_df)
     post_hoc_df <- broom::tidy(post_hoc_result)
     post_hoc_df <- post_hoc_df %>%
-      dplyr::select(-term, -null.value) %>%  # Remove term and null.value columns
-      mutate(
-        Significant = ifelse(adj.p.value < 0.05, "Yes", "No"),
-        P_value_summary = ifelse(adj.p.value < 0.001, "***", 
-                                 ifelse(adj.p.value < 0.01, "**", 
-                                        ifelse(adj.p.value > 0.05, "ns", "*")))
-      ) %>%
+      dplyr::select(-term, -null.value)  # Remove term and null.value columns
+    post_hoc_df$Significant <- ifelse(post_hoc_df$adj.p.value <= 0.05, "Yes", "No")
+    post_hoc_df$P_value_summary <- ifelse(post_hoc_df$adj.p.value <= 0.001, "***", 
+                                          ifelse(post_hoc_df$adj.p.value <= 0.01, "**", 
+                                                 ifelse(post_hoc_df$adj.p.value > 0.05, "ns", "*")))
+    
+    post_hoc_df <- post_hoc_df %>%
       rename("Adjusted P Value" = adj.p.value, 
              "Significant?" = Significant, 
              "P Value Summary" = P_value_summary,

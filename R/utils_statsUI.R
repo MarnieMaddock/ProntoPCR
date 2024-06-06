@@ -24,6 +24,7 @@ displayGeneUI_message <- function(input){
 
 
 display_statsSamplesUI <- function(input, session, values, wrangled_data, average_dcq){
+  req(input$select_dcq_or_ddcq_stats)  # Ensure there is a selection
   if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
     updateSelectInput(session, "sampleInput", choices = unique(wrangled_data()$cell))
     updateSelectInput(session, "columnInput", choices = grep("^fc_dcq_", names(wrangled_data()), value = TRUE))
@@ -36,11 +37,15 @@ display_statsSamplesUI <- function(input, session, values, wrangled_data, averag
       updateSelectInput(session, "sampleInput", choices=character(0), selected = character(0))  # Clear the sampleInput choices
       updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
     }
+  } else {
+    updateSelectInput(session, "sampleInput", choices=character(0), selected = character(0))  # Clear the sampleInput choices
+    updateSelectInput(session, "columnInput", choices=character(0), selected = character(0))
   }
 }
 
 ddcq_not_calculated_msg <- function(input, values){
   renderUI({
+    req(input$select_dcq_or_ddcq_stats)  # Ensure there is a selection
     # Check if 'ddcq_stats' is selected and data is not saved yet
     if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && !values$ddcqDataSaved) {
       # Return a UI element with the message
@@ -57,13 +62,36 @@ ddcq_not_calculated_msg <- function(input, values){
 
 # Define the reactive expression for the dataframe to be used in the stats tab
 choose_stats_df <- function(input, values, wrangled_data, average_dcq){
+  # Reactive values to store user selections
+  selected_stats <- reactive({
+    sub("_stats", "", input$select_dcq_or_ddcq_stats)
+  })
+  selected_graphs <- reactive({
+    input$select_dcq_or_ddcq
+  })
+  
+  # Reactive expression to check for consistency
+  data_consistency <- reactive({
+    selected_stats() == selected_graphs()
+  })
+  
   reactive({
-    if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
-      wrangled_data()
-    } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && values$ddcqDataSaved) {
-      average_dcq()
-    } else {
+    if (!data_consistency()) {
+      showModal(modalDialog(
+        title = "Data Selection Mismatch",
+        "Please ensure that the selected data type for stats and graphs are the same.",
+        easyClose = TRUE,
+        footer = NULL
+      ))
       return(NULL)
+    }else{
+      if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
+        wrangled_data()
+      } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats" && values$ddcqDataSaved) {
+        average_dcq()
+      } else {
+        return(NULL)
+      }
     }
   })
 }

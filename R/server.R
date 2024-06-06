@@ -17,6 +17,7 @@ source("utils_performTukeyPostHoc.R")
 source("utils_performPostHoc.R")
 source("utils_performDunnPostHoc.R")
 source("utils_performConoverPostHoc.R")
+source("utils_posthocUI.R")
 
 #Graph functions
 source("utils_graphTheme.R")
@@ -24,14 +25,8 @@ source("utils_graphing.R")
 source("utils_getColourSchemes.R")
 source("utils_RmarkdownTemps.R")
 
-library(shinyscreenshot)
 server <- function(input, output, session) {
   
-  screenshot(
-    scale = 3,
-    timer = 400,
-    filename = "screenshot_graph"
-  )
   #insert csv file and check that it meets the required formatting
   data <- checkCSVfile("file")
   
@@ -613,134 +608,14 @@ shapiro_results(input, output, test_results_shapiro)
     dataTableOutput("cld_table")
   })
   
-  output$comparisonsHeading <- renderUI({
-    req(input$sampleInput, input$columnInput, input$group_comparison)
-    data <- shapiro_data_reactive() # Assuming this returns your dataset
-    
-    num_groups <- length(unique(data$cell))
-    
-    if (num_groups == 2) {
-      if (input$group_comparison == "parametric") {
-        h4(HTML("<b>Independent T-Test</b>"))
-      } else if (input$group_comparison == "welch") {
-        h4(HTML("<b>Welch T-Test</b>"))
-      } else {
-        h4(HTML("<b>Mann-Whitney U Test</b>"))
-      }
-    } else if (num_groups > 2) {
-      if (input$group_comparison == "parametric") {
-        h4(HTML("<b>One-Way ANOVA</b>"))
-      } else if (input$group_comparison == "welch") {
-        h4(HTML("<b>Welch's ANOVA</b>"))
-      } else {
-        h4(HTML("<b>Kruskal-Wallis Test</b>"))
-      }
-    } else {
-      return(NULL) # Handle the case where there are not enough groups
-    }
-  })
+  #Headings/UI generation for posthoc options
+  output$comparisonsHeading <- create_comparisonsHeading(input, shapiro_data_reactive)
+  output$postHocOptions <- create_postHocUI(input, shapiro_data_reactive)
+  output$correctionOptions <- create_correctionUI(input, shapiro_data_reactive)
+  output$postHocHeading <- create_postHocHeading(input, shapiro_data_reactive)
+  output$cldHeading <- create_cldHeading(comparisonResults)
   
-  # Dynamically generate UI for post hoc options based on the type of test and number of groups
-  output$postHocOptions <- renderUI({
-    # Ensure we have more than 2 groups for post hoc tests to make sense
-    req(input$sampleInput, input$columnInput, input$group_comparison)
-    data <- shapiro_data_reactive() 
-    num_groups <- length(unique(data$cell))
-    
-    if (input$group_comparison == "parametric" && num_groups > 2) {
-      # Parametric post hoc test options
-      radioButtons("postHocTest", HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
-                   choices = list("Tukey's HSD" = "tukey",
-                                  "Bonferroni Correction" = "bonferroni",
-                                  "Holm Correction" = "holm",
-                                  "Benjamini-Hochberg Correction" = "bh",
-                                  "Scheffé's Test" = "scheffe"))
-    } else if (input$group_comparison == "non_parametric" && num_groups > 2) {
-      # Nonparametric post hoc test options
-      radioButtons("postHocTest", HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
-                   choices = list("Dunn's Test" = "dunn",
-                                  "Conover-Iman Test" = "conover"))
-    } else if (input$group_comparison == "welch" && num_groups >2){
-      radioButtons("postHocTest", HTML("<b>Select a post hoc test for Welch's ANOVA (if <i>p</i> < 0.05):</b>"),
-                   choices = list("Games-Howell" = "games_howell",
-                                  "Dunnett's T3" = "dunnett_t3"))
-    } else {
-      return(NULL) 
-    }
-  })
-  
-  
-  output$correctionOptions <- renderUI({
-    num_groups <- length(unique(shapiro_data_reactive()$cell))
-    # Ensure we have more than 2 groups for post hoc tests to make sense
-    req(input$sampleInput, input$columnInput, input$group_comparison, num_groups > 2)
-    if (!is.null(input$postHocTest) && (input$postHocTest == "dunn" || input$postHocTest == "conover")) {
-      radioButtons("correctionMethod", HTML("<b>Select a correction method for Dunn's test:</b>"),
-                   choices = list("Bonferroni" = "bonferroni",
-                                  "Šidák" = "sidak",
-                                  "Holm" = "holm",
-                                  "Holm-Šidák" = "hs",
-                                  "Benjamini-Hochberg" = "bh",
-                                  "Hochberg's Step-up" = "hochberg"))
-    }else{
-      return(NULL)
-    }
-  })
-  
-  output$postHocHeading <- renderUI({
-    req(input$sampleInput, input$columnInput, input$group_comparison, input$postHocTest)
-    data <- shapiro_data_reactive()
-    num_groups <- length(unique(data$cell))
-    if (input$group_comparison == "parametric" && input$postHocTest == "tukey" && num_groups > 2) {
-      h4(HTML("<b>Tukey's HSD Post-hoc</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "holm" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "bh" && num_groups > 2) {
-      h4(HTML("<b>Pairwise t-test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "parametric" && input$postHocTest == "scheffe" && num_groups > 2) {
-      h4(HTML("<b>Scheffé's Post-hoc</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "sidak" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "holm" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hs" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Holm-Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "bh" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "dunn" && input$correctionMethod == "hochberg" && num_groups > 2) {
-      h4(HTML("<b>Dunn's test with Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bonferroni" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Bonferroni adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "sidak" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "holm" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Holm adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hs" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Holm-Šidák adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "bh" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "non_parametric" && input$postHocTest == "conover" && input$correctionMethod == "hochberg" && num_groups > 2) {
-      h4(HTML("<b>Conover-Iman test with Hochberg adjustment for multiple comparisons</b>"))
-    } else if (input$group_comparison == "welch" && input$postHocTest == "games_howell" && num_groups > 2) {
-      h4(HTML("<b>Games-Howell post-hoc test</b>"))
-    } else {
-      return(NULL)
-    }
-  })
-  
-  
-  output$cldHeading <- renderUI({
-    req(!is.null(comparisonResults()$cld))
-    tagList(
-      tags$h4(HTML("<b>Compact Letter Display</b>")),
-      tags$h6(HTML("Groups with the same letter are not significantly different from each other."))
-    )
-  })
-  
+  #GRAPHING SECTION
   # Reactive value to track if the graph has been generated
   graph_generated <- reactiveVal(FALSE)
   
@@ -889,18 +764,8 @@ shapiro_results(input, output, test_results_shapiro)
   )
   
 #STATISTICS REPORT
-  #save gene name for statistics report.
-  selected_gene_name_stats <- reactive({
-    # Determine which input to use based on the condition selected
-    if (input$select_dcq_or_ddcq_stats == "dcq_stats") {
-      selected_gene_cleaned <- gsub("^fc_dcq_", "", input$columnInput)  # Clean the gene name for dcq
-    } else if (input$select_dcq_or_ddcq_stats == "ddcq_stats") {
-      selected_gene_cleaned <- gsub("^dcq_", "", input$select_gene)  # Clean the gene name for ddcq
-    }
-    return(selected_gene_cleaned)
-  })
-  
-  #names for group comparisons
+  selected_gene_name_stats <- clean_geneName(input)
+
   testName <- reactive({
     req(input$sampleInput, input$columnInput, input$group_comparison)
     data <- shapiro_data_reactive() # Assuming this returns your dataset
@@ -910,24 +775,28 @@ shapiro_results(input, output, test_results_shapiro)
     if (num_groups == 2) {
       if (input$group_comparison == "parametric") {
         "Independent T-Test"
+      } else if (input$group_comparison == "welch") {
+        "Welch T-Test"
       } else {
         "Mann-Whitney U Test"
       }
     } else if (num_groups > 2) {
       if (input$group_comparison == "parametric") {
         "One-Way ANOVA"
-      } else {
+      } else if (input$group_comparison == "non_parametric"){
         "Kruskal-Wallis Test"
+      }else{
+        "Welch's ANOVA"
       }
     } else {
       "Not enough groups" # Default message or handle as required
     }
   })
-  
   # Define named vectors for the mappings
   fullPostHocTests <- c(tukey = "Tukey's HSD", 
                         dunn = "Dunn's", 
-                        conover = "Conover-Iman"
+                        conover = "Conover-Iman",
+                        games_howell = "Games-Howell"
                         # Add other mappings as necessary
   )
   
@@ -939,35 +808,7 @@ shapiro_results(input, output, test_results_shapiro)
                              hochberg = "Hochberg"
   )
   
-  postHocTestDescription <- reactive({
-    req(input$sampleInput, input$columnInput, input$group_comparison)
-    data <- shapiro_data_reactive() 
-    num_groups <- length(unique(data$cell))
-    
-
-    # Logic to determine the test description based on the inputs
-    if (num_groups > 2) { # Ensuring there are more than 2 groups
-      if (input$group_comparison == "parametric") {
-        switch(input$postHocTest,
-               "tukey" = "You selected a Tukey's HSD Post-hoc test.",
-               "bonferroni" = "You selected a Pairwise t-test with Bonferroni adjustment.",
-               "holm" = "You selected a Pairwise t-test with Holm adjustment.",
-               "bh" = "You selected a Pairwise t-test with Benjamini-Hochberg adjustment.",
-               "scheffe" = "You selected a Scheffé's Post-hoc test.",
-               # Add other parametric tests as needed
-               "Not a valid parametric post-hoc test"
-        )
-      } else if (input$group_comparison == "non_parametric") {
-        postHocTestFullName <- fullPostHocTests[input$postHocTest]
-        correctionMethodFullName <- fullCorrectionMethods[input$correctionMethod]
-        paste("You selected a ", postHocTestFullName, " test with ", correctionMethodFullName, " adjustment.")
-      } else {
-        "Not a valid test type."
-      }
-    } else {
-      "Not enough groups for post-hoc tests."
-    }
-  })
+  postHocTestDescription <-  create_postHocDescription(input, shapiro_data_reactive, fullPostHocTests, fullCorrectionMethods) 
   
   #download button UI for statistics results report
   output$downloadButtonUI <- downloadStatsButton(input)
