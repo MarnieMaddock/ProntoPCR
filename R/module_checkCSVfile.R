@@ -1,13 +1,19 @@
+library(shinyBS)
 # module_checkCSVfile.R
 checkCSVfileUI <- function(id) {
   ns <- NS(id)
   tagList(
-    fileInput(ns("file"), "Choose CSV File", accept = c(".csv")), #input csv files
-    helpText("Please select a CSV file containing PCR data with the formatting given in the Example Data."),
+    fileInput(ns("file"), label = tags$span("Choose CSV File", 
+                                            tags$i(
+                                              class =  "glyphicon glyphicon-info-sign", 
+                                              style = "color:#00359bff;",
+                                              title = "Please select a CSV file containing PCR data with the formatting given in the Example Data.")),
+                                              accept = c(".csv")), #input csv files
     helpText("If you have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset in the Cq.Mean column. Any NA values will be disregarded (i.e. REMOVED)."),
     tags$br(),
     downloadLink(ns("download_example"), "Download Example Data"),
     tags$br(),
+    bsPopover(ns("helpIcon1"), title = "CSV File Information", content = "Please select a CSV file containing PCR data with the formatting given in the Example Data Tab.", placement = "right", trigger = "hover", options = list(container = "body")),
     tags$br(),
   )
 }
