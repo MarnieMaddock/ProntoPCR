@@ -111,6 +111,7 @@ ui <- fluidPage(
                                     choices = c("ΔCq" = "dcq", "∆ΔCq" = "ddcq"),
                                     selected = "dcq"),
                        uiOutput("ddcqMessage_graphs"),
+                       uiOutput("selected_samples_list"),
                        uiOutput("selected_gene_ui"), # Display the gene selection message if ddcq is being graphed
                        tags$br(),
                        fluidRow(

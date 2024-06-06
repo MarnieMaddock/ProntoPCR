@@ -15,7 +15,18 @@ ddcq_not_calculated_msg_graphs <- function(input, values){
     }
   })
 }
-
+#display ddcq samples
+  display_ddcq_samples <- function(input, rep_avg_data_ddcq){
+    renderUI({
+      if(input$select_dcq_or_ddcq == "ddcq"){
+        samples <- rep_avg_data_ddcq()$cell
+        samples_text <- paste("Samples selected:", paste(samples, collapse = ", "))
+        tags$p(samples_text)
+      } else {
+        NULL
+      }
+    })
+  }
 select_dcq_ddcq_data <- function(input, wrangled_data, average_dcq){
   # Graphing dcq or ddcq  
   # Reactive values to store user selections

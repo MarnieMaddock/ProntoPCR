@@ -621,6 +621,17 @@ shapiro_results(input, output, test_results_shapiro)
   
   output$ddcqMessage_graphs <- ddcq_not_calculated_msg_graphs(input, values)
   
+  # Render the list of selected samples
+  output$selected_samples_list <- renderUI({
+    if(input$select_dcq_or_ddcq == "ddcq"){
+      samples <- rep_avg_data_ddcq()$cell
+      samples_text <- paste("Samples selected:", paste(samples, collapse = ", "))
+      tags$p(samples_text)
+    } else{
+      NULL
+    }
+    
+  })
   # # Define a reactive expression to switch between datasets
   # displays error msg if dcq and ddcq don't match, or if gene name doesn't match between graphs and stats tab
   dcq_or_ddcq <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
