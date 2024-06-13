@@ -46,13 +46,13 @@ server <- function(input, output, session) {
   # Render instruction text
   output$text2 <- render_instruction_text()
   
-  # Data wrangling
+  # Data wrangling for dcq calculations
   wrangled_data <- wrangle_data(input, data, saved_variables)
   
   # Render the calculations table
   output$calculations_table <- render_calculations_table(wrangled_data)
     
-  #download processed data as a csv.
+  #download processed dcq data as a csv.
   downloadServer("download_processed_data", wrangled_data, function(input, session) {
     paste("processed_PCR_data_", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".csv", sep = "")
   })
@@ -622,16 +622,7 @@ shapiro_results(input, output, test_results_shapiro)
   output$ddcqMessage_graphs <- ddcq_not_calculated_msg_graphs(input, values)
   
   # Render the list of selected samples
-  output$selected_samples_list <- renderUI({
-    if(input$select_dcq_or_ddcq == "ddcq"){
-      samples <- rep_avg_data_ddcq()$cell
-      samples_text <- paste("Samples selected:", paste(samples, collapse = ", "))
-      tags$p(samples_text)
-    } else{
-      NULL
-    }
-    
-  })
+  output$selected_samples_list <- display_ddcq_samples(input, rep_avg_data_ddcq)
   # # Define a reactive expression to switch between datasets
   # displays error msg if dcq and ddcq don't match, or if gene name doesn't match between graphs and stats tab
   dcq_or_ddcq <- select_dcq_ddcq_data(input, wrangled_data, average_dcq)
