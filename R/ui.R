@@ -45,8 +45,13 @@ source("module_logStats.R")
 source("module_graphs.R")
 
 
+#Set the locale to ensure it handles UTF-8 encoding properly:
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
+
 ui <- fluidPage(
   theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
+  tags$head(includeHTML("analytics.html")), #google analytics tracker
   includeCSS("www/style.css"), #custom css styles
   # Use div to place the logo
   div(id = "logo", tags$img(src = "dottori_lab_pentagon.svg")),
