@@ -1,0 +1,12 @@
+name: ProntoPCR
+title: ProntoPCR
+username: marniem
+account: marniem
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12488385
+bundleId: 9008769
+url: https://marniem.shinyapps.io/ProntoPCR/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

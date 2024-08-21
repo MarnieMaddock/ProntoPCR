@@ -66,7 +66,6 @@ function(input, output, session) {
   descriptives_table <- stats$descriptives_table
   
   # Graphing
-  
   graph_generated <- reactiveVal(FALSE)
   graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$gene_for_download, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
                stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
