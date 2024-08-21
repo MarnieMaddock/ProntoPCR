@@ -1,4 +1,4 @@
-# # download_module.R
+# # module_download.R
 
 downloadUI <- function(id, label = "Download Data") {
   ns <- NS(id)
@@ -16,9 +16,8 @@ downloadServer <- function(id, df, filenameFunc) {
         filenameFunc(input, session)  # Generate filename dynamically
       },
       content = function(file) {
-        write.csv(df(), file, row.names = FALSE)  # Assuming df is a reactive expression
+        utils::write.csv(df(), file, row.names = FALSE)  # Assuming df is a reactive expression
       }
     )
   })
 }
-

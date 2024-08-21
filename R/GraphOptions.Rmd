@@ -13,7 +13,6 @@ params:
   colourScheme: NA
   plotType: NA
   significance: NA
-  yPositionSignificance: NA
   labelSize: NA
   bracketThickness: NA
   tipLength: NA
@@ -46,7 +45,14 @@ params:
   height: NA
 ---
 
-### Your selected graph options:
+
+<style>
+h1, h2, h3, h4, h5, h6 {
+  color: #00359c;
+}
+</style>
+
+### Your selected graph options
 
 * Rotate x-axis labels: `r params$rotateXLabels`
 * Y-axis label: `r params$yAxisLabel`
@@ -57,12 +63,19 @@ params:
 * X-axis text font size: `r params$xAxisTextFontSize`
 * Y-axis text font size: `r params$yAxisTextFontSize`
 * Colour scheme: `r params$colourScheme`
-* Plot type: `r params$plotType`
+* Plot type: `r switch(params$plotType,
+                      "dot" = "Scatter Plot",
+                      "dot_group" = "Grouped Scatter Plot",
+                      "column" = "Column Graph",
+                      params$plotType)` 
 
 #### Significance options
 
-* Significance?: `r params$significance`
-* Y position of significance: `r params$yPositionSignificance`
+* Significance?: `r switch(params$significance,
+                           "asterix" = "Asterisk",
+                           "pval" = "P-Value",
+                           "cld" = "Compact Letter Display",
+                           params$significance)`
 * Label size: `r params$labelSize`
 * Bracket thickness: `r params$bracketThickness`
 * Tip length: `r params$tipLength`
@@ -74,23 +87,28 @@ params:
 
 #### Error Bars
 
-* Error bar type: `r params$errorBarType`
+* Error bar type: `r switch(params$errorBarType,
+                           "se" = "Standard Error",
+                           "sd" = "Standard Deviation",
+                           "ci" = "95% Confidence Interval",
+                           params$errorBarType)`
 * Start at y = 0: `r params$startAtZero`
-* Error bar width (column graph): `r params$errorBarWidth`
-* Error bar thickness (column graph): `r params$errorBarThickness`
-* Error bar width (dot graph): `r params$errorBarWidthdot`
-* Error bar thickness (dot graph): `r params$errorBarThicknessdot`
 * Error bar colour: `r params$errorBarColour`
 * Average line width (dot graph): `r params$averageLineWidth`
 * Average line thickness (dot graph): `r params$averageLineThickness`
 * Average line colour (dot graph): `r params$averageLineColour`
+* Error bar width (column graph): `r params$errorBarWidth`
+* Error bar thickness (column graph): `r params$errorBarThickness`
+* Error bar width (dot graph): `r params$errorBarWidthdot`
+* Error bar thickness (dot graph): `r params$errorBarThicknessdot`
+
 
 #### Point Design
 
-* Fill or Border: `r params$fillOrBorder`
+* Fill or Border (column graph): `r params$fillOrBorder`
 * Point size (column graph): `r params$pointSize`
 * Point size (dot graph): `r params$pointSizedot`
-* Point Spacing: `r params$pointSpacing`
+* Point Spacing (column graph): `r params$pointSpacing`
 * Change to paired shapes: `r params$changeToPairedShapes`
 * Shape outline thickness: `r params$shapeOutlineThickness`
 * Point spread: `r params$pointSpread`
@@ -103,3 +121,8 @@ params:
 * Width (in): `r params$width`
 * Height (in): `r params$height`
 
+#### **Contact**
+
+If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
+
+![](www/footer.svg)

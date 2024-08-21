@@ -5,79 +5,54 @@ params:
   analysisType: NA
   selectedSamples: NA
   selectedGene: NA
-  sampleSizeTable: NA
+  descTable: NA
   shapiroData: NA
+  resFitPlot: NA
   qqPlotGraph: NA
   densityPlot: NA
-  leveneData: NA
+  levene: NA
   logTransformed: NA
   testResultData: NA
   cldData: NA
   posthocData: NA
   testName: NA
   postHocName: NA
----
-```{r setup, include=FALSE}
-#packages for app
-library(shiny)
-library(rmarkdown)
-library(readr)
-library(DT)
-library(tidyverse)
-library(datawizard)
-library(purrr)
-library(ggplot2)
-library(ggbeeswarm)
-library(ggpubr)
-library(bslib)
-library(ggtext)
-library(shinyjs)
-library(car) 
-library(multcomp) 
-library(dplyr)
-library(rlang)
-library(broom)
-library(DescTools)
-library(FSA)
-library(conover.test)
-library(multcompView)
 
-source("module_download.R")
-source("utils_downloadGraphHandler.R")
-source("about.R")
-source("example_data_text.R")
-source("utils_getColourSchemes.R")
-#Stats functions
-source("utils_performComparisonTests.R")
-source("utils_performCLD.R")
-source("utils_performTukeyPostHoc.R")
-source("utils_performPostHoc.R")
-source("utils_performDunnPostHoc.R")
-source("utils_performConoverPostHoc.R")
-#Graph functions
-source("utils_graphTheme.R")
-source("utils_getColourSchemes.R")
+---
+
+
+<style>
+h1, h2, h3, h4, h5, h6 {
+  color: #00359c;
+}
+</style>
+
+```{r setup, include=FALSE}
 #packages for rmakrdown
 library(kableExtra)
 ```
+
 ### **ProntoPCR**
 
 All statistics within the ProntoPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated github page (INSERT VIGNETTE HERE), or refer to the source code [GitHub](https://github.com/MarnieMaddock/ProntoPCR).
+
 
 ### **Your Data**
 
 This is the statistics report for the following: `r params$analysisType`, samples: `r paste(params$selectedSamples, collapse = ", ")`, and gene: `r params$selectedGene`.
 
-### **Sample Size Table**
-```{r tableOutput, echo = FALSE, results='asis'}
-if (!is.null(params$sampleSizeTable)) {
-knitr::kable(params$sampleSizeTable, "html") %>% 
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
-} else {
-  cat("Sample size not selected.")
-}
-```
+### **Descriptive Statistics**
 
+```{r descTable, echo = FALSE, results='asis'}
+if(!is.null(params$descTable)) {
+  knitr::kable(params$descTable, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+} else {
+  cat("Descriptive statistics not selected.")
+}
+
+
+```
 
 ### **Normality Tests**
 
@@ -85,17 +60,34 @@ knitr::kable(params$sampleSizeTable, "html") %>%
 #### **Shapiro-Wilk Test**
 ```{r shapiroTable, echo = FALSE, results='asis'}
 if (!is.null(params$shapiroData)) {
-knitr::kable(params$shapiroData, format = "html") %>%
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
+  # Create a formatted version of the shapiroData
+  shapiroDataFormatted <- params$shapiroData
+  
+  # Format numeric columns to 10 decimal places
+  shapiroDataFormatted$W <- format(shapiroDataFormatted$W, digits = 6, nsmall = 6)
+  shapiroDataFormatted$P_value <- format(shapiroDataFormatted$P_value, digits = 6, nsmall = 6)
+  
+  knitr::kable(shapiroDataFormatted, format = "html") %>%
+    kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
 } else {
   cat("Shapiro-Wilk test not selected.")
 }
 ```
 
+#### **Residuals vs Fitted Plot**
+```{r resFitPlot, echo = FALSE, results='asis'}
+if (!is.null(params$resFitPlot)) {
+  print(params$resFitPlot)
+} else {
+  cat("Residuals vs Fitted plot not selected.")
+}
+
+```
 
 #### **QQ-Plot**
 ```{r qqPlot, echo = FALSE, results='asis'}
 if (!is.null(params$qqPlotGraph)) {
+#if (!is.null(params$qqPlotGraph$layers)) {
   print(params$qqPlotGraph)
 } else {
   cat("QQ-Plot not selected.")
@@ -106,6 +98,7 @@ if (!is.null(params$qqPlotGraph)) {
 #### **Density Plot**
 ```{r densityPlot, echo = FALSE, results='asis'}
 if (!is.null(params$densityPlot)) {
+#if (!is.null(params$densityPlot$layers)) {
   print(params$densityPlot)
 } else {
   cat("Density plot not selected.")
@@ -113,17 +106,19 @@ if (!is.null(params$densityPlot)) {
 ```
 
 
+
 ### **Homogeneity of Variance**
 
 #### **Levene's Test**
-```{r leveneTable, echo = FALSE, results='asis'}
-if (!is.null(params$leveneData)) {
-  knitr::kable(params$leveneData, format = "html") %>%
+```{r levene, echo = FALSE, results='asis'}
+if (!is.null(params$levene)) {
+  knitr::kable(params$levene, format = "html") %>%
     kableExtra::kable_styling(bootstrap_options = c("striped", "hover"))
 } else {
   cat("Levene's test not selected.")
 }
 ```
+
 
 
 ### **Log transformation?**
@@ -135,6 +130,7 @@ if (!params$logTransformed) {
   cat("This data was log transformed.")
 }
 ```
+
 
 
 ### **Group Comparisons**
@@ -176,7 +172,7 @@ if (!is.null(params$cldData)) {
 
 ### **Contact**
 
-If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [email](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
+If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
 
 ![](www/footer.svg)
 

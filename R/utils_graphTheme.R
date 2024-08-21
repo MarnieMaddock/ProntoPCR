@@ -11,12 +11,14 @@ theme_Marnie <- theme(axis.line.y = element_line(colour = "black", linewidth = 0
                       axis.text.y = element_text(size=14),
                       plot.title = element_text(size = 32, hjust = 0), # legend.position = c(0.8, 0.8) 
                       legend.position  = "right",
-                      legend.key.size = unit(0.4, "cm"),
+                      legend.key.size = unit(0.7, "cm"),
                       legend.text = element_text(size = 12),
-                      legend.title = element_text(face = "bold", size = 14),
-                      legend.key.width = unit(0.4,"cm"),
+                      legend.title = element_text(face = "bold", size = 14, hjust =0.5),
+                      legend.key.width = unit(0.7,"cm"),
                       legend.key = element_rect(fill = NA, colour = NA),
                       strip.text = element_text(size = 16, face = "bold"),
                       strip.background = element_rect(colour = "black"),
-                      panel.spacing = unit(0, "lines")
+                      panel.spacing = unit(0, "lines"),
+                      plot.margin = margin(t=5, r=5, b=5, l=5, unit="pt") # Adjust these values accordingly
+                      
 )

@@ -225,7 +225,21 @@ input[type="text"]:active {
 
 
 
-
+/* Change button color to blue when it's focused (clicked) */
+/* Apply to all action buttons */
+.action-button:focus,
+.btn:focus {
+  background-color: #00359bff !important;
+  border-color: #00359bff !important;
+  color: white !important;
+}
+/* Change button color to dark blue when hovered */
+.action-button:hover,
+.btn:hover {
+  background-color: #00359bff !important;
+  border-color: #00359bff !important;
+  color: white !important;
+}
 
 
 

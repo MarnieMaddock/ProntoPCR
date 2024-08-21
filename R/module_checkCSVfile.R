@@ -1,4 +1,5 @@
 library(shinyBS)
+#OLD NOT NEEDED
 # module_checkCSVfile.R
 checkCSVfileUI <- function(id) {
   ns <- NS(id)
@@ -8,7 +9,7 @@ checkCSVfileUI <- function(id) {
                                               class =  "glyphicon glyphicon-info-sign", 
                                               style = "color:#00359bff;",
                                               title = "Please select a CSV file containing PCR data with the formatting given in the Example Data.")),
-                                              accept = c(".csv")), #input csv files
+              accept = c(".csv")), #input csv files
     helpText("If you have 'undetermined' amplification i.e. no amplification, please enter 0 in your dataset in the Cq.Mean column. Any NA values will be disregarded (i.e. REMOVED)."),
     tags$br(),
     downloadLink(ns("download_example"), "Download Example Data"),
@@ -29,8 +30,6 @@ downloadExampleData <- function(id, dataset_path = "www/exampledata.csv") {
         },
         content = function(file) {
           file.copy(dataset_path, file)
-          # If the dataset is generated within the app, use something like this:
-          # write.csv(dataset, file, row.names = FALSE)
         }
       )
     }
