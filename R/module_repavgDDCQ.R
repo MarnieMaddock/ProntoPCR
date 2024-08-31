@@ -17,8 +17,10 @@ DDCQrepServer <- function(id, average_dcq, selected_gene){
 
         rep_avg_ddcq <- average_dcq() %>%
           group_by(cell) %>%
+          #summarise using arithemtic mean
+          summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop") %>%
           #summarize using geometric mean
-          summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
+          #summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
         
         return(rep_avg_ddcq)
       })
