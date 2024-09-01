@@ -10,7 +10,7 @@ normalitySidebar <- function(id) {
                               tags$i(
                                 class = "glyphicon glyphicon-info-sign", 
                                 style = "color:#00359bff;", 
-                                title = "Note: Normality testing is usually considered to be unreliable for small sample sizes. If one-way ANOVA or Welch ANOVA is selected, the normality tests will be performed on the residuals, not the raw data. The raw values is the default if no comparison of groups test, or any other group comparison tests are selected."
+                                title = "Note: Normality testing is usually considered to be unreliable for small sample sizes. If one-way ANOVA is selected, the normality tests will be performed on the residuals, not the raw data. The raw values are the default if no comparison of groups test, or any other group comparison tests are selected."
                               ) 
                           )
                         ), 
@@ -60,7 +60,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         
         # Calculate residuals for normality testing
         residual_values <- residuals(aov_result)
-        sw_res <- shapiro.test(residual_values)
+        sw_res <- stats::shapiro.test(residual_values)
         # Return Shapiro-Wilk result
         # Create a data frame with results similar to the raw data format
         results_df <- data.frame(
@@ -139,7 +139,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         # Loop through the list of groups and perform the Shapiro-Wilk test
         for (group_name in names(grouped_data)) {
           test_result <- tryCatch({
-            shapiro.test(grouped_data[[group_name]])
+            stats::shapiro.test(grouped_data[[group_name]])
           }, error = function(e) {
             return(list(statistic = NA, p.value = NA))
           })
