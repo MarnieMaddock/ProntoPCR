@@ -5,12 +5,12 @@ repDataUI <- function(id){
   tagList(
     h4(HTML("<b>Biological Replicate Average Values</b>")),
     tags$br(),
-    dataTableOutput(ns("rep_avg_table")),
+    DT::DTOutput(ns("rep_avg_table")),
     downloadUI(ns("download_rep_avg_data"), "Download Replicate Average Data"), #download as csv
     tags$br(),
     tags$br(),
     h4(HTML("<b>Filter by Condition</b>")),
-    dataTableOutput(ns("rep_avg_filtered_table")),
+    DT::DTOutput(ns("rep_avg_filtered_table")),
     downloadUI(ns("download_rep_avg_filtered_data"), "Download Filtered Replicate Average Data"),  #download as csv
     tags$br(),
     tags$br()
@@ -60,7 +60,7 @@ repDataServer <- function(id, data, filter_condition){
     })
     
     # Display the replicate averages table in "Calculations" tab
-    output$rep_avg_table <- renderDataTable({
+    output$rep_avg_table <- DT::renderDT({
       req(rep_avg_data())
       rep_avg_data()
     }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))
@@ -79,7 +79,7 @@ repDataServer <- function(id, data, filter_condition){
     })
     
     # Display filtered replicate data table in the UI
-    output$rep_avg_filtered_table <- renderDataTable({
+    output$rep_avg_filtered_table <- DT::renderDT({
       req(filtered_rep_avg_dataset())
       filtered_rep_avg_dataset()
     }, options = list(pageLength = 5, scrollX = TRUE, scrollY = "200px"))

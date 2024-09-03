@@ -32,12 +32,12 @@ wrangleDataUI <- function(id) {
   tagList(
     h4(HTML("<b>Average the houskeeping genes and perform ∆Cq and 2<sup>-∆Cq</sup></b>")),
     tags$br(),
-    dataTableOutput(ns("wrangled_table")),
+    DT::DTOutput(ns("wrangled_table")),
     downloadUI(ns("download_processed_data"), "Download Processed Data"), #download dcq data as csv
     tags$br(),
     tags$br(),
     h4(HTML("<b>Filter by Condition</b>")),
-    dataTableOutput(ns("filtered_table")),
+    DT::DTOutput(ns("filtered_table")),
     downloadUI(ns("download_filtered_data"), "Download Filtered Data") #download filtered data as csv
   )
 }
@@ -144,7 +144,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       return(df)
     })
     
-    output$wrangled_table <- renderDataTable({
+    output$wrangled_table <- DT::renderDT({
       req(wrangled_data())
       wrangled_data()
     })
@@ -176,7 +176,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
     })
     
     # Render the filtered data table
-    output$filtered_table <- renderDataTable({
+    output$filtered_table <- DT::renderDT({
       req(filtered_data())
       filtered_data()
     }, options = list(pageLength = 5))

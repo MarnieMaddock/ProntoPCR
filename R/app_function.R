@@ -31,10 +31,10 @@ ProntoPCR <-  function(...) {
         style = "height: 85vh; overflow-y: auto;",
         conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
                          inputFileUI("file")), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
-        # #Calculations tab: #Delta Cq tab
-        # conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
-        #                  wrangleDataSidebar("wrangleDataModule"),
-        # ), 
+        #Calculations tab: #Delta Cq tab
+        conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
+                         wrangleDataSidebar("wrangleDataModule"),
+        ),
         # conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
         #                  ddcqSidebar("ddcqModule") #display ddcq data
         # ),
@@ -67,30 +67,30 @@ ProntoPCR <-  function(...) {
                               #Display uploaded data using DataTable (module_deltaCq.R)
                               inputDataUI("inputDataModule"),
                      ),
-                     # tabPanel("Example Data", value = 2.2,
-                     #          exampleDataUI("exampleData")
-                     # ) #demonstrates an example file
+                     tabPanel("Example Data", value = 2.2,
+                              exampleDataUI("exampleData")
+                     ) #demonstrates an example file
                    )
           ),
-          #   #calculations tab
-          #   tabPanel("Calculations", value = 3,
-          #            tabsetPanel(
-          #              id = "subPanel",
-          #              selected = 3.1,
-          #              tabPanel(HTML("2<sup>-(∆Cq)</sup>"), value = 3.1, #dcq tab
-          #                       tabsetPanel(
-          #                         id = "subCalc",
-          #                         selected = 1,
-          #                         tabPanel("All Data", value = 1, #dcq tab 
-          #                                  wrangleDataUI("wrangleDataModule"), # Display delta Cq data here, and filtered data (module_deltaCq.R)
-          #                                  tags$br(),
-          #                                  tags$br()),
-          #                         #display biological replicate averages
-          #                         tabPanel("Biological Replicate", value = 2,
-          #                                  repDataUI("rep_data"),
-          #                         )
-          #                       )
-          #              ),
+            #calculations tab
+            tabPanel("Calculations", value = 3,
+                     tabsetPanel(
+                       id = "subPanel",
+                       selected = 3.1,
+                       tabPanel(HTML("2<sup>-(∆Cq)</sup>"), value = 3.1, #dcq tab
+                                tabsetPanel(
+                                  id = "subCalc",
+                                  selected = 1,
+                                  tabPanel("All Data", value = 1, #dcq tab
+                                           wrangleDataUI("wrangleDataModule"), # Display delta Cq data here, and filtered data (module_deltaCq.R)
+                                           tags$br(),
+                                           tags$br()),
+                                  #display biological replicate averages
+                                  tabPanel("Biological Replicate", value = 2,
+                                           repDataUI("rep_data"),
+                                  )
+                                )
+                       ),
           #              #delta delta cq tab
           #              tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
           #                       tabsetPanel(
@@ -104,8 +104,8 @@ ProntoPCR <-  function(...) {
           #                         )
           #                       ),
           #              ),
-          #            ),
-          #   ),
+                      ),
+             ),
           #   #statistics tab
           #   tabPanel("Statistics", value = 4,
           #            tabsetPanel(
@@ -137,16 +137,16 @@ ProntoPCR <-  function(...) {
     
     # Use the input data module to display inserted file in the UI
     inputDataServer("inputDataModule", csv_data)
-    # 
-    # #calculate mean housekeepers, delta Cq and fold change dcq
-    # wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
-    # 
-    # 
+
+    #calculate mean housekeepers, delta Cq and fold change dcq
+    wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
+
+
     # # Display and calculate biological replicate average values for dcq
-    # wrangled_data <- wrangled_data_module$wrangled_data 
+    # wrangled_data <- wrangled_data_module$wrangled_data
     # 
     # filter_condition <- wrangled_data_module$filter_condition
-    # 
+
     # #perform biological replicate calculations
     # DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
     # #save dcq rep avg data table

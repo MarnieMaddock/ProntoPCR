@@ -1,10 +1,9 @@
 
-
 exampleDataUI <- function(id) {
   ns <- NS(id)
   tagList(
     h4("Example CSV File"),
-    tags$img(src = "exampleTable.png", height = 400, width = 680),
+    tags$img(src = "www/exampleTable.png", height = 400, width = 680),
     tags$br(),
     tags$br(),
     tags$br(),
