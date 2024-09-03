@@ -47,10 +47,7 @@ ProntoPCR <-  function(...) {
         ),
         # Statistics tab
         # Suggested workflow tab
-        conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 1",
-                         workflowSidebar("workflow"),
-        ),
-        conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 2",
+        conditionalPanel(condition = "input.tabselected == 4",
                          statsSidebar("statsModule"),
         ),
         # conditionalPanel(condition = "input.tabselected == 5",
@@ -115,16 +112,7 @@ ProntoPCR <-  function(...) {
              ),
             #statistics tab
             tabPanel("Statistics", value = 4,
-                     tabsetPanel(
-                       id = "subStats",
-                       selected = 1,
-                       tabPanel("Flowchart", value = 1, # first subtab showing stats workflow recommendation
-                                workflowMain("workflow"),
-                       ),
-                       tabPanel("Statistics", value = 2, #perform stats subtab
-                                statsMain("statsModule"),
-                       )
-                     )
+                     statsMain("statsModule"),
             ),
           #   tabPanel("Graphs", value = 5,
           #            graphsMain("graphsModule")
