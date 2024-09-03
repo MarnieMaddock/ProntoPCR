@@ -182,7 +182,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
       results_shapiro <- selected_shapiro_results()
       
       results_shapiro <- results_shapiro %>% 
-        rename("P Value" = P_value, "Passed Normality Test?" = Passed_normality_test, "P Value Summary" = P_value_summary)
+        dplyr::rename("P Value" = P_value, "Passed Normality Test?" = Passed_normality_test, "P Value Summary" = P_value_summary)
       
         # Dynamically create or remove the table based on selection
         output$normalityTableUI <- renderUI({
@@ -195,7 +195,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
               tagList(
                 h4("Shapiro-Wilk Normality Test"),  # Dynamic heading
                 # Construct and render the results table
-                dataTableOutput(ns("normalityTable"))
+                DT::DTOutput(ns("normalityTable"))
               )
             }
           }
@@ -208,7 +208,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
           }
         })
         
-        output$normalityTable <- renderDataTable({
+        output$normalityTable <- DT::renderDT({
           if(!is.null(results_shapiro) && is.list(results_shapiro) && is.null(results_shapiro$error)) {
             results_shapiro
           }
@@ -229,8 +229,8 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
       
       # Create QQ plot for residuals
       ggplot2::ggplot(data = data.frame(sample = residual_values), aes(sample = sample)) +
-        geom_qq() +
-        geom_qq_line() +
+        ggplot2::geom_qq() +
+        ggplot2::geom_qq_line() +
         labs(x = "Theoretical Quantiles", y = "Residuals") +
         theme_Marnie
     })
@@ -245,8 +245,8 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         qqplot_data <- stats_data()
 
         ggplot2::ggplot(qqplot_data, aes(sample = !!as.symbol(columnInput()))) +
-          geom_qq() + geom_qq_line() +
-          facet_wrap(~cell, scales = "free_y") +
+          ggplot2::geom_qq() + ggplot2::geom_qq_line() +
+          ggplot2::facet_wrap(~cell, scales = "free_y") +
           labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
           theme_Marnie
       }
@@ -284,8 +284,8 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
       residual_values <- residuals(aov_result)
       
       # Create density plot for residuals
-      ggplot(data = data.frame(residuals = residual_values), aes(x = residuals)) +
-        geom_density() +
+      ggplot2::ggplot(data = data.frame(residuals = residual_values), aes(x = residuals)) +
+        ggplot2::geom_density() +
         labs(x = "Residuals", y = "Density") +
         theme_Marnie
     })
@@ -298,8 +298,8 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         density_data <- stats_data()
 
         ggplot2::ggplot(density_data, aes(x = !!as.symbol(columnInput()))) +
-          geom_density() +
-          facet_wrap(~cell, scales = "free_y") +
+          ggplot2::geom_density() +
+          ggplot2::facet_wrap(~cell, scales = "free_y") +
           labs(x = "Value", y = "Density") +
           theme_Marnie
       }

@@ -25,7 +25,7 @@ descriptiveMain <- function(id) {
   ns <- NS(id)
   tagList(
     uiOutput(ns("descriptivesHeading")),
-    dataTableOutput(ns("nTable")), #display sample size table if the option is checked in the sidepanel
+    DT::DTOutput(ns("nTable")), #display sample size table if the option is checked in the sidepanel
     tags$br(),
     
   )
@@ -192,7 +192,7 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
     })
 
     # Function to render the table output using the sample size table
-    output$nTable <- renderDataTable({
+    output$nTable <- DT::renderDT({
       req(input$descriptiveStats)
       datatable <- descriptivesTable()
       if (nrow(datatable) == 0) {

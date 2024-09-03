@@ -3,5 +3,8 @@
 export(ProntoPCR)
 import(shiny)
 importFrom(bslib,bs_theme)
+importFrom(ggplot2,aes)
+importFrom(ggplot2,geom_point)
+importFrom(ggplot2,labs)
 importFrom(magrittr,"%>%")
 importFrom(shinyjs,useShinyjs)

@@ -33,7 +33,7 @@ leveneServer <- function(id, columnInput, stats_data, selected_stat) {
     levene_reactive <- reactive({
         req(input$variance == TRUE, columnInput())
         levene_test_data <- stats_data()
-        test_result <- leveneTest(levene_test_data[[columnInput()]] ~ levene_test_data$cell)
+        test_result <- car::leveneTest(levene_test_data[[columnInput()]] ~ levene_test_data$cell)
         # Extracting values from the test_result
         df_group <- test_result$Df[1] # Degrees of freedom for group
         df_error <- test_result$Df[2] # Degrees of freedom for error/residuals
@@ -51,7 +51,7 @@ leveneServer <- function(id, columnInput, stats_data, selected_stat) {
                                           ifelse(p_value > 0.05, "ns", "*")))
         )
         summary_df <- summary_df %>% 
-          rename("df (Group)" = DF_Group, "df (Error)" = DF_Error, "F" = F_Value, 
+          dplyr::rename("df (Group)" = DF_Group, "df (Error)" = DF_Error, "F" = F_Value, 
                  "P Value" = P_Value, "Passed Variance Test?" = Passed_variance_test, "P Value Summary" = P_value_summary)
         rownames(summary_df) <- ""
         # Return the new summary data frame
@@ -59,14 +59,14 @@ leveneServer <- function(id, columnInput, stats_data, selected_stat) {
       })
     
     # display levene's test
-    output$levene  <- renderDataTable({
+    output$levene  <- DT::renderDT({
         req(levene_reactive())
         levene_reactive()
       })
     
     output$leveneUI <- renderUI({
         if(input$variance == TRUE) { # Check if the user wants to see the Levene's test results
-          dataTableOutput(ns("levene"))
+          DT::DTOutput(ns("levene"))
         }
       })
     

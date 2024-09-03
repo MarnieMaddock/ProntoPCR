@@ -7,6 +7,12 @@
 #' @importFrom bslib bs_theme
 #' @importFrom shinyjs useShinyjs
 #' @importFrom magrittr %>%
+#' @importFrom ggplot2 aes
+#' @importFrom ggplot2 labs
+#' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 geom_line
+#' @importFrom ggplot2 theme
+#' @importFrom ggplot2 geom_hline
 #' @export
 ProntoPCR <-  function(...) {
   
@@ -39,14 +45,14 @@ ProntoPCR <-  function(...) {
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
                          ddcqSidebar("ddcqModule") #display ddcq data
         ),
-        # # Statistics tab
-        # # Suggested workflow tab
-        # conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 1",
-        #                  workflowSidebar("workflow"),
-        # ),
-        # conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 2",
-        #                  statsSidebar("statsModule"),
-        # ),
+        # Statistics tab
+        # Suggested workflow tab
+        conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 1",
+                         workflowSidebar("workflow"),
+        ),
+        conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 2",
+                         statsSidebar("statsModule"),
+        ),
         # conditionalPanel(condition = "input.tabselected == 5",
         #                  graphsSidebar("graphsModule")
         # ),
@@ -107,19 +113,19 @@ ProntoPCR <-  function(...) {
                        ),
                       ),
              ),
-          #   #statistics tab
-          #   tabPanel("Statistics", value = 4,
-          #            tabsetPanel(
-          #              id = "subStats",
-          #              selected = 1,
-          #              tabPanel("Flowchart", value = 1, # first subtab showing stats workflow recommendation
-          #                       workflowMain("workflow"),
-          #              ),
-          #              tabPanel("Statistics", value = 2, #perform stats subtab
-          #                       statsMain("statsModule"),
-          #              )
-          #            )
-          #   ),
+            #statistics tab
+            tabPanel("Statistics", value = 4,
+                     tabsetPanel(
+                       id = "subStats",
+                       selected = 1,
+                       tabPanel("Flowchart", value = 1, # first subtab showing stats workflow recommendation
+                                workflowMain("workflow"),
+                       ),
+                       tabPanel("Statistics", value = 2, #perform stats subtab
+                                statsMain("statsModule"),
+                       )
+                     )
+            ),
           #   tabPanel("Graphs", value = 5,
           #            graphsMain("graphsModule")
           #   )
@@ -162,17 +168,17 @@ ProntoPCR <-  function(...) {
     ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
     ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
 
-    # #statistics
-    # stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
-    # selected_stat <- stats$selected_stat
-    # stats_gene <- stats$columnInput
-    # filter_data_stats <- stats$filter_data_stats
-    # group_comparison <- stats$group_comparison
-    # comparisonResults <- reactive({
-    #   stats$comparisonResults()
-    # })
-    # descriptives_table <- stats$descriptives_table
-    # 
+    #statistics
+    stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
+    selected_stat <- stats$selected_stat
+    stats_gene <- stats$columnInput
+    filter_data_stats <- stats$filter_data_stats
+    group_comparison <- stats$group_comparison
+    comparisonResults <- reactive({
+      stats$comparisonResults()
+    })
+    descriptives_table <- stats$descriptives_table
+
     # # Graphing
     # graph_generated <- reactiveVal(FALSE)
     # graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$gene_for_download, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,

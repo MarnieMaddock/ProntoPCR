@@ -8,8 +8,8 @@ performComparisonTests <- function(test_type, data, column_input = columnInput()
   group1_name <- group_names[1]
   group2_name <- group_names[2]
 
-  grp1 <-  data %>% filter(cell == unique(data$cell)[1]) %>% pull(!!column_input)
-  grp2 <-  data %>% filter(cell == unique(data$cell)[2]) %>% pull(!!column_input)
+  grp1 <-  data %>% dplyr::filter(cell == unique(data$cell)[1]) %>% dplyr::pull(!!column_input)
+  grp2 <-  data %>% dplyr::filter(cell == unique(data$cell)[2]) %>% dplyr::pull(!!column_input)
 
   # Helper function to determine significance
   determine_significance <- function(p_value) {

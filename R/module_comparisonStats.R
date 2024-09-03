@@ -215,7 +215,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                                                   ifelse(post_hoc_df$Freq <= 0.01, "**", 
                                                          ifelse(post_hoc_df$Freq > 0.05, "ns", "*")))
             post_hoc_df <- post_hoc_df %>% 
-              rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
+              dplyr::rename("Adjusted P Value" = Freq, "Significant?" = Significant, "P Value Summary" = P_value_summary, "group1" = Var1, "group2" = Var2)
             
             rownames(post_hoc_df) <- NULL
             post_hoc_df <- post_hoc_df[!is.na(post_hoc_df$"Adjusted P Value"), ]
@@ -229,7 +229,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
           aov_formula <- as.formula(formula_str)
           # Perform the ANOVA
           aov_result <- aov(aov_formula, data = data)
-          post_hoc_result <- ScheffeTest(aov_result)
+          post_hoc_result <- DescTools::ScheffeTest(aov_result)
           post_hoc_df <- post_hoc_result$cell
           
           # Convert the matrix or list into a dataframe
@@ -243,8 +243,8 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
           # Rename columns appropriately if needed
           names(post_hoc_df) <- c("Difference", "Lower CI", "Upper CI", "Adjusted P Value", "group1", "group2")
           #move columns usinhg datawizard package
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Difference")
-          post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
+          post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group1", before = "Difference")
+          post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group2", after = "group1")
           post_hoc_df$Significant <- ifelse(post_hoc_df$"Adjusted P Value" <= 0.05, "Yes", "No")
           # Add a summary of the p-value similar to what you've done before
           post_hoc_df$P_value_summary <- ifelse(post_hoc_df$"Adjusted P Value" <= 0.001, "***",
@@ -252,7 +252,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                                                        ifelse(post_hoc_df$"Adjusted P Value" > 0.05, "ns", "*")))
           
           post_hoc_df <- post_hoc_df %>% 
-            rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
+            dplyr::rename("Significant?" = Significant, "P Value Summary" = P_value_summary)
           rownames(post_hoc_df) <- NULL
         }
       }
@@ -274,7 +274,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                                                      ifelse(post_hoc_df$adj.p.value > 0.05, "ns", "*")))
         
         post_hoc_df <- post_hoc_df %>%
-          rename("Adjusted P Value" = adj.p.value, 
+          dplyr::rename("Adjusted P Value" = adj.p.value, 
                  "Significant?" = Significant, 
                  "P Value Summary" = P_value_summary,
                  Contrast = contrast,
@@ -288,8 +288,8 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
         post_hoc_df$group1 <- sapply(split_names, `[`, 1)
         post_hoc_df$group2 <- sapply(split_names, `[`, 2)
         #move columns usinhg datawizard package
-        post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Contrast")
-        post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
+        post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group1", before = "Contrast")
+        post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group2", after = "group1")
         #remove Contrast column
         post_hoc_df <- post_hoc_df %>% dplyr::select(-Contrast)
         rownames(post_hoc_df) <- NULL
@@ -317,8 +317,8 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       #remove comparison column
       post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
       #move columns usinhg datawizard package
-      post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "Z")
-      post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
+      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group1", before = "Z")
+      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group2", after = "group1")
       rownames(post_hoc_df) <- NULL
       post_hoc_df$Significant <- ifelse(is.na(post_hoc_df$P.adj), "NA",
                                         ifelse(post_hoc_df$P.adj <= 0.05, "Yes", "No"))
@@ -328,7 +328,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                                                    ifelse(post_hoc_df$P.adj > 0.05, "ns", "*")))
       
       post_hoc_df <- post_hoc_df %>%
-        rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+        dplyr::rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                "Unadjusted P Value" = P.unadj, "Adjusted P Value" = P.adj)
       return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
     }
@@ -366,7 +366,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
         }
         
         # Generate compact letter display based on the p_matrix
-        cl_display <- multcompLetters(p_matrix, compare = "<=", threshold = 0.05)
+        cl_display <- multcompView::multcompLetters(p_matrix, compare = "<=", threshold = 0.05)
         # Create dataframe for compact letter display results
         cld_df <- data.frame(
           Group = names(cl_display$Letters),
@@ -381,7 +381,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
           p_matrix[data$group1[i], data$group2[i]] <- p_value_col[i]
           p_matrix[data$group2[i], data$group1[i]] <- p_value_col[i]
         }
-        cl_display <- multcompLetters(p_matrix, compare = "<=", threshold = 0.05)
+        cl_display <- multcompView::multcompLetters(p_matrix, compare = "<=", threshold = 0.05)
         cld_df <- data.frame(
           Group = names(cl_display$Letters),
           Letters = unname(cl_display$Letters)
@@ -397,8 +397,8 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       cld_df <- data.frame()
       dependent_variable <- data[[input_column]]
       group_variable <- data$cell
-      conover_result <- conover.test(dependent_variable, group_variable,
-                                     method = p_adjust_method)
+      conover_result <- conover.test::conover.test(dependent_variable, group_variable,
+                                     method = p_adjust_method, altp = TRUE)
       "T" <- conover_result$T
       P <- conover_result$P
       P.adjusted <- conover_result$P.adjusted
@@ -419,8 +419,8 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       #remove comparison column
       post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
       #move columns usinhg datawizard package
-      post_hoc_df <- data_relocate(post_hoc_df, select = "group1", before = "T")
-      post_hoc_df <- data_relocate(post_hoc_df, select = "group2", after = "group1")
+      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group1", before = "T")
+      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group2", after = "group1")
       rownames(post_hoc_df) <- NULL
       post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
       # Add a summary of the p-value 
@@ -429,7 +429,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                                                    ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
       
       post_hoc_df <- post_hoc_df %>% 
-        rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
+        dplyr::rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
                "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
       return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
     }
@@ -761,25 +761,25 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
     
     
     # Render the dataframe using DT::renderDataTable
-    output$dataTable <- renderDataTable({
+    output$dataTable <- DT::renderDT({
       req(!is.null(comparisonResults()$test)) # Ensure the dataframe is ready
       if (!is.null(comparisonResults()$test)) {
-        datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE))
+        DT::datatable(comparisonResults()$test, options = list(pageLength = 5, autoWidth = TRUE))
       } else {
-        datatable(data.frame(Message = "No test results available"), options = list(pageLength = 5, autoWidth = TRUE))
+        DT::datatable(data.frame(Message = "No test results available"), options = list(pageLength = 5, autoWidth = TRUE))
       }
     })
     
     # Use renderUI to dynamically generate dataTableOutput
     output$testResultTable <- renderUI({
       # Dynamically create a dataTableOutput element
-      dataTableOutput(ns("dataTable"))
+      DT::DTOutput(ns("dataTable"))
     })
     
-    output$postHocTable <- renderDataTable({
+    output$postHocTable <- DT::renderDT({
       req(!is.null(comparisonResults()$posthoc))  # Ensure the post-hoc results are available
       if (!is.null(comparisonResults()$posthoc)) {
-        datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
+        DT::datatable(comparisonResults()$posthoc, options = list(pageLength = 5, autoWidth = TRUE))
       } else {
         return(NULL)
       }
@@ -787,17 +787,17 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
     
     output$postHocTableUI <- renderUI({
       # Dynamically create a dataTableOutput element
-      dataTableOutput(ns("postHocTable"))
+      DT::DTOutput(ns("postHocTable"))
     })
     
     suppressWarnings({
       # Render the dataframe using DT::renderDataTable
-      output$cld_table <- renderDataTable({
+      output$cld_table <- DT::renderDT({
         req(!is.na(comparisonResults()$cld)) # Ensure the dataframe is ready
         if (!is.null(comparisonResults()$cld)) {
-          datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
+          DT::datatable(comparisonResults()$cld, options = list(pageLength = 5, autoWidth = TRUE))
         } else {
-          datatable(data.frame(Message = "No compact letter display results available"), options = list(pageLength = 5, autoWidth = TRUE))
+          DT::datatable(data.frame(Message = "No compact letter display results available"), options = list(pageLength = 5, autoWidth = TRUE))
         }
       })
     })
@@ -805,7 +805,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
     # Use renderUI to dynamically generate dataTableOutput
     output$cld_tableUI <- renderUI({
       # Dynamically create a dataTableOutput element
-      dataTableOutput(ns("cld_table"))
+      DT::DTOutput(ns("cld_table"))
     })
     
     # Render the heading for the compact letter display
