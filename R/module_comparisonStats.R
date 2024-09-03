@@ -76,8 +76,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
         } else if (input$group_comparison == "non_parametric" && num_groups() > 2) {
           # Nonparametric post hoc test options
           radioButtons(ns("postHocTest"), HTML("<b>Select a post hoc test for Kruskal-Wallis (if <i>p</i> < 0.05):</b>"),
-                       choices = list("Dunn's Test" = "dunn",
-                                      "Conover-Iman Test" = "conover"))
+                       choices = list("Dunn's Test" = "dunn"))
         } else if (input$group_comparison == "welch" && num_groups() >2){
           radioButtons(ns("postHocTest"), HTML("<b>Select a post hoc test for Welch's ANOVA (if <i>p</i> < 0.05):</b>"),
                        choices = list("Games-Howell" = "games_howell"))
@@ -91,7 +90,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       # Dynamically generate UI for correction options based on the post hoc test selected
         # Ensure we have more than 2 groups for post hoc tests to make sense
         req(sampleInput(), columnInput(), input$group_comparison, num_groups() > 2)
-        if (!is.null(input$postHocTest) && (input$postHocTest == "dunn" || input$postHocTest == "conover")) {
+        if (!is.null(input$postHocTest) && (input$postHocTest == "dunn" )) {
           radioButtons(ns("correctionMethod"), HTML("<b>Select a correction method for Dunn's test:</b>"),
                        choices = list("Bonferroni" = "bonferroni",
                                       "Šidák" = "sidak",
@@ -125,19 +124,10 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
             "hs" = "Dunn's test with Holm-Šidák adjustment for multiple comparisons",
             "bh" = "Dunn's test with Benjamini-Hochberg adjustment for multiple comparisons",
             "hochberg" = "Dunn's test with Hochberg adjustment for multiple comparisons"
-          ),
-          "conover" = list(
-            "bonferroni" = "Conover-Iman test with Bonferroni adjustment for multiple comparisons",
-            "sidak" = "Conover-Iman test with Šidák adjustment for multiple comparisons",
-            "holm" = "Conover-Iman test with Holm adjustment for multiple comparisons",
-            "hs" = "Conover-Iman test with Holm-Šidák adjustment for multiple comparisons",
-            "bh" = "Conover-Iman test with Benjamini-Hochberg adjustment for multiple comparisons",
-            "hochberg" = "Conover-Iman test with Hochberg adjustment for multiple comparisons"
           )
         ),
         "welch" = list(
-          "games_howell" = "Games-Howell post-hoc test",
-          "dunnett_t3" = "Dunnett's T3 post-hoc test"  # Assuming this is missing and should be included
+          "games_howell" = "Games-Howell post-hoc test"
         )
       )
       
@@ -392,47 +382,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       }  
     }
     
-    performConoverPostHoc <- function(data, p_adjust_method, input_column = columnInput()){
-      post_hoc_df <- data.frame()
-      cld_df <- data.frame()
-      dependent_variable <- data[[input_column]]
-      group_variable <- data$cell
-      conover_result <- conover.test::conover.test(dependent_variable, group_variable,
-                                     method = p_adjust_method, altp = TRUE)
-      "T" <- conover_result$T
-      P <- conover_result$P
-      P.adjusted <- conover_result$P.adjusted
-      comparisons <- conover_result$comparisons
-      
-      # Create a dataframe
-      post_hoc_df <- data.frame(
-        Comparison = comparisons,
-        "T" = T,
-        P = P,
-        P.adjusted = P.adjusted
-      )
-      split_names <- strsplit(post_hoc_df$Comparison, split = " - ")
-      
-      # Create new columns for Group1 and Group2 based on the split row names
-      post_hoc_df$group1 <- sapply(split_names, `[`, 1)
-      post_hoc_df$group2 <- sapply(split_names, `[`, 2)
-      #remove comparison column
-      post_hoc_df <- post_hoc_df %>% dplyr::select(-Comparison)
-      #move columns usinhg datawizard package
-      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group1", before = "T")
-      post_hoc_df <- datawizard::data_relocate(post_hoc_df, select = "group2", after = "group1")
-      rownames(post_hoc_df) <- NULL
-      post_hoc_df$Significant <- ifelse(post_hoc_df$P.adjusted < 0.05, "Yes", "No")
-      # Add a summary of the p-value 
-      post_hoc_df$P_value_summary <- ifelse(post_hoc_df$P.adjusted <= 0.001, "***",
-                                            ifelse(post_hoc_df$P.adjusted <= 0.01, "**",
-                                                   ifelse(post_hoc_df$P.adjusted > 0.05, "ns", "*")))
-      
-      post_hoc_df <- post_hoc_df %>% 
-        dplyr::rename("Significant?" = Significant, "P Value Summary" = P_value_summary,
-               "Unadjusted P Value" = P, "Adjusted P Value" = P.adjusted)
-      return(list(post_hoc_df = post_hoc_df, cld_df = cld_df))
-    }
+    
 
 
 #reactive to perform stats test based on selections made by the user
@@ -665,72 +615,6 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
           }else if(input$postHocTest == "dunn" && input$correctionMethod == "hochberg"){
             # Validate conditions
             results <- performDunnPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "hochberg",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "bonferroni"){
-            results <-performConoverPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "bonferroni",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "sidak"){
-            results <-performConoverPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "sidak",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "holm"){
-            results <-performConoverPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "holm",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "bh"){
-            results <-performConoverPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "bh",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "hs"){
-            results <-performConoverPostHoc(
-              data = shapiro_data_reactive(),
-              p_adjust_method = "hs",
-              input_column = columnInput()
-            )
-            post_hoc_df <- results$post_hoc_df
-            #compact letter display
-            cld_df <- results$cld_df
-            cld_df <- performCLD(data = post_hoc_df, p_colname = "Adjusted P Value",  remove_NA = FALSE)
-
-          }else if(input$postHocTest == "conover" && input$correctionMethod == "hochberg"){
-            results <-performConoverPostHoc(
               data = shapiro_data_reactive(),
               p_adjust_method = "hochberg",
               input_column = columnInput()
