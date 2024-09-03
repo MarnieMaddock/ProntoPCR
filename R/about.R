@@ -1,3 +1,4 @@
+library(shiny)
 about_text <- div(
   h3("About ProntoPCR"),
   p("Pronto PCR has been developed to simplify and accelerate the analysis of qPCR data, including performing calculations, statistics and graphing (which is known to be a repetitive and time-consuming task). The application is designed to do the following:"),

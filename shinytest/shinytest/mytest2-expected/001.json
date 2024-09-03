@@ -1,0 +1,149 @@
+{
+  "input": {
+    "add_significance": "none",
+    "average_line_thickness": 1,
+    "average_line_width": 0.15,
+    "change_shapes": false,
+    "dot_size": 1.5,
+    "dot_spacing": 2.7,
+    "dpi": 500,
+    "error_bar_thickness": 1.5,
+    "error_bar_width": 0.2,
+    "error_type": "se",
+    "errorbar_thickness": 1,
+    "errorbar_width": 0.2,
+    "file": null,
+    "group_comparison": null,
+    "group1": "",
+    "group2": "",
+    "group3": "",
+    "height": 5,
+    "housekeepers": 3,
+    "jitter_amount": 0.2,
+    "log_transform": false,
+    "normality_test": null,
+    "option1": false,
+    "option2": false,
+    "option3": false,
+    "option4": false,
+    "option5": false,
+    "option6": false,
+    "option7": false,
+    "option8": false,
+    "point_size": 3,
+    "rotate_labels": false,
+    "sample_size": false,
+    "save_btn": 0,
+    "save_ddcq_data": 0,
+    "seed_input": 123,
+    "select_dcq_or_ddcq": "dcq",
+    "select_dcq_or_ddcq_stats": "dcq_stats",
+    "start_at_zero": true,
+    "stroke_thickness": 1.5,
+    "subCalc": "1",
+    "subCalc2": "3",
+    "subInput": "2.1",
+    "subPanel": "3.1",
+    "subStats": "1",
+    "tabselected": "1",
+    "variance": false,
+    "width": 8,
+    "x_axis_label_font_size": 12,
+    "x_axis_positions": "",
+    "x_axis_title_font_size": 14,
+    "x_label": "Group",
+    "y_axis_label_font_size": 12,
+    "y_axis_title_font_size": 14
+  },
+  "output": {
+    "column_selector": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "column_selector2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "condition_filter": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "condition_selector": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "correctionOptions": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "ddcqMessage": null,
+    "downloadButtonUI": null,
+    "dynamic_y_label_input": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "groups": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group1-label\" for=\"group1\">Enter the name of housekeeper 1<\/label>\n  <input id=\"group1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group2-label\" for=\"group2\">Enter the name of housekeeper 2<\/label>\n  <input id=\"group2\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"group3-label\" for=\"group3\">Enter the name of housekeeper 3<\/label>\n  <input id=\"group3\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "postHocOptions": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "select_control": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "select_samples": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "selected_gene_ui": null,
+    "selected_gene_ui_stats": null,
+    "sigUI": null,
+    "text1": "You have 3 housekeeper genes. The housekeepers are called .",
+    "text2": "Once you have saved the housekeeper gene names, please move to the calculations tab.",
+    "x_axis_labels": null
+  },
+  "export": {
+
+  }
+}

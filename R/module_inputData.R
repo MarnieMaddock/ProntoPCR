@@ -34,7 +34,7 @@ inputFileUI <- function(id) {
 }
 
 
-downloadExampleData <- function(id, dataset_path = "www/exampledata.csv") {
+downloadExampleData <- function(id, dataset_path = "inst/www/exampledata.csv") {
   moduleServer(
     id,
     function(input, output, session) {
@@ -56,7 +56,7 @@ inputDataUI <- function(id) {
   ns <- NS(id)
   tagList(
     h3(HTML("Inserted Data")),
-    dataTableOutput(ns("table")),
+    DT::DTOutput(ns("table")),
     tags$br(),
     tags$br()
   )
@@ -218,7 +218,7 @@ inputDataServer <- function(id, csv_data) {
     ns <- session$ns
     
     # Render the data table for the uploaded CSV
-    output$table <- renderDataTable({
+    output$table <- DT::renderDT({
       req(csv_data$data())
       csv_data$data()
     }, options = list(pageLength = 5))

@@ -1,5 +1,6 @@
 # utils_graphTheme.R
-theme_Marnie <- theme(axis.line.y = element_line(colour = "black", linewidth = 0.9),
+library(ggplot2)
+theme_Marnie <- ggplot2::theme(axis.line.y = element_line(colour = "black", linewidth = 0.9),
                       axis.line.x = element_line(colour = "black", linewidth = 0.9),
                       panel.grid.minor = element_blank(),
                       panel.background = element_rect(fill = "white"),
