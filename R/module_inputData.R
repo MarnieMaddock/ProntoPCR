@@ -22,7 +22,7 @@ inputFileUI <- function(id) {
       max = 10),
     uiOutput(ns("groups")), # Generate dynamic text input fields based on the number of groups for housekeeper genes
     helpText("Ensure that genes are entered exactly as they appear in the Target column."),
-    actionButton(ns("save_btn"), "Save housekeeper names"),
+    actionButton(ns("save_btn"), "Save Housekeeper Names"),
     tags$br(),
     tags$br(),
     tags$br(),

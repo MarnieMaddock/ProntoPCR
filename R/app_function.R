@@ -42,8 +42,6 @@
 #' @importFrom ggplot2 last_plot
 #' @importFrom ggbeeswarm geom_beeswarm
 #' @importFrom ggpubr stat_pvalue_manual
-
-
 #' @export
 ProntoPCR <-  function(...) {
   
