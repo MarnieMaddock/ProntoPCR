@@ -27,9 +27,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 </style>
 
-```{r setup, include=FALSE}
+
+```{r setup_stats, include=FALSE}
 #packages for rmakrdown
 library(kableExtra)
+
+# Get the full path to the footer.svg image within the package
+footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  knitr::include_graphics(footer_svg_path)
+} else {
+  "Footer image not found."
+}
 ```
 
 ### **ProntoPCR**
@@ -174,7 +183,14 @@ if (!is.null(params$cldData)) {
 
 If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
 
-![](www/footer.svg)
+```{r footer, echo=FALSE}
+footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  knitr::include_graphics(footer_svg_path)
+} else {
+  "Footer image not found."
+}
+```
 
 
 
