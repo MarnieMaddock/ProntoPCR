@@ -24,7 +24,7 @@ ddcqMain <- function(id){
   ns <- NS(id)
   tagList(
     h4(HTML("<b>Average ∆Cq for control and perform 2<sup>-∆ΔCq</sup></b>")),
-    dataTableOutput(ns("ddcq_data")), #display processed ddcq data
+    DT::DTOutput(ns("ddcq_data")), #display processed ddcq data
     downloadUI(ns("download_ddcq_data"), "Download Processed Data"), #download ddcq data as a csv
     tags$br()
   )
@@ -56,7 +56,7 @@ ddcqServer <- function(id, wrangled_data) {
     
     extracted_gene <- reactive({
       selected_gene <- input$select_gene
-      str_extract(selected_gene, "(?<=_).*")
+      stringr::str_extract(selected_gene, "(?<=_).*")
     })
     
     # create ddcq data
@@ -70,7 +70,7 @@ ddcqServer <- function(id, wrangled_data) {
         
         #select for required samples and keep relevant columns
         ddcq_data <- wrangled_data() %>%
-          filter((cell == control) | (cell %in% samples)) %>%
+          dplyr::filter((cell == control) | (cell %in% samples)) %>%
           dplyr::select(Sample, condition, group, cell, mean_hk, extracted_gene(), all_of(selected_gene))
 
         # Resetting levels of factors to only include selected options
@@ -91,12 +91,12 @@ ddcqServer <- function(id, wrangled_data) {
 
         # Calculate the average delta cq for the selected gene in the control samples
         avg_dcq_ctrl <- ddcq_filtered_data() %>%
-          filter(cell == control) %>%
-          group_by(cell) %>%
-          summarise(dcq_ctrl_avg = mean(!!sym(selected_gene), na.rm = TRUE), .groups = "drop")
+          dplyr::filter(cell == control) %>%
+          dplyr::group_by(cell) %>%
+          dplyr::summarise(dcq_ctrl_avg = mean(!!rlang::sym(selected_gene), na.rm = TRUE), .groups = "drop")
 
         # Left join the original dataframe with the summarised dataframe
-        avg_dcq_ctrl <- left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = "cell")
+        avg_dcq_ctrl <- dplyr::left_join(ddcq_filtered_data(), avg_dcq_ctrl, by = "cell")
 
         # Calculate the mean value
         mean_val <- mean(avg_dcq_ctrl$dcq_ctrl_avg, na.rm = TRUE)
@@ -120,7 +120,7 @@ ddcqServer <- function(id, wrangled_data) {
       })
     
     #display ddcq data in UI
-    output$ddcq_data <- renderDataTable({
+    output$ddcq_data <- DT::renderDT({
         req(average_dcq())
         average_dcq()
       }, options = list(pageLength = 5))

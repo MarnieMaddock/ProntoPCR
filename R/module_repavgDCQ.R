@@ -33,13 +33,18 @@ repDataServer <- function(id, data, filter_condition){
 
       
       # Add and relocate 'cell' column
-      rep_avg <- data() %>%
-        group_by(condition, group) %>%
-        summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
-        gather(key = "Variable", value = "fc_avg", -condition, -group)
+      # rep_avg <- data() %>%
+      #   group_by(condition, group) %>%
+      #   summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
+      #   gather(key = "Variable", value = "fc_avg", -condition, -group)
 
+      rep_avg <- data() %>%
+        dplyr::group_by(condition, group) %>%
+        dplyr::summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
+        tidyr::pivot_longer(cols = -c(condition, group), names_to = "Variable", values_to = "fc_avg")
+      
       rep_avg <- rep_avg %>%
-        pivot_wider(names_from = Variable, values_from = fc_avg)
+        tidyr::pivot_wider(names_from = Variable, values_from = fc_avg)
       
       # Remove "_fc_avg" from column names
       colnames(rep_avg) <- sub("_fc_avg$", "", colnames(rep_avg))
@@ -49,7 +54,7 @@ repDataServer <- function(id, data, filter_condition){
       rep_avg$cell <- as.factor(rep_avg$cell)
       #Move column
       rep_avg <- rep_avg %>%
-        relocate(cell, .after = group)
+        dplyr::relocate(cell, .after = group)
       #rep_avg <- datawizard::data_relocate(rep_avg, select = "cell", after = "group")
       
 
@@ -71,7 +76,7 @@ repDataServer <- function(id, data, filter_condition){
       
       if (!is.null(conditions_to_filter)) {
         filtered_data <- rep_avg_data() %>%
-          filter(condition %in% conditions_to_filter)
+          dplyr::filter(condition %in% conditions_to_filter)
         return(filtered_data)
       } else {
         return(NULL)

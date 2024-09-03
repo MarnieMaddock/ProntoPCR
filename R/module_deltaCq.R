@@ -96,9 +96,9 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
         dplyr::mutate(
           mean_hk = if (isTRUE(geo_mean_state())) {
             # Calculate geometric mean if checkbox is selected
-            exp(mean(log(c_across(all_of(variables))), na.rm = TRUE)) 
+            exp(mean(log(dplyr::c_across(all_of(variables))), na.rm = TRUE)) 
           } else { # use arithmetic mean
-            mean(c_across(all_of(variables)), na.rm = TRUE)
+            mean(dplyr::c_across(all_of(variables)), na.rm = TRUE)
           }
         )
       #move columns using datawizard package
@@ -110,7 +110,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       #+ 1 increments the index to select the columns directly after "mean_hk".
       #ncol(data) provides the last column index of the dataframe.
       df <- df %>%
-        mutate(across((which(names(df) == "mean_hk") + 1):ncol(df),
+        dplyr::mutate(across((which(names(df) == "mean_hk") + 1):ncol(df),
                       list(dcq = ~ ifelse(.x != 0, .x - mean_hk, 0)),
                       .names = "{.fn}_{.col}"))
       
@@ -118,7 +118,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       # Calculate fc, considering the case where the data point is 0
       #supressed warnings as it is inconsequential to the data functionality
       df <- suppressWarnings({df %>%
-          mutate(across(
+          dplyr::mutate(across(
             (which(startsWith(names(df), "dcq_"))):ncol(df),
             list(fc = ~ ifelse(.x != 0, 2^(-.x), 0)),
             .names = "{.fn}_{.col}"
@@ -168,7 +168,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       
       if (!is.null(conditions_to_filter)) {
         filtered_data <- wrangled_data() %>%
-          filter(condition %in% conditions_to_filter)
+          dplyr::filter(condition %in% conditions_to_filter)
         return(filtered_data)
       } else {
         return(NULL)

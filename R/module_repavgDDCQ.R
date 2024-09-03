@@ -3,7 +3,7 @@ DDCQrepMain <- function(id){
   ns <- NS(id)
   tagList(
     h4(HTML("<b>Biological Replicate Average Values</b>")), 
-    dataTableOutput(ns("rep_avg_table_ddcq")), #display biological replicate values for ddcq
+    DT::DTOutput(ns("rep_avg_table_ddcq")), #display biological replicate values for ddcq
     downloadUI(ns("download_ddcq_avg_data"), "Download Replicate Data") #download as a csv
     ) 
 }
@@ -14,11 +14,10 @@ DDCQrepServer <- function(id, average_dcq, selected_gene){
     
     rep_avg_data_ddcq <- reactive({
         req(average_dcq())
-
         rep_avg_ddcq <- average_dcq() %>%
-          group_by(cell) %>%
+          dplyr::group_by(cell) %>%
           #summarise using arithemtic mean
-          summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop") %>%
+          dplyr::summarize(mean_fc_ddcq = mean(fc_ddcq, na.rm = TRUE), .groups = "drop")
           #summarize using geometric mean
           #summarize(mean_fc_ddcq = exp(mean(log(fc_ddcq), na.rm = TRUE)), .groups = "drop")
         
@@ -26,7 +25,7 @@ DDCQrepServer <- function(id, average_dcq, selected_gene){
       })
     
     # Display the replicate averages table in "Calculations" tab
-    output$rep_avg_table_ddcq <- renderDataTable({
+    output$rep_avg_table_ddcq <- DT::renderDT({
         rep_avg_data_ddcq()
       }, options = list(pageLength = 5))
     

@@ -3,4 +3,5 @@
 export(ProntoPCR)
 import(shiny)
 importFrom(bslib,bs_theme)
+importFrom(magrittr,"%>%")
 importFrom(shinyjs,useShinyjs)

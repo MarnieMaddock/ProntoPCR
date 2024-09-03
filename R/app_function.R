@@ -6,6 +6,7 @@
 #' @import shiny
 #' @importFrom bslib bs_theme
 #' @importFrom shinyjs useShinyjs
+#' @importFrom magrittr %>%
 #' @export
 ProntoPCR <-  function(...) {
   
@@ -35,9 +36,9 @@ ProntoPCR <-  function(...) {
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
                          wrangleDataSidebar("wrangleDataModule"),
         ),
-        # conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
-        #                  ddcqSidebar("ddcqModule") #display ddcq data
-        # ),
+        conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
+                         ddcqSidebar("ddcqModule") #display ddcq data
+        ),
         # # Statistics tab
         # # Suggested workflow tab
         # conditionalPanel(condition = "input.tabselected == 4 && input.subStats == 1",
@@ -91,19 +92,19 @@ ProntoPCR <-  function(...) {
                                   )
                                 )
                        ),
-          #              #delta delta cq tab
-          #              tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
-          #                       tabsetPanel(
-          #                         id = "subCalc2",
-          #                         selected = 3,
-          #                         tabPanel("All Data", value = 3,
-          #                                  ddcqMain("ddcqModule")
-          #                         ), #display processed ddcq data
-          #                         tabPanel("Biological Replicate", value = 4,
-          #                                  DDCQrepMain("ddcqRep"),
-          #                         )
-          #                       ),
-          #              ),
+                       #delta delta cq tab
+                       tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
+                                tabsetPanel(
+                                  id = "subCalc2",
+                                  selected = 3,
+                                  tabPanel("All Data", value = 3,
+                                           ddcqMain("ddcqModule")
+                                  ), #display processed ddcq data
+                                  tabPanel("Biological Replicate", value = 4,
+                                           DDCQrepMain("ddcqRep"),
+                                  )
+                                ),
+                       ),
                       ),
              ),
           #   #statistics tab
@@ -142,25 +143,25 @@ ProntoPCR <-  function(...) {
     wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
 
 
-    # # Display and calculate biological replicate average values for dcq
-    # wrangled_data <- wrangled_data_module$wrangled_data
-    # 
-    # filter_condition <- wrangled_data_module$filter_condition
+    # Display and calculate biological replicate average values for dcq
+    wrangled_data <- wrangled_data_module$wrangled_data
+    
+    filter_condition <- wrangled_data_module$filter_condition
 
-    # #perform biological replicate calculations
-    # DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
-    # #save dcq rep avg data table
-    # rep_avg_data <- DCQ_repData$rep_avg_data
-    # 
-    # # select groups for ddcq and calculate ddcq for a gene
-    # # Display and calculate biological replicate average values for ddcq
-    # ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
-    # average_dcq <- ddcq_data_module$average_dcq  
-    # 
-    # selected_gene <- ddcq_data_module$extracted_gene
-    # ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
-    # ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
-    # 
+    #perform biological replicate calculations
+    DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
+    #save dcq rep avg data table
+    rep_avg_data <- DCQ_repData$rep_avg_data
+    
+    # select groups for ddcq and calculate ddcq for a gene
+    # Display and calculate biological replicate average values for ddcq
+    ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
+    average_dcq <- ddcq_data_module$average_dcq
+
+    selected_gene <- ddcq_data_module$extracted_gene
+    ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
+    ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
+
     # #statistics
     # stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
     # selected_stat <- stats$selected_stat
