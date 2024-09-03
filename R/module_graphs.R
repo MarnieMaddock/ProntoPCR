@@ -587,11 +587,10 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       }
     })
     
-    # render plot according to user input options
     
+    # render plot according to user input options
     # PLOT CODE
     ## EXTENISVE code for generating customisable graphs:
-    #create_graph <- function(input, graph_generated, selected_stats, selected_graphs, dcq_or_ddcq, col_discrepancy, rep_avg_data, rep_avg_data_ddcq, error_fun, color_schemes, colours, theme_Marnie, user_labels, shapiro_data_reactive, comparisonResults, ci){
     output$plot <- renderPlot({
         req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
       

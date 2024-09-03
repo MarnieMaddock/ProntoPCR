@@ -4,15 +4,46 @@
 #' @param ... Additional arguments to pass to the ProntoPCR function.
 #' @name ProntoPCR
 #' @import shiny
+#' @import ggtext
 #' @importFrom bslib bs_theme
 #' @importFrom shinyjs useShinyjs
 #' @importFrom magrittr %>%
+#' @importFrom dplyr select
+#' @importFrom dplyr filter
+#' @importFrom dplyr mutate
+#' @importFrom dplyr summarise
+#' @importFrom dplyr group_by
+#' @importFrom dplyr rename
+#' @importFrom dplyr case_when
+#' @importFrom dplyr n
+#' @importFrom rlang sym
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_bar
+#' @importFrom ggplot2 geom_text
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 position_jitter
+#' @importFrom ggplot2 scale_y_continuous
+#' @importFrom ggplot2 scale_x_discrete
+#' @importFrom ggplot2 scale_fill_manual
+#' @importFrom ggplot2 scale_color_manual
+#' @importFrom ggplot2 scale_shape_manual
+#' @importFrom ggplot2 expansion
+#' @importFrom ggplot2 facet_wrap
 #' @importFrom ggplot2 geom_line
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 geom_hline
+#' @importFrom ggplot2 element_text
+#' @importFrom ggplot2 mean_se
+#' @importFrom ggplot2 geom_errorbar
+#' @importFrom ggplot2 stat_summary
+#' @importFrom ggplot2 ggsave
+#' @importFrom ggplot2 last_plot
+#' @importFrom ggbeeswarm geom_beeswarm
+#' @importFrom ggpubr stat_pvalue_manual
+
+
 #' @export
 ProntoPCR <-  function(...) {
   
@@ -50,9 +81,9 @@ ProntoPCR <-  function(...) {
         conditionalPanel(condition = "input.tabselected == 4",
                          statsSidebar("statsModule"),
         ),
-        # conditionalPanel(condition = "input.tabselected == 5",
-        #                  graphsSidebar("graphsModule")
-        # ),
+        conditionalPanel(condition = "input.tabselected == 5",
+                         graphsSidebar("graphsModule")
+        ),
       ), #sidebarPanel closing bracket
       
       mainPanel(
@@ -114,9 +145,9 @@ ProntoPCR <-  function(...) {
             tabPanel("Statistics", value = 4,
                      statsMain("statsModule"),
             ),
-          #   tabPanel("Graphs", value = 5,
-          #            graphsMain("graphsModule")
-          #   )
+            tabPanel("Graphs", value = 5,
+                     graphsMain("graphsModule")
+            )
         )
       ) #main panel close bracket
     ) #sidebarLayout close bracket
@@ -167,11 +198,11 @@ ProntoPCR <-  function(...) {
     })
     descriptives_table <- stats$descriptives_table
 
-    # # Graphing
-    # graph_generated <- reactiveVal(FALSE)
-    # graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$gene_for_download, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
-    #              stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
-    # 
+    # Graphing
+    graph_generated <- reactiveVal(FALSE)
+    graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$gene_for_download, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
+                 stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
+
   }
   shinyApp(ui, server, ...)
 }
