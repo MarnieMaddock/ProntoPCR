@@ -59,7 +59,7 @@ ProntoPCR <-  function(...) {
     div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
     div(id = "logo2", tags$img(src = "www/UOW.png")),
     # Application title
-    div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
+    div(tags$h1("ProntoPCR v1.0.1", style = "margin-left: 65px;")),
     useShinyjs(), 
     #sidebar options
     sidebarLayout(
