@@ -1,5 +1,5 @@
 Package: ProntoPCR
-Title: Performs Routine RT-qPCR calculations automatically through a user-friendly interface.
+Title: ProntoPCR performs routine RT-qPCR calculations automatically through a user-friendly interface.
 Version: 1.0.0
 Authors@R: 
     person("Marnie", "Maddock", , "mlm715@uowmail.edu.au", role = c("aut", "cre"),
