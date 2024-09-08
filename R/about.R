@@ -16,5 +16,5 @@ about_text <- div(
   shiny::tags$br(),
   shiny::tags$br(),
   #add footer image
-  tags$img(src = "www/footer.svg", height = 150, width = 800)
+  tags$img(src = "inst/www/footer.svg", height = 150, width = 800)
 )
