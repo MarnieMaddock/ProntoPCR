@@ -34,7 +34,7 @@ inputFileUI <- function(id) {
 }
 
 
-downloadExampleData <- function(id, dataset_path = "inst/www/exampledata.csv") {
+downloadExampleData <- function(id, dataset_path = system.file("www", "exampledata.csv", package = "ProntoPCR")) {
   moduleServer(
     id,
     function(input, output, session) {
@@ -44,8 +44,6 @@ downloadExampleData <- function(id, dataset_path = "inst/www/exampledata.csv") {
         },
         content = function(file) {
           file.copy(dataset_path, file)
-          # If the dataset is generated within the app, use something like this:
-          # write.csv(dataset, file, row.names = FALSE)
         }
       )
     }
