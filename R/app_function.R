@@ -49,7 +49,7 @@ ProntoPCR <-  function(...) {
   #Sys.setlocale("LC_ALL", "en_US.UTF-8")
   
   # Map the 'www' directory to a URL path
-  addResourcePath("www", system.file("www", package = "ProntoPCR"))
+  #addResourcePath("www", system.file("www", package = "ProntoPCR"))
   
   # Map the 'www' directory to a URL path
   # www_path <- system.file("www", package = "ProntoPCR")
