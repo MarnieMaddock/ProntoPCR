@@ -57,14 +57,6 @@ h1, h2, h3, h4, h5, h6 {
 library(knitr)
 library(rmarkdown)
 
-# Get the full path to the footer.svg image within the package
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  knitr::include_graphics(footer_svg_path)
-} else {
-  "Footer image not found."
-}
-
 ```
 
 ### Your selected graph options
@@ -141,12 +133,23 @@ if (file.exists(footer_svg_path)) {
 If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). Note Colour Scheme suggestions for graphs can also be sent to [Marnie](mailto:mlm715@uowmail.edu.au?subject=ProntoPCR Colour Request&body=Hi, I have a colour scheme request. Here is a list of colours in order. Please use hex codes, e.g. #000000, #63b8ff:).
 
 
-```{r footer, echo=FALSE}
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  knitr::include_graphics(footer_svg_path)
+```{r footer, echo=FALSE, results = 'hide'}
+# Check if the app is running on shinyapps.io by checking the SHINY_PORT environment variable
+is_local <- Sys.getenv("SHINY_PORT") == ""
+
+if (is_local) {
+  # This block will only run when the app is running locally
+  footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+  
+  if (file.exists(footer_svg_path)) {
+    knitr::include_graphics(footer_svg_path)
+  } else {
+    NULL
+  }
 } else {
-  "Footer image not found."
+  # You can print a message or leave it blank for shinyapps.io deployment
+  NULL
 }
+
 ```
 

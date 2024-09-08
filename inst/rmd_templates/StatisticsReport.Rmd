@@ -32,13 +32,6 @@ h1, h2, h3, h4, h5, h6 {
 #packages for rmakrdown
 library(kableExtra)
 
-# Get the full path to the footer.svg image within the package
-# footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
-# if (file.exists(footer_svg_path)) {
-#   knitr::include_graphics(footer_svg_path)
-# } else {
-#   "Footer image not found."
-# }
 ```
 
 ### **ProntoPCR**
@@ -183,27 +176,25 @@ if (!is.null(params$cldData)) {
 
 If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
 
-```{r footer, echo=FALSE}
-# # Copy the footer.svg to a temporary directory
-# footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-# temp_footer_path <- file.path(tempdir(), "footer.svg")
-# 
-# # If the footer exists, copy it to the temp folder and display it
-# if (file.exists(footer_svg_path)) {
-#   file.copy(footer_svg_path, temp_footer_path, overwrite = TRUE)
-#   knitr::include_graphics(temp_footer_path)
-# } else {
-#   "Footer image not found."
-# }
 
-footer_svg_path <- "inst/rmd_templates/footer.svg"
-#footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  knitr::include_graphics(footer_svg_path)
+```{r footer, echo=FALSE, results = 'hide'}
+# Check if the app is running on shinyapps.io by checking the SHINY_PORT environment variable
+is_local <- Sys.getenv("SHINY_PORT") == ""
+
+if (is_local) {
+  # This block will only run when the app is running locally
+  footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+  
+  if (file.exists(footer_svg_path)) {
+    knitr::include_graphics(footer_svg_path)
+  } else {
+    NULL
+  }
 } else {
-  "Footer image not found."
+  # You can print a message or leave it blank for shinyapps.io deployment
+  NULL
 }
-```
 
+```
 
 
