@@ -46,13 +46,16 @@
 ProntoPCR <-  function(...) {
   
   #Set the locale to ensure it handles UTF-8 encoding properly:
-  Sys.setlocale("LC_ALL", "en_US.UTF-8")
+  #Sys.setlocale("LC_ALL", "en_US.UTF-8")
   
   # Map the 'www' directory to a URL path
   #addResourcePath("www", system.file("www", package = "ProntoPCR"))
   
   # Map the 'www' directory to a URL path
   www_path <- system.file("www", package = "ProntoPCR")
+  if (www_path == "") {
+    www_path <- system.file("inst/www", package = "ProntoPCR")
+  }
   if (www_path == "") {
     stop("Could not find 'www' directory. Please ensure it exists in the package.")
   }
