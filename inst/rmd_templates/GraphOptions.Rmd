@@ -58,7 +58,7 @@ library(knitr)
 library(rmarkdown)
 
 # Get the full path to the footer.svg image within the package
-footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
+footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
 if (file.exists(footer_svg_path)) {
   knitr::include_graphics(footer_svg_path)
 } else {
