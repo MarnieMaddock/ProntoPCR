@@ -12,4 +12,9 @@ about_text <- div(
       Additionally, all statistics and analysis can be saved as a report in .html format."),
   p("We request that users of ProntoPCR cite the associated journal article if the application has been used in analysis. The citation is as follows:"),
   p("Please refer to the user guide and video tutorial for more information on how to use the application."),
+  shiny::tags$br(),
+  shiny::tags$br(),
+  shiny::tags$br(),
+  #add footer image
+  tags$img(src = "www/footer.svg", height = 150, width = 800)
 )
