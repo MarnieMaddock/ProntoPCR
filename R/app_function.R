@@ -64,6 +64,7 @@ ProntoPCR <-  function(...) {
   ui <- fluidPage(
     theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
+    tags$head(includeCSS("www/style.css")),
     #includeCSS(system.file("www", "style.css", package = "ProntoPCR")), #custom css styles
     # Use div to place the logo
     div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
