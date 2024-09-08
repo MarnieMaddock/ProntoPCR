@@ -1,4 +1,4 @@
-library(ProntoPCR)
+#library(ProntoPCR)
 
 # Run the app
 ProntoPCR()
