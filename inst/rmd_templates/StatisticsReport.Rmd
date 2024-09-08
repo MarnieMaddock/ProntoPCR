@@ -196,7 +196,7 @@ If you have found any issues with this report, or want to suggest improvements, 
 #   "Footer image not found."
 # }
 
-footer_svg_path <- system.file("inst/rmd_templates", "footer.svg", package = "ProntoPCR")
+footer_svg_path <- "inst/rmd_templates/footer.svg"
 #footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
 if (file.exists(footer_svg_path)) {
   knitr::include_graphics(footer_svg_path)
