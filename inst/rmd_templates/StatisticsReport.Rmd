@@ -184,16 +184,72 @@ if (!is.null(params$cldData)) {
 If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
 
 ```{r footer, echo=FALSE}
-# Copy the footer.svg to a temporary directory
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-temp_footer_path <- file.path(tempdir(), "footer.svg")
+# # Copy the footer.svg to a temporary directory
+# footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+# temp_footer_path <- file.path(tempdir(), "footer.svg")
+# 
+# # If the footer exists, copy it to the temp folder and display it
+# if (file.exists(footer_svg_path)) {
+#   file.copy(footer_svg_path, temp_footer_path, overwrite = TRUE)
+#   knitr::include_graphics(temp_footer_path)
+# } else {
+#   "Footer image not found."
+# }
 
-# If the footer exists, copy it to the temp folder and display it
+footer_svg_path <- "inst/www/footer.svg"
 if (file.exists(footer_svg_path)) {
-  file.copy(footer_svg_path, temp_footer_path, overwrite = TRUE)
-  knitr::include_graphics(temp_footer_path)
+  knitr::include_graphics(footer_svg_path)
 } else {
   "Footer image not found."
+}
+
+library(magick)
+footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  footer_image <- image_read(footer_svg_path)
+  print(footer_image)
+} else {
+  "Footer image not found 2."
+}
+
+library(ggplot2)
+footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  footer_image <- ggplot() + 
+    annotation_custom(rasterGrob(readPNG(footer_svg_path), 
+                                 width = unit(1, "npc"), 
+                                 height = unit(1, "npc")))
+  print(footer_image)
+} else {
+  "Footer image not found 3."
+}
+
+footer_svg_path <- system.file("inst/www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  footer_image <- ggplot() + 
+    annotation_custom(rasterGrob(readPNG(footer_svg_path), 
+                                 width = unit(1, "npc"), 
+                                 height = unit(1, "npc")))
+  print(footer_image)
+} else {
+  "Footer image not found 3.2"
+}
+
+library(htmltools)
+footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  img_tag <- tags$img(src = footer_svg_path, width = "800px")
+  HTML(as.character(img_tag))
+} else {
+  "Footer image not found 4."
+}
+
+footer_svg_path <- system.file("inst/www", "footer.svg", package = "ProntoPCR")
+if (file.exists(footer_svg_path)) {
+  img_tag <- tags$img(src = footer_svg_path, width = "800px")
+  HTML(as.character(img_tag))
+} else {
+  "Footer image not found 4.2"
 }
 ```
 
