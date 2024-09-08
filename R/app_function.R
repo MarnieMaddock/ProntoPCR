@@ -105,47 +105,47 @@ ProntoPCR <-  function(...) {
                      ) #demonstrates an example file
                    )
           ),
-            #calculations tab
-            tabPanel("Calculations", value = 3,
-                     tabsetPanel(
-                       id = "subPanel",
-                       selected = 3.1,
-                       tabPanel(HTML("2<sup>-(∆Cq)</sup>"), value = 3.1, #dcq tab
-                                tabsetPanel(
-                                  id = "subCalc",
-                                  selected = 1,
-                                  tabPanel("All Data", value = 1, #dcq tab
-                                           wrangleDataUI("wrangleDataModule"), # Display delta Cq data here, and filtered data (module_deltaCq.R)
-                                           tags$br(),
-                                           tags$br()),
-                                  #display biological replicate averages
-                                  tabPanel("Biological Replicate", value = 2,
-                                           repDataUI("rep_data"),
-                                  )
+          #calculations tab
+          tabPanel("Calculations", value = 3,
+                   tabsetPanel(
+                     id = "subPanel",
+                     selected = 3.1,
+                     tabPanel(HTML("2<sup>-(∆Cq)</sup>"), value = 3.1, #dcq tab
+                              tabsetPanel(
+                                id = "subCalc",
+                                selected = 1,
+                                tabPanel("All Data", value = 1, #dcq tab
+                                         wrangleDataUI("wrangleDataModule"), # Display delta Cq data here, and filtered data (module_deltaCq.R)
+                                         tags$br(),
+                                         tags$br()),
+                                #display biological replicate averages
+                                tabPanel("Biological Replicate", value = 2,
+                                         repDataUI("rep_data"),
                                 )
-                       ),
-                       #delta delta cq tab
-                       tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
-                                tabsetPanel(
-                                  id = "subCalc2",
-                                  selected = 3,
-                                  tabPanel("All Data", value = 3,
-                                           ddcqMain("ddcqModule")
-                                  ), #display processed ddcq data
-                                  tabPanel("Biological Replicate", value = 4,
-                                           DDCQrepMain("ddcqRep"),
-                                  )
-                                ),
-                       ),
-                      ),
-             ),
-            #statistics tab
-            tabPanel("Statistics", value = 4,
-                     statsMain("statsModule"),
-            ),
-            tabPanel("Graphs", value = 5,
-                     graphsMain("graphsModule")
-            )
+                              )
+                     ),
+                     #delta delta cq tab
+                     tabPanel(HTML("2<sup>-(∆∆Cq)</sup>"), value = 3.2,
+                              tabsetPanel(
+                                id = "subCalc2",
+                                selected = 3,
+                                tabPanel("All Data", value = 3,
+                                         ddcqMain("ddcqModule")
+                                ), #display processed ddcq data
+                                tabPanel("Biological Replicate", value = 4,
+                                         DDCQrepMain("ddcqRep"),
+                                )
+                              ),
+                     ),
+                   ),
+          ),
+          #statistics tab
+          tabPanel("Statistics", value = 4,
+                   statsMain("statsModule"),
+          ),
+          tabPanel("Graphs", value = 5,
+                   graphsMain("graphsModule")
+          )
         )
       ) #main panel close bracket
     ) #sidebarLayout close bracket
@@ -161,16 +161,16 @@ ProntoPCR <-  function(...) {
     
     # Use the input data module to display inserted file in the UI
     inputDataServer("inputDataModule", csv_data)
-
+    
     #calculate mean housekeepers, delta Cq and fold change dcq
     wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
-
-
+    
+    
     # Display and calculate biological replicate average values for dcq
     wrangled_data <- wrangled_data_module$wrangled_data
     
     filter_condition <- wrangled_data_module$filter_condition
-
+    
     #perform biological replicate calculations
     DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
     #save dcq rep avg data table
@@ -180,11 +180,11 @@ ProntoPCR <-  function(...) {
     # Display and calculate biological replicate average values for ddcq
     ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
     average_dcq <- ddcq_data_module$average_dcq
-
+    
     selected_gene <- ddcq_data_module$extracted_gene
     ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
     ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
-
+    
     #statistics
     stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
     selected_stat <- stats$selected_stat
@@ -195,12 +195,12 @@ ProntoPCR <-  function(...) {
       stats$comparisonResults()
     })
     descriptives_table <- stats$descriptives_table
-
+    
     # Graphing
     graph_generated <- reactiveVal(FALSE)
     graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$gene_for_download, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
                  stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
-
+    
   }
   shinyApp(ui, server, ...)
 }
