@@ -21,6 +21,14 @@
   right: 1px; 
 }
 
+#footer img {
+  width: 100%; 
+  height: auto; 
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
+
 a {
   color: #00359bff;
 }
