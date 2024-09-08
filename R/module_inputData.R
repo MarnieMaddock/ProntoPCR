@@ -34,7 +34,7 @@ inputFileUI <- function(id) {
 }
 
 
-downloadExampleData <- function(id, dataset_path = "inst/www/exampledata.csv") {
+downloadExampleData <- function(id, dataset_path = ystem.file("www/exampledata.csv", package = "ProntoPCR")) {
   moduleServer(
     id,
     function(input, output, session) {
