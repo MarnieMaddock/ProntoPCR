@@ -34,33 +34,15 @@ inputFileUI <- function(id) {
 }
 
 
-# downloadExampleData <- function(id, dataset_path = system.file("www", "exampledata.csv", package = "ProntoPCR")) {
-#   moduleServer(
-#     id,
-#     function(input, output, session) {
-#       output$download_example  <- downloadHandler(
-#         filename = function() {
-#           "exampledata.csv"
-#         },
-#         content = function(file) {
-#           file.copy(dataset_path, file)
-#         }
-#       )
-#     }
-#   )
-# }
-print(system.file("www", "exampledata.csv", package = "ProntoPCR"))
-
-downloadExampleData <- function(id) {
+downloadExampleData <- function(id, dataset_path = system.file("inst/www", "exampledata.csv", package = "ProntoPCR")) {
   moduleServer(
     id,
     function(input, output, session) {
-      output$download_example <- downloadHandler(
+      output$download_example  <- downloadHandler(
         filename = function() {
           "exampledata.csv"
         },
         content = function(file) {
-          dataset_path <- system.file("www", "exampledata.csv", package = "ProntoPCR")
           file.copy(dataset_path, file)
         }
       )
