@@ -33,12 +33,12 @@ h1, h2, h3, h4, h5, h6 {
 library(kableExtra)
 
 # Get the full path to the footer.svg image within the package
-footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  knitr::include_graphics(footer_svg_path)
-} else {
-  "Footer image not found."
-}
+# footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
+# if (file.exists(footer_svg_path)) {
+#   knitr::include_graphics(footer_svg_path)
+# } else {
+#   "Footer image not found."
+# }
 ```
 
 ### **ProntoPCR**
@@ -196,60 +196,12 @@ If you have found any issues with this report, or want to suggest improvements, 
 #   "Footer image not found."
 # }
 
-footer_svg_path <- "inst/www/footer.svg"
+footer_svg_path <- system.file("rmd_templates", "footer.svg", package = "ProntoPCR")
+#footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
 if (file.exists(footer_svg_path)) {
   knitr::include_graphics(footer_svg_path)
 } else {
   "Footer image not found."
-}
-
-library(magick)
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  footer_image <- image_read(footer_svg_path)
-  print(footer_image)
-} else {
-  "Footer image not found 2."
-}
-
-library(ggplot2)
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  footer_image <- ggplot() + 
-    annotation_custom(rasterGrob(readPNG(footer_svg_path), 
-                                 width = unit(1, "npc"), 
-                                 height = unit(1, "npc")))
-  print(footer_image)
-} else {
-  "Footer image not found 3."
-}
-
-footer_svg_path <- system.file("inst/www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  footer_image <- ggplot() + 
-    annotation_custom(rasterGrob(readPNG(footer_svg_path), 
-                                 width = unit(1, "npc"), 
-                                 height = unit(1, "npc")))
-  print(footer_image)
-} else {
-  "Footer image not found 3.2"
-}
-
-library(htmltools)
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  img_tag <- tags$img(src = footer_svg_path, width = "800px")
-  HTML(as.character(img_tag))
-} else {
-  "Footer image not found 4."
-}
-
-footer_svg_path <- system.file("inst/www", "footer.svg", package = "ProntoPCR")
-if (file.exists(footer_svg_path)) {
-  img_tag <- tags$img(src = footer_svg_path, width = "800px")
-  HTML(as.character(img_tag))
-} else {
-  "Footer image not found 4.2"
 }
 ```
 
