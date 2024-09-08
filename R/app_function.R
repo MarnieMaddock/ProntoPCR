@@ -169,7 +169,7 @@ ProntoPCR <-  function(...) {
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
-    downloadExampleData("file", dataset_path = system.file("inst/www", "exampledata.csv", package = "ProntoPCR"))
+    downloadExampleData("file", dataset_path = "inst/www/exampledata.csv")
     # Generate dynamic text input fields for housekeeper genes
     fileModule <- inputFileServer("file")
     
