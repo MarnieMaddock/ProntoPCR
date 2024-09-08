@@ -33,11 +33,14 @@ Imports:
     FSA,
     rstatix,
     multcompView,
-    Cairo
+    Cairo,
+    remotes,
+    ProntoPCR
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Depends: R (>= 4.2.3)
 Encoding: UTF-8
-Remotes: MarnieMaddock/ProntoPCR
+Remotes: 
+  MarnieMaddock/ProntoPCR
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
