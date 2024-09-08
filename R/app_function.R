@@ -49,7 +49,7 @@ ProntoPCR <-  function(...) {
   #Sys.setlocale("LC_ALL", "en_US.UTF-8")
   
   # Map the 'www' directory to a URL path
-  #addResourcePath("www", system.file("www", package = "ProntoPCR"))
+  addResourcePath("www", system.file("www", package = "ProntoPCR"))
   
   # Map the 'www' directory to a URL path
   # www_path <- system.file("www", package = "ProntoPCR")
@@ -64,11 +64,14 @@ ProntoPCR <-  function(...) {
   ui <- fluidPage(
     theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    tags$head(includeCSS("www/style.css")),
+    tags$head(includeCSS("inst/www/style.css")),
     #includeCSS(system.file("www", "style.css", package = "ProntoPCR")), #custom css styles
     # Use div to place the logo
-    div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
-    div(id = "logo2", tags$img(src = "www/UOW.png")),
+    #div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
+    #div(id = "logo2", tags$img(src = "www/UOW.png")),
+    # Use bslib::card_image to include images
+    div(id = "logo", bslib::card_image(file = "inst/www/dottori_lab_pentagon.svg", fill = FALSE, width = "70px")),
+    div(id = "logo2", bslib::card_image(file = "inst/www/UOW.png", fill = FALSE, width = "220px")),
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
     useShinyjs(), 
