@@ -52,19 +52,19 @@ ProntoPCR <-  function(...) {
   #addResourcePath("www", system.file("www", package = "ProntoPCR"))
   
   # Map the 'www' directory to a URL path
-  www_path <- system.file("www", package = "ProntoPCR")
-  if (www_path == "") {
-    www_path <- system.file("inst/www", package = "ProntoPCR")
-  }
-  if (www_path == "") {
-    stop("Could not find 'www' directory. Please ensure it exists in the package.")
-  }
-  addResourcePath("www", www_path)
+  # www_path <- system.file("www", package = "ProntoPCR")
+  # if (www_path == "") {
+  #   www_path <- system.file("inst/www", package = "ProntoPCR")
+  # }
+  # if (www_path == "") {
+  #   stop("Could not find 'www' directory. Please ensure it exists in the package.")
+  # }
+  # addResourcePath("www", www_path)
   
   ui <- fluidPage(
     theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
-    tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    includeCSS(system.file("www", "style.css", package = "ProntoPCR")), #custom css styles
+    #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
+    #includeCSS(system.file("www", "style.css", package = "ProntoPCR")), #custom css styles
     # Use div to place the logo
     div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
     div(id = "logo2", tags$img(src = "www/UOW.png")),
