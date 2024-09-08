@@ -184,7 +184,7 @@ if (!is.null(params$cldData)) {
 If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
 
 ```{r footer, echo=FALSE}
-footer_svg_path <- system.file("www", "footer.svg", package = "ProntoPCR")
+footer_svg_path <- "www/footer.svg"
 if (file.exists(footer_svg_path)) {
   knitr::include_graphics(footer_svg_path)
 } else {
