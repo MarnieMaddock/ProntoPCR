@@ -34,8 +34,7 @@ Imports:
     rstatix,
     multcompView,
     Cairo,
-    remotes,
-    ProntoPCR
+    remotes
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Depends: R (>= 4.2.3)
