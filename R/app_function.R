@@ -166,6 +166,8 @@ ProntoPCR <-  function(...) {
   ) #fluidPage close bracket
   
   server <- function(input, output, session) {
+    # Map the 'www' directory to a URL path
+    shiny::addResourcePath("www", system.file("www", package = "ProntoPCR"))
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
