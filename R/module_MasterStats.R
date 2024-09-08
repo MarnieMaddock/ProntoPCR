@@ -207,8 +207,8 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
       },
       content = function(file) {
         
-        addResourcePath("www", system.file("www", package = "ProntoPCR"))
-        rmdTemplate <- system.file("rmd_templates", "StatisticsReport.Rmd", package = "ProntoPCR")
+        #addResourcePath("www", system.file("www", package = "ProntoPCR"))
+        rmdTemplate <- system.file("inst/rmd_templates", "StatisticsReport.Rmd", package = "ProntoPCR")
         # Specify the path to your R Markdown template
         
         
