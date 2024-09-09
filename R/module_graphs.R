@@ -26,7 +26,7 @@ graphsSidebar <- function(id) {
       textInput(ns("x_label"), "Enter X-axis Label", value = "Group"), #
       helpText("To have no x or y-axis label enter a space."),
       tags$br(),
-      selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma", "Verdana", "Courier New")),
+      selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Calibri", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma")),
       fluidRow(
         column(
           width = 6,
@@ -1055,8 +1055,14 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         plot <- plot + axis_label_theme2
         
         # Set font based on user selection
-        font_family <- input$font_selector
-        plot <- plot + theme(text = element_text(family = font_family))
+        # font_family <- input$font_selector
+        # plot <- plot + theme(text = element_text(family = font_family))
+        
+        # Enable automatic font rendering via showtext
+        showtext::showtext_auto()
+        
+        plot <- plot + theme(text = element_text(family = input$font_selector))
+        
         #allow markdown on y axis
         plot <- plot + theme(axis.title.y = element_markdown())
         
@@ -1249,7 +1255,14 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       content = function(file) {
         # Save the plot 
         set.seed(input$seed_input)
-        ggsave(file, plot = last_plot(), device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
+        # Get the last plot and apply the selected font family
+        last_plot <- last_plot() + 
+          theme(text = element_text(family = input$font_selector))  # Apply selected font family
+        
+        # Ensure font rendering is handled for downloads
+        showtext::showtext_auto()
+        
+        ggsave(file, plot = last_plot, device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
       }
     )
     

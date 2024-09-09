@@ -48,30 +48,20 @@ ProntoPCR <-  function(...) {
   #Set the locale to ensure it handles UTF-8 encoding properly:
   #Sys.setlocale("LC_ALL", "en_US.UTF-8")
   
-  # Map the 'www' directory to a URL path
-  #addResourcePath("www", system.file("www", package = "ProntoPCR"))
-  
-  # Map the 'www' directory to a URL path
-  # www_path <- system.file("www", package = "ProntoPCR")
-  # if (www_path == "") {
-  #   www_path <- system.file("inst/www", package = "ProntoPCR")
-  # }
-  # if (www_path == "") {
-  #   stop("Could not find 'www' directory. Please ensure it exists in the package.")
-  # }
-  # addResourcePath("www", www_path)
   
   ui <- fluidPage(
     theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
     tags$head(includeCSS("inst/www/style.css")),
-    #includeCSS(system.file("www", "style.css", package = "ProntoPCR")), #custom css styles
-    # Use div to place the logo
-    #div(id = "logo", tags$img(src = "www/dottori_lab_pentagon.svg")),
-    #div(id = "logo2", tags$img(src = "www/UOW.png")),
     # Use bslib::card_image to include images
     div(id = "logo", bslib::card_image(file = "inst/www/dottori_lab_pentagon.svg", fill = FALSE, width = "70px")),
     div(id = "logo2", bslib::card_image(file = "inst/www/UOW.png", fill = FALSE, width = "220px")),
+    
+    #add fonts for graphs
+    tags$head(
+      tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Georgia|Verdana")
+    ),
+    
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
     useShinyjs(), 
@@ -166,6 +156,16 @@ ProntoPCR <-  function(...) {
   ) #fluidPage close bracket
   
   server <- function(input, output, session) {
+    # Enable automatic font rendering via showtext
+    showtext::showtext_auto()
+    # Add system fonts
+    sysfonts::font_add("Arial", "C:/Windows/Fonts/arial.ttf")
+    sysfonts::font_add("Calibri", "C:/Windows/Fonts/calibri.ttf")
+    sysfonts::font_add("Times New Roman", "C:/Windows/Fonts/times.ttf")
+    sysfonts::font_add("Georgia", "C:/Windows/Fonts/georgia.ttf")
+    sysfonts::font_add("Comic Sans MS", "C:/Windows/Fonts/comic.ttf")
+    sysfonts::font_add("Century Gothic", "C:/Windows/Fonts/gothic.ttf")
+    sysfonts::font_add("Tahoma", "C:/Windows/Fonts/tahoma.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")

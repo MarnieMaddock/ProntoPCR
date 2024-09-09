@@ -29,6 +29,8 @@ library(rstatix)
 library(multcompView)
 library(Cairo)
 library(remotes)
+library(showtext)
+library(sysfonts)
 
 # Source modules for shinyapps --------------------------------------------------
 # Dynamically source all module files in the R/ directory
