@@ -165,7 +165,7 @@ ProntoPCR <-  function(...) {
     sysfonts::font_add("Times New Roman", "inst/www/times.ttf")
     sysfonts::font_add("Georgia", "inst/www/georgia.ttf")
     sysfonts::font_add("Comic Sans MS", "inst/www/comic.ttf")
-    sysfonts::font_add("Century Gothic", "inst/www/GOTHIC.ttf")
+    sysfonts::font_add("Century Gothic", "inst/www/gothic.ttf")
     sysfonts::font_add("Tahoma", "inst/www/tahoma.ttf")
     
     # #insert csv file and check that it meets the required formatting
