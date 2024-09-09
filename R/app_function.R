@@ -159,13 +159,14 @@ ProntoPCR <-  function(...) {
     # Enable automatic font rendering via showtext
     showtext::showtext_auto()
     # Add system fonts
-    sysfonts::font_add("Arial", "C:/Windows/Fonts/arial.ttf")
-    sysfonts::font_add("Calibri", "C:/Windows/Fonts/calibri.ttf")
-    sysfonts::font_add("Times New Roman", "C:/Windows/Fonts/times.ttf")
-    sysfonts::font_add("Georgia", "C:/Windows/Fonts/georgia.ttf")
-    sysfonts::font_add("Comic Sans MS", "C:/Windows/Fonts/comic.ttf")
-    sysfonts::font_add("Century Gothic", "C:/Windows/Fonts/gothic.ttf")
-    sysfonts::font_add("Tahoma", "C:/Windows/Fonts/tahoma.ttf")
+    sysfonts::font_add("Arial", "inst/www/arial.ttf")
+    sysfonts::font_add("Arial Bold", "inst/www/arialbd.ttf")
+    sysfonts::font_add("Calibri", "inst/www/calibri.ttf")
+    sysfonts::font_add("Times New Roman", "inst/www/times.ttf")
+    sysfonts::font_add("Georgia", "inst/www/georgia.ttf")
+    sysfonts::font_add("Comic Sans MS", "inst/www/comic.ttf")
+    sysfonts::font_add("Century Gothic", "inst/www/GOTHIC.ttf")
+    sysfonts::font_add("Tahoma", "inst/www/tahoma.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")

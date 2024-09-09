@@ -26,7 +26,7 @@ graphsSidebar <- function(id) {
       textInput(ns("x_label"), "Enter X-axis Label", value = "Group"), #
       helpText("To have no x or y-axis label enter a space."),
       tags$br(),
-      selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Calibri", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma")),
+      selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Arial Bold", "Calibri", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma")),
       fluidRow(
         column(
           width = 6,
