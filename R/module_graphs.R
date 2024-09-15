@@ -23,7 +23,7 @@ graphsSidebar <- function(id) {
       uiOutput(ns("x_axis_labels")), # change names of x axis groups
       checkboxInput(ns("rotate_labels"), "Rotate x-axis labels", value = FALSE),  # Checkbox for label rotation
       uiOutput(ns("dynamic_y_label_input")), # automatically changes the y axis gene name depending on what gene is selected.
-      textInput(ns("x_label"), "Enter X-axis Label", value = "Group"), #
+      textInput(ns("x_label"), "Enter X-axis Label. Markup is accepted.", value = "Group"), #renders x axis label input
       helpText("To have no x or y-axis label enter a space."),
       tags$br(),
       selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Arial Bold", "Calibri", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma")),
@@ -395,7 +395,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         # Generate the text input with the dynamic placeholder
         textInput(ns("y_label"), "Enter Y-axis Label. Markup is accepted.", value = placeholder_text)
       })
-
+    
     
     # Dynamic generation of text inputs based on positions
     #check this works
@@ -1055,16 +1055,14 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         plot <- plot + axis_label_theme2
         
         # Set font based on user selection
-        # font_family <- input$font_selector
-        # plot <- plot + theme(text = element_text(family = font_family))
-        
         # Enable automatic font rendering via showtext
         showtext::showtext_auto()
         
         plot <- plot + theme(text = element_text(family = input$font_selector))
         
-        #allow markdown on y axis
+        #allow markdown on y and x axis
         plot <- plot + theme(axis.title.y = element_markdown())
+        plot <- plot + theme(axis.title.x = element_markdown())
         
         observe({
           req(input$add_significance != "none")
