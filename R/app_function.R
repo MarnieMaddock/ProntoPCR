@@ -159,14 +159,40 @@ ProntoPCR <-  function(...) {
     # Enable automatic font rendering via showtext
     showtext::showtext_auto()
     # Add system fonts
-    sysfonts::font_add("Arial", "inst/www/arial.ttf")
+    sysfonts::font_add("Arial", 
+                       regular = "inst/www/arial.ttf", 
+                       italic = "inst/www/ariali.ttf", 
+                       bold = "inst/www/arialbd.ttf", 
+                       bolditalic = "inst/www/arialbi.ttf")
     sysfonts::font_add("Arial Bold", "inst/www/arialbd.ttf")
-    sysfonts::font_add("Calibri", "inst/www/calibri.ttf")
-    sysfonts::font_add("Times New Roman", "inst/www/times.ttf")
-    sysfonts::font_add("Georgia", "inst/www/georgia.ttf")
-    sysfonts::font_add("Comic Sans MS", "inst/www/comic.ttf")
-    sysfonts::font_add("Century Gothic", "inst/www/GOTHIC.TTF")
-    sysfonts::font_add("Tahoma", "inst/www/tahoma.ttf")
+    sysfonts::font_add("Calibri", 
+                       regular = "inst/www/calibri.ttf", 
+                       italic = "inst/www/calibrii.ttf", 
+                       bold = "inst/www/calibrib.ttf", 
+                       bolditalic = "inst/www/calibriz.ttf")
+    sysfonts::font_add("Times New Roman", 
+                       regular = "inst/www/times.ttf", 
+                       italic = "inst/www/timesi.ttf", 
+                       bold = "inst/www/timesbd.ttf", 
+                       bolditalic = "inst/www/timesbi.ttf")
+    sysfonts::font_add("Georgia", 
+                       regular = "inst/www/georgia.ttf", 
+                       italic = "inst/www/georgiai.ttf", 
+                       bold = "inst/www/georgiab.ttf", 
+                       bolditalic = "inst/www/georgiaz.ttf")
+    sysfonts::font_add("Comic Sans MS", 
+                       regular = "inst/www/comic.ttf", 
+                       italic = "inst/www/comici.ttf", 
+                       bold = "inst/www/comicbd.ttf", 
+                       bolditalic = "inst/www/comicz.ttf")
+    sysfonts::font_add("Century Gothic", 
+                       regular = "inst/www/GOTHIC.TTF", 
+                       italic = "inst/www/GOTHICI.TTF", 
+                       bold = "inst/www/GOTHICB.TTF", 
+                       bolditalic = "inst/www/GOTHICBI.TTF")
+    sysfonts::font_add("Tahoma", 
+                       regular = "inst/www/tahoma.ttf",
+                       bold = "inst/www/tahomabd.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
