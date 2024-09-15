@@ -127,11 +127,15 @@ statsDataServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene,
         droplevels()
       
       # Apply log10 transformation if the checkbox is checked
-      if (log_transform()) {
-        data <- data %>%
-          dplyr::mutate(!!as.symbol(columnInput()) := log10(!!as.symbol(columnInput())))
+      if (!is.null(log_transform()) && length(log_transform()) > 0) {
+        if (log_transform() == "Log10") {
+          data <- data %>%
+            dplyr::mutate(!!as.symbol(columnInput()) := log10(!!as.symbol(columnInput())))
+        } else if (log_transform() == "Log2") {
+          data <- data %>%
+            dplyr::mutate(!!as.symbol(columnInput()) := log2(!!as.symbol(columnInput())))
+        }
       }
-      
       data
     })
     

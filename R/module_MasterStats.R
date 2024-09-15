@@ -11,7 +11,6 @@ statsSidebar <- function(id) {
     leveneSidebar(ns("leveneStats")), # call leveneSidebar from module_leveneStats.R
     logSidebar(ns("logStats")), # call logSidebar from module_logStats.R
     compTestSidebar(ns("compTest")), # call compTestSidebar from module_comparisonStats.R
-    # helpText("Note: If you have a small sample size, it is recommended to use non-parametric tests (even if the data is normally distributed)."),
     uiOutput(ns("downloadButtonUI")) #"Download Statistics Report"
   )
 }
@@ -133,37 +132,6 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
                                bh = "Benjamini-Hochberg",
                                hochberg = "Hochberg"
     )
-    # 
-    # postHocTestDescription <-  reactive({
-    #     req(sampleInput(), columnInput(), group_comparison())
-    #     num_groups <- length(unique(sampleInput()))
-    #     req(posthoc_input(), group_comparison())
-    #     # Logic to determine the test description based on the inputs
-    #     if (num_groups > 2) { # Ensuring there are more than 2 groups
-    #       if (group_comparison() == "parametric" || group_comparison() == "welch") {
-    #         switch(posthoc_input(),
-    #                "tukey" = "You selected a Tukey's HSD Post-hoc test.",
-    #                "bonferroni" = "You selected a Pairwise t-test with Bonferroni adjustment.",
-    #                "holm" = "You selected a Pairwise t-test with Holm adjustment.",
-    #                "bh" = "You selected a Pairwise t-test with Benjamini-Hochberg adjustment.",
-    #                "scheffe" = "You selected a Scheffé's Post-hoc test.",
-    #                "games_howell" = "You selected a Games-Howell Post-hoc test with Tukey adjustment.",
-    #                # Add other parametric tests as needed
-    #                "Not a valid parametric post-hoc test"
-    #         )
-    #       } else if (group_comparison() == "non_parametric") {
-    #         postHocTestFullName <- fullPostHocTests[posthoc_input()]
-    #         correctionMethodFullName <- fullCorrectionMethods[correctionMethod_input()]
-    #         paste("You selected a ", postHocTestFullName, " test with ", correctionMethodFullName, " adjustment.")
-    #       } else {
-    #         "Not a valid test type."
-    #       }
-    #     } else if (num_groups == 2) {
-    #       "Not enough groups for post-hoc tests."
-    #     } else {
-    #       "Not enough groups for post-hoc tests."
-    #     }
-    #   })
     
     postHocTestDescription <- reactive({
       req(sampleInput(), group_comparison())
@@ -263,11 +231,12 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
           NULL
         }
         
-        logResult <- if (log() == TRUE) {
-          "This data was log transformed."
+        logResult <- if (log() != "None") {
+          TRUE
         } else {
-          "This data was ***not*** log transformed."
+          FALSE
         }
+        
         
         comparisonResultsData <- if(group_comparison() == "parametric" || group_comparison() == "non_parametric" || group_comparison() == "welch"){
           isolate(comparisonResults())
@@ -298,7 +267,7 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
                             qqPlotGraph = qqPlot,
                             densityPlot = densityPlot,
                             levene = leveneTable,
-                            logTransformed = log(),
+                            logTransformed = logResult,
                             testResultData = comparisonResultsData$test,
                             cldData = comparisonResultsData$cld,
                             posthocData = comparisonResultsData$posthoc,

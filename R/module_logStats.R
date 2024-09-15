@@ -3,7 +3,7 @@
 logSidebar <- function(id) {
   ns <- NS(id)
   tagList(
-    h6(HTML(
+    radioButtons(ns("log_transform"), label = HTML(
       paste0(
         "<b>4. Log transform data:</b> ",
         tags$i(
@@ -11,11 +11,11 @@ logSidebar <- function(id) {
           style = "color:#00359bff;",
           title = "Applying a log transformation can help normalize data and reduce skewness if the data is not normally distributed or has unequal variance."
         )
-      )
-    )),
-    checkboxInput(ns("log_transform"), "Log10", value = FALSE)
+        )
+      ), choices = c("Log2", "Log10", "None"), selected = "None")
   )
 }
+
 
 logServer <- function(id) {
   moduleServer(id, function(input, output, session) {
