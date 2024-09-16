@@ -713,7 +713,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
                                                  electraGray = c("#e00154", "#222337", "#e6e1dd", "#b4a8b4", "#ddd2cf"),
                                                  bones = c("#edede9", "#d6ccc2", "#f5ebe0", "#e3d5ca", "#d5bdaf"),
                                                  oranges = c("#ffc971", "#ffb627", "#ff9505", "#e2711d" ,"#cc5803"),
-                                                 oranges2 = c("#ff4800", "#ff5400", "#ff6000", "#ff6d00", "#ff7900", "#ff8500", "#ff9100", "#ff9e00", "#ffaa00", "#ffb600"),
+                                                 oranges2 = c("#ff4800", "#ff6000", "#ff6d00", "#ff7900", "#ff8500", "#ff9100", "#ff9e00", "#ffaa00", "#ffb600"),
                                                  pinks = c("#ffe5ec", "#ffc2d1", "#ffb3c6", "#ff8fab", "#fb6f92"),
                                                  pinks2 = c("#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d", "#ff758f", "#ff8fa3", "#ffb3c1", "#ffccd5", "#fff0f3"),
                                                  blues = c("#03045e", "#0077b6", "#00b4d8", "#90e0ef", "#caf0f8"),

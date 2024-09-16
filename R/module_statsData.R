@@ -135,6 +135,8 @@ statsDataServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene,
           data <- data %>%
             dplyr::mutate(!!as.symbol(columnInput()) := log2(!!as.symbol(columnInput())))
         }
+      } else {
+        data <- data
       }
       data
     })
