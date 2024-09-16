@@ -1228,9 +1228,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     selected_gene_name <- reactive({
       # Check if 'ddcq' is selected
       if (input$select_dcq_or_ddcq == "ddcq") {
-        # Assume `input$select_gene` holds the gene name for 'ddcq'
-        # Clean the gene name if needed
-        clean_gene_name <- gsub("^dcq_", "", input$select_gene)
+        # Clean the gene name for ddcq
+        clean_gene_name <- gsub("^dcq_", "", ddcq_selected_gene())
       } else {
         # For 'dcq' and other conditions, return the selected column from `fc_dcq_column`
         clean_gene_name <- gsub("^fc_dcq_", "", input$fc_dcq_column)
@@ -1264,6 +1263,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       }
     )
     
+    #download graph options with dynamic names, formats etc
     output$downloadGraphOptions <- downloadHandler(
       filename = function() {
         # Generate the filename
