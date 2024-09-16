@@ -174,7 +174,7 @@ if (!is.null(params$cldData)) {
 
 ### **Contact**
 
-If you have found any issues with this report, or want to suggest improvements, please contact the developer [Marnie](mailto:mlm715@uowmail.edu.au) or [here](mailto:mmaddock@uow.edu.au). Issues, or requests for features can also be added in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues). 
+If you have found any issues with this report, or want to suggest improvements or new features please submit a request in the `Issues` tab on [GitHub](https://github.com/MarnieMaddock/ProntoPCR/issues).
 
 
 ```{r footer, echo=FALSE, results = 'hide'}
