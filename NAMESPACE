@@ -2,6 +2,7 @@
 
 export("%||%")
 export(ProntoPCR)
+import(bslib)
 import(ggtext)
 import(shiny)
 importFrom(bslib,bs_theme)

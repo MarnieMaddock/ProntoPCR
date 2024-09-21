@@ -26,9 +26,8 @@ inputFileUI <- function(id) {
     tags$br(),
     tags$br(),
     tags$br(),
-    textOutput(ns("text1")), verbatimTextOutput("saved_variables"), # Generate the output text based on the saved variables
+    textOutput(ns("text1")), # Generate the output text based on the saved variables
     tags$br(),
-
     textOutput(ns("text2"))
   )
 }
@@ -65,7 +64,8 @@ inputFileServer <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     saved_variables <- reactiveValues(names = NULL)
-    
+    #for testing purposes
+    saved_names <- reactiveVal(NULL)
 
     
     #display the number of housekeeper genes names depending on how many groups are selected. 
@@ -83,14 +83,11 @@ inputFileServer <- function(id) {
     })
     
     # Save text inputs as variables when the button is clicked
-    #saved_variables <- reactiveValues()
-    observeEvent(input$save_btn, {
-      saved_variables$names <- sapply(1:input$housekeepers, function(i) input[[ns(paste0("group", i))]])
-    })
-    # Save the text inputs as variables when the button is clicked
     save_housekeeper_names <- observeEvent(input$save_btn,{
         housekeepers <- as.integer(input$housekeepers)
         saved_variables$names <- sapply(1:housekeepers, function(i) input[[paste0("group", i)]])
+        names_vector <- sapply(1:housekeepers, function(i) input[[paste0("group", i)]])
+        saved_names(names_vector)
       })
     # # Render text output based on saved variables
     output$text1 <-  renderText({
@@ -109,8 +106,16 @@ inputFileServer <- function(id) {
     output$text2 <- renderText({
       paste("Once you have saved the housekeeper gene names, please move to the calculations tab.")
     })
+    
+    # Expose saved_variables$names via an output for testing
+    output$savedNames <- renderText({
+      req(saved_names())
+      paste(saved_names(), collapse = ",")
+    })
+    
     return(list(
       saved_variables = saved_variables,
+      saved_names = saved_names,
       save_btn = reactive(input$save_btn)
       #geo_mean_state = geo_mean_state
     ))

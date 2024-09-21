@@ -5,6 +5,7 @@
 #' @name ProntoPCR
 #' @import shiny
 #' @import ggtext
+#' @import bslib
 #' @importFrom bslib bs_theme
 #' @importFrom shinyjs useShinyjs
 #' @importFrom magrittr %>%
@@ -50,7 +51,7 @@ ProntoPCR <-  function(...) {
   
   
   ui <- fluidPage(
-    theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
+    theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
     #tags$head(includeCSS("inst/www/style.css")),
     tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))),

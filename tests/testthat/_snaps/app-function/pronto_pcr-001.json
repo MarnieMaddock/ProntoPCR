@@ -1,0 +1,186 @@
+{
+  "input": {
+    "ddcqModule-save_ddcq_data": 0,
+    "file-file": null,
+    "file-group1": "",
+    "file-group2": "",
+    "file-group3": "",
+    "file-housekeepers": 3,
+    "file-save_btn": 0,
+    "graphsModule-add_significance": "none",
+    "graphsModule-color_scheme_select": "default",
+    "graphsModule-dpi": 300,
+    "graphsModule-error_type": "se",
+    "graphsModule-file_format": "svg",
+    "graphsModule-font_selector": "Arial",
+    "graphsModule-height": 5,
+    "graphsModule-plot_type": "dot",
+    "graphsModule-rotate_labels": false,
+    "graphsModule-select_dcq_or_ddcq": "dcq",
+    "graphsModule-start_at_zero": true,
+    "graphsModule-width": 7,
+    "graphsModule-x_axis_label_font_size": 12,
+    "graphsModule-x_axis_positions": "",
+    "graphsModule-x_axis_title_font_size": 14,
+    "graphsModule-x_label": "Group",
+    "graphsModule-y_axis_label_font_size": 12,
+    "graphsModule-y_axis_title_font_size": 14,
+    "option1": false,
+    "option2": false,
+    "option3": false,
+    "option4": false,
+    "option5": false,
+    "option6": false,
+    "option7": false,
+    "option8": false,
+    "option9": false,
+    "statsModule-compTest-group_comparison": "none",
+    "statsModule-descriptiveStats-descriptiveStats": null,
+    "statsModule-leveneStats-variance": false,
+    "statsModule-logStats-log_transform": "None",
+    "statsModule-normalityStats-normality_test": null,
+    "statsModule-statsData-columnInput": "",
+    "statsModule-statsData-sampleInput": null,
+    "statsModule-statsData-select_dcq_or_ddcq_stats": "dcq_stats",
+    "subCalc": "1",
+    "subCalc2": "3",
+    "subInput": "2.1",
+    "subPanel": "3.1",
+    "tabselected": "1",
+    "wrangleDataModule-geo_mean": false
+  },
+  "output": {
+    "ddcqModule-column_selector2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "ddcqModule-select_control": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "ddcqModule-select_samples": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "file-groups": {
+      "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group1-label\" for=\"file-group1\">Enter the name of housekeeper 1<\/label>\n  <input id=\"file-group1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group2-label\" for=\"file-group2\">Enter the name of housekeeper 2<\/label>\n  <input id=\"file-group2\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group3-label\" for=\"file-group3\">Enter the name of housekeeper 3<\/label>\n  <input id=\"file-group3\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "file-text1": "You have 3 housekeeper genes. The housekeepers are called .",
+    "file-text2": "Once you have saved the housekeeper gene names, please move to the calculations tab.",
+    "graphsModule-column_selector": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "graphsModule-condition_selector": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "graphsModule-ddcqMessage_graphs": null,
+    "graphsModule-dynamic_y_label_input": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "graphsModule-extraOptionsUI": null,
+    "graphsModule-selected_gene_ui": null,
+    "graphsModule-selected_samples_list": null,
+    "graphsModule-sigUI": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "graphsModule-significanceOptions": {
+      "html": "<h5><b>Significance<\/b><\/h5>\n<div id=\"graphsModule-add_significance\" class=\"form-group shiny-input-radiogroup shiny-input-container\" role=\"radiogroup\" aria-labelledby=\"graphsModule-add_significance-label\">\n  <label class=\"control-label\" id=\"graphsModule-add_significance-label\" for=\"graphsModule-add_significance\">If statistics have been performed, add significance to graph.<\/label>\n  <div class=\"shiny-options-group\">\n    <div class=\"radio\">\n      <label>\n        <input type=\"radio\" name=\"graphsModule-add_significance\" value=\"none\" checked=\"checked\"/>\n        <span>None<\/span>\n      <\/label>\n    <\/div>\n    <div class=\"radio\">\n      <label>\n        <input type=\"radio\" name=\"graphsModule-add_significance\" value=\"asterix\"/>\n        <span>Asterisk Notation<\/span>\n      <\/label>\n    <\/div>\n    <div class=\"radio\">\n      <label>\n        <input type=\"radio\" name=\"graphsModule-add_significance\" value=\"pval\"/>\n        <span>P Values<\/span>\n      <\/label>\n    <\/div>\n    <div class=\"radio\">\n      <label>\n        <input type=\"radio\" name=\"graphsModule-add_significance\" value=\"cld\"/>\n        <span>Compact Letter Display<\/span>\n      <\/label>\n    <\/div>\n  <\/div>\n<\/div>",
+      "deps": [
+
+      ]
+    },
+    "graphsModule-x_axis_labels": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "statsModule-compTest-correctionOptions": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "statsModule-compTest-postHocOptions": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "statsModule-downloadButtonUI": {
+      "html": "<a id=\"statsModule-downloadStats\" class=\"btn btn-default shiny-download-link disabled\" href=\"\" target=\"_blank\" download aria-disabled=\"true\" tabindex=\"-1\">\n  <i class=\"fas fa-download\" role=\"presentation\" aria-label=\"download icon\"><\/i>\n  Download Statistics Report\n<\/a>",
+      "deps": [
+        {
+          "name": "font-awesome",
+          "version": "6.4.2",
+          "src": {
+            "href": "font-awesome-6.4.2"
+          },
+          "meta": null,
+          "script": null,
+          "stylesheet": [
+            "css/all.min.css",
+            "css/v4-shims.min.css"
+          ],
+          "head": null,
+          "attachment": null,
+          "all_files": true
+        }
+      ]
+    },
+    "statsModule-statsData-ddcqMessage": null,
+    "statsModule-statsData-selected_gene_ui_stats": null,
+    "wrangleDataModule-condition_filter": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    }
+  },
+  "export": {
+
+  }
+}
