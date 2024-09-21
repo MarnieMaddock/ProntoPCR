@@ -52,15 +52,14 @@ ProntoPCR <-  function(...) {
   ui <- fluidPage(
     theme = bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    tags$head(includeCSS("inst/www/style.css")),
-    # Use bslib::card_image to include images
-    div(id = "logo", bslib::card_image(file = "inst/www/dottori_lab_pentagon.svg", fill = FALSE, width = "70px")),
-    div(id = "logo2", bslib::card_image(file = "inst/www/UOW.png", fill = FALSE, width = "220px")),
+    #tags$head(includeCSS("inst/www/style.css")),
+    tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))),
     
-    #add fonts for graphs
-    tags$head(
-      tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css?family=Georgia|Verdana")
-    ),
+    # Use bslib::card_image to include images
+    #div(id = "logo", bslib::card_image(file = "inst/www/dottori_lab_pentagon.svg", fill = FALSE, width = "70px")),
+    #div(id = "logo2", bslib::card_image(file = "inst/www/UOW.png", fill = FALSE, width = "220px")),
+    div(id = "logo", bslib::card_image(file = system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR"), fill = FALSE, width = "70px")),
+    div(id = "logo2", bslib::card_image(file = system.file("www", "UOW.png", package = "ProntoPCR"), fill = FALSE, width = "220px")),
     
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
