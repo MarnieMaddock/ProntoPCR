@@ -1,6 +1,6 @@
 source("helper-initialize.R") 
 
-test_that("DDCT initializes correctly", {
+test_that("DDCT rep data initializes correctly", {
   app <- initialize_app_with_housekeepers()
   on.exit(app$stop(), add = TRUE)
   
@@ -13,22 +13,17 @@ test_that("DDCT initializes correctly", {
   app$wait_for_idle()  # Give the app enough time to update
   
   #all data
-  app$set_inputs(subCalc2 = "3")
+  app$set_inputs(subCalc2 = "4")
   app$wait_for_idle()  # Give the app enough time to update
   
   # Scroll to the dynamic inputs
-  app$run_js("document.getElementById('ddcqModule-column_selector2').scrollIntoView();")
+  app$run_js("document.getElementById('ddcqModule-select_gene').scrollIntoView();")
   
   # Wait for the dynamic inputs to become available
   app$wait_for_js("document.getElementById('ddcqModule-select_control') !== null", timeout = 10000)
   app$wait_for_js("document.getElementById('ddcqModule-select_samples') !== null", timeout = 10000)
   app$wait_for_js("document.getElementById('ddcqModule-select_gene') !== null", timeout = 10000)
-  
-  
-  # Print the available inputs to verify their IDs
-  inputs <- app$get_values()$input
-  print(names(inputs))
-  
+
   # Set the control group
   app$set_inputs(`ddcqModule-select_control` = "F_sample1")
   
@@ -44,12 +39,13 @@ test_that("DDCT initializes correctly", {
   # Click the "Save ΔΔCq Data" button
   app$click("ddcqModule-save_ddcq_data")
   app$wait_for_idle()
-  
-  # Retrieve the output data
-  ddcq_data <- app$get_value(output = "ddcqModule-ddcq_data")
-  
-  # Verify that the data is not null
-  expect_true(!is.null(ddcq_data))
+
+  #rep data
+  app$set_inputs(subCalc = "4")
+  app$wait_for_idle()  # Give the app enough time to update
+
+  # Check that certain values are calculated correctly
+  app$expect_values(output = "ddcqRep-rep_avg_table_ddcq")
   
   # Take a full-page screenshot
   app$expect_screenshot(screenshot_args = list(

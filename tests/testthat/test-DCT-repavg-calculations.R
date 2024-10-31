@@ -20,6 +20,11 @@ test_that("Rep average DCT initializes correctly", {
   # Check that certain values are calculated correctly
   app$expect_values(output = "rep_data-rep_avg_table")
   
+  # Now set the 'condition' input to "F"
+  app$set_inputs(`wrangleDataModule-condition` = "F")
+  
+  app$wait_for_idle()
+  
   # Take a full-page screenshot
   app$expect_screenshot(screenshot_args = list(
     cliprect = NULL,
