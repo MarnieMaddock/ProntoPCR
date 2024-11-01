@@ -21,7 +21,7 @@ test_that("Mean HK and DCT initializes correctly", {
   app$expect_values(output = "wrangleDataModule-wrangled_table")
   
   # Now set the 'condition' input to "F"
-  app$set_inputs(`wrangleDataModule-condition` = "F")
+  app$set_inputs(`wrangleDataModule-condition` = "M")
   
   app$wait_for_idle()
   
