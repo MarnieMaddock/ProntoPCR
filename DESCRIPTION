@@ -37,7 +37,8 @@ Imports:
     remotes,
     showtext,
     sysfonts,
-    svglite
+    svglite,
+    kableExtra
 License: `use_mit_license()`
 Depends: R (>= 4.2.3)
 Encoding: UTF-8
