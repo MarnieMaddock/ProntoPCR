@@ -1271,7 +1271,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       },
       content = function(file) {
         
-        rmdTemplate <- "inst/rmd_templates/GraphOptions.Rmd"
+        rmdTemplate <- "rmd_templates/GraphOptions.Rmd"
         
         #Render the Rmd file, passing the sample size table data as a parameter
         rmarkdown::render(input = rmdTemplate,
