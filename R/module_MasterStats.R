@@ -174,10 +174,9 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
         paste("StatisticsReport-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep="")
       },
       content = function(file) {
-        # Specify the path to your R Markdown template
+        # Specify the path to Statistics Report R Markdown template
         rmdTemplate <- system.file("rmd_templates", "StatisticsReport.Rmd", package = "ProntoPCR")
-         
-        
+
         # Print dcq or ddcq
         analysisHTML <- if (selected_stat() == "dcq_stats") {
           "2<sup>-(ΔCq)</sup>"

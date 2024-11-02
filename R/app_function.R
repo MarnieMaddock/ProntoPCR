@@ -53,12 +53,9 @@ ProntoPCR <-  function(...) {
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    #tags$head(includeCSS("inst/www/style.css")),
     tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))),
     
     # Use bslib::card_image to include images
-    #div(id = "logo", bslib::card_image(file = "inst/www/dottori_lab_pentagon.svg", fill = FALSE, width = "70px")),
-    #div(id = "logo2", bslib::card_image(file = "inst/www/UOW.png", fill = FALSE, width = "220px")),
     div(id = "logo", bslib::card_image(file = system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR"), fill = FALSE, width = "70px")),
     div(id = "logo2", bslib::card_image(file = system.file("www", "UOW.png", package = "ProntoPCR"), fill = FALSE, width = "220px")),
     
@@ -160,43 +157,43 @@ ProntoPCR <-  function(...) {
     showtext::showtext_auto()
     # Add system fonts
     sysfonts::font_add("Arial", 
-                       regular = "inst/www/arial.ttf", 
-                       italic = "inst/www/ariali.ttf", 
-                       bold = "inst/www/arialbd.ttf", 
-                       bolditalic = "inst/www/arialbi.ttf")
-    sysfonts::font_add("Arial Bold", "inst/www/arialbd.ttf")
+                       regular = "www/arial.ttf", 
+                       italic = "www/ariali.ttf", 
+                       bold = "www/arialbd.ttf", 
+                       bolditalic = "www/arialbi.ttf")
+    sysfonts::font_add("Arial Bold", "www/arialbd.ttf")
     sysfonts::font_add("Calibri", 
-                       regular = "inst/www/calibri.ttf", 
-                       italic = "inst/www/calibrii.ttf", 
-                       bold = "inst/www/calibrib.ttf", 
-                       bolditalic = "inst/www/calibriz.ttf")
+                       regular = "www/calibri.ttf", 
+                       italic = "www/calibrii.ttf", 
+                       bold = "www/calibrib.ttf", 
+                       bolditalic = "www/calibriz.ttf")
     sysfonts::font_add("Times New Roman", 
-                       regular = "inst/www/times.ttf", 
-                       italic = "inst/www/timesi.ttf", 
-                       bold = "inst/www/timesbd.ttf", 
-                       bolditalic = "inst/www/timesbi.ttf")
+                       regular = "www/times.ttf", 
+                       italic = "www/timesi.ttf", 
+                       bold = "www/timesbd.ttf", 
+                       bolditalic = "www/timesbi.ttf")
     sysfonts::font_add("Georgia", 
-                       regular = "inst/www/georgia.ttf", 
-                       italic = "inst/www/georgiai.ttf", 
-                       bold = "inst/www/georgiab.ttf", 
-                       bolditalic = "inst/www/georgiaz.ttf")
+                       regular = "www/georgia.ttf", 
+                       italic = "www/georgiai.ttf", 
+                       bold = "www/georgiab.ttf", 
+                       bolditalic = "www/georgiaz.ttf")
     sysfonts::font_add("Comic Sans MS", 
-                       regular = "inst/www/comic.ttf", 
-                       italic = "inst/www/comici.ttf", 
-                       bold = "inst/www/comicbd.ttf", 
-                       bolditalic = "inst/www/comicz.ttf")
+                       regular = "www/comic.ttf", 
+                       italic = "www/comici.ttf", 
+                       bold = "www/comicbd.ttf", 
+                       bolditalic = "www/comicz.ttf")
     sysfonts::font_add("Century Gothic", 
-                       regular = "inst/www/GOTHIC.TTF", 
-                       italic = "inst/www/GOTHICI.TTF", 
-                       bold = "inst/www/GOTHICB.TTF", 
-                       bolditalic = "inst/www/GOTHICBI.TTF")
+                       regular = "www/GOTHIC.TTF", 
+                       italic = "www/GOTHICI.TTF", 
+                       bold = "www/GOTHICB.TTF", 
+                       bolditalic = "www/GOTHICBI.TTF")
     sysfonts::font_add("Tahoma", 
-                       regular = "inst/www/tahoma.ttf",
-                       bold = "inst/www/tahomabd.ttf")
+                       regular = "www/tahoma.ttf",
+                       bold = "www/tahomabd.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
-    downloadExampleData("file", dataset_path = "inst/www/exampledata.csv")
+    downloadExampleData("file", dataset_path = "www/exampledata.csv")
     # Generate dynamic text input fields for housekeeper genes
     fileModule <- inputFileServer("file")
     

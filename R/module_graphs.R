@@ -1270,8 +1270,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         paste("GraphOptions-", Sys.Date(), "-", format(Sys.time(), "%H-%M-%S"), ".html", sep = "")
       },
       content = function(file) {
-        
-        rmdTemplate <- "rmd_templates/GraphOptions.Rmd"
+        # Specify the path to Graphs Report R Markdown template
+        rmdTemplate <- system.file("rmd_templates", "GraphOptions.Rmd", package = "ProntoPCR")
         
         #Render the Rmd file, passing the sample size table data as a parameter
         rmarkdown::render(input = rmdTemplate,
