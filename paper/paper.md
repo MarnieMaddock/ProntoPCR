@@ -1,5 +1,28 @@
 ---
 title: 'ProntoPCR: Efficient qPCR Data Analysis Software'
+authors:
+- name: Marnie
+  surname: Maddock
+  orcid: "0000-0001-6393-4837"
+  affiliation: 1
+- name: Mirella
+  surname: Dottori
+  orcid: "0000-0002-9975-0367"
+  affiliation: 1
+- name: Alberto
+  surname: Nettel‐Aguirre
+  orcid: "0000-0001-6604-0652"
+  corresponding: true
+  affiliation: 2
+bibliography: paper.bib
+affiliations:
+- name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, University
+    of Wollongong, Wollongong NSW 2522, Australia
+  index: 1
+- name: National Institute for Applied Statistics Research Australia, University of
+    Wollongong, Wollongong NSW 2522, Australia
+  index: 2
+  
 tags:
 - R
 - R Shiny
@@ -11,31 +34,6 @@ output:
   word_document: default
   pdf_document:
     latex_engine: xelatex
-authors:
-- name: null
-  given-names: Marnie
-  surname: Maddock
-  orcid: "0000-0001-6393-4837"
-  affiliation: 1
-- name: null
-  given-names: Alberto
-  surname: Nettel‐Aguirre
-  orcid: "0000-0001-6604-0652"
-  affiliation: 2
-- name: null
-  given-names: Mirella
-  surname: Dottori
-  orcid: "0000-0002-9975-0367"
-  corresponding: true
-  affiliation: 1
-bibliography: paper.bib
-affiliations:
-- name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, University
-    of Wollongong, Wollongong NSW 2522, Australia
-  index: 1
-- name: National Institute for Applied Statistics Research Australia, University of
-    Wollongong, Wollongong NSW 2522, Australia
-  index: 2
 ---
 
 # Summary
