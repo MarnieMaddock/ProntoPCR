@@ -174,4 +174,15 @@ test_that("Graph Design aesthetics", {
     cliprect = NULL,
     selector = "html"
   ))
+  
+  app$set_inputs(`graphsModule-width` = 6)
+  app$set_inputs(`graphsModule-height` = 4)
+  app$expect_download("graphsModule-downloadGraph")
+  app$wait_for_idle()  # Give the app enough time to update
+  # Take a full-page screenshot of basic graph
+  app$expect_screenshot(screenshot_args = list(
+    cliprect = NULL,
+    selector = "html"
+  ))
+  
 })
