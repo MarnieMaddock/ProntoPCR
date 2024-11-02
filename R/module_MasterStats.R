@@ -175,7 +175,7 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
       },
       content = function(file) {
         # Specify the path to your R Markdown template
-        rmdTemplate <- "rmd_templates/StatisticsReport.Rmd"
+        rmdTemplate <- "/rmd_templates/StatisticsReport.Rmd"
         
         # Print dcq or ddcq
         analysisHTML <- if (selected_stat() == "dcq_stats") {
