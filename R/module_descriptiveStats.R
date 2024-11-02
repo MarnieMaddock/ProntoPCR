@@ -10,7 +10,7 @@ descriptiveSidebar <- function(id) {
                            tags$i(
                              class = "glyphicon glyphicon-info-sign", 
                              style = "color:#00359bff;", 
-                             title = "Note: If log transform is selected, descriptive statistics will be performed on the log10 data."
+                             title = "Note: If log transformation is applied, all displayed descriptive statistics will be calculated from the log-transformed data."
                            )
                          )
                            ), 

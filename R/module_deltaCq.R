@@ -30,7 +30,7 @@ wrangleDataSidebar <- function(id){
 wrangleDataUI <- function(id) {
   ns <- NS(id)
   tagList(
-    h4(HTML("<b>Average the houskeeping genes and perform ∆Cq and 2<sup>-∆Cq</sup></b>")),
+    h4(HTML("<b>Average the Houskeeping Genes and Calculate ∆Cq and 2<sup>-∆Cq</sup></b>")),
     tags$br(),
     DT::DTOutput(ns("wrangled_table")),
     downloadUI(ns("download_processed_data"), "Download Processed Data"), #download dcq data as csv
