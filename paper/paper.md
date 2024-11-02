@@ -10,13 +10,11 @@ authors:
   orcid: "0000-0002-9975-0367"
   affiliation: 1
 - name: Alberto
-  surname: Nettel‐Aguirre
+  surname: Nettel-Aguirre
   orcid: "0000-0001-6604-0652"
   corresponding: true
   affiliation: 2
-bibliography: paper.bib
 affiliations:
-  
 - name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, University
     of Wollongong, Wollongong NSW 2522, Australia
   index: 1
@@ -28,12 +26,7 @@ tags:
 - R Shiny
 - qPCR
 - Polymerase chain reaction
-output:
-  pdf_document:
-    latex_engine: xelatex
-  word_document: default
-  html_document:
-    df_print: paged
+bibliography: paper.bib
 ---
 
 # Summary
