@@ -38,8 +38,7 @@ Imports:
     showtext,
     sysfonts,
     svglite
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: `use_mit_license()`
 Depends: R (>= 4.2.3)
 Encoding: UTF-8
 Remotes: 
