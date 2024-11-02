@@ -13,8 +13,8 @@ ddcqSidebar <- function(id){
     tags$br(),
     tags$br(),
     fluidRow(
-      column(width = 5, uiOutput(ns("select_control"))), # select control group
-      column(width = 5, uiOutput(ns("select_samples"))), # select the rest of the samples to be analyzed
+      column(width = 5, uiOutput(ns("select_control2"))), # select control group
+      column(width = 5, uiOutput(ns("select_samples2"))), # select the rest of the samples to be analyzed
       column(width = 5, uiOutput(ns("column_selector2")))), # select the gene
     actionButton(ns("save_ddcq_data"), "Save ΔΔCq Data")
   )
@@ -34,12 +34,12 @@ ddcqServer <- function(id, wrangled_data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     
-    output$select_control <- renderUI({
+    output$select_control2 <- renderUI({
       req(wrangled_data())
       selectInput(ns("select_control"), "Select the control/untreated sample", choices = unique(wrangled_data()$cell))
     })
     
-    output$select_samples <- renderUI({
+    output$select_samples2 <- renderUI({
       req(wrangled_data())
       selectInput(ns("select_samples"), "Select the diseased/treated sample(s)", choices = unique(wrangled_data()$cell), multiple = T)
     })
@@ -141,6 +141,7 @@ ddcqServer <- function(id, wrangled_data) {
       # use this as a trigger for other reactive expressions or observers.
       values$ddcqDataSaved <- TRUE
     })
+    
     
     return(list(
       average_dcq = average_dcq,
