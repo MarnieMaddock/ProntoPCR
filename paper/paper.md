@@ -16,29 +16,29 @@ authors:
   affiliation: 2
 bibliography: paper.bib
 affiliations:
+  
 - name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, University
     of Wollongong, Wollongong NSW 2522, Australia
   index: 1
 - name: National Institute for Applied Statistics Research Australia, University of
     Wollongong, Wollongong NSW 2522, Australia
   index: 2
-  
 tags:
 - R
 - R Shiny
 - qPCR
 - Polymerase chain reaction
 output:
-  html_document:
-    df_print: paged
-  word_document: default
   pdf_document:
     latex_engine: xelatex
+  word_document: default
+  html_document:
+    df_print: paged
 ---
 
 # Summary
 
-Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to amplify and quantify the amount of DNA, gene or transcript in a sample by measuring the quantification cycle (Cq) threshold. qPCR is widely used in molecular biology, genetics, and diagnostics, and involves a standardised and routine analysis process. Inherently, this means qPCR analysis is repetitive and time-consuming, especially for large data sets. Therefore, an intuitive and versatile software application would be beneficial to automate and fast-track the analysis for a variety of disciplines. \texttt{ProntoPCR} is a software application that serves this purpose, aiming to efficiently and automatically perform routine qPCR calculations, such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq, relative fold-change (2^-ΔCq), and fold-change (2^-ΔΔCq) of the target gene. It also provides the user with options to perform statistics and graphing of the data. 
+Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to amplify and quantify the amount of DNA, gene or transcript in a sample by measuring the quantification cycle (Cq) threshold. qPCR is widely used in molecular biology, genetics, and diagnostics, and involves a standardised and routine analysis process. Inherently, this means qPCR analysis is repetitive and time-consuming, especially for large data sets. Therefore, an intuitive and versatile software application would be beneficial to automate and fast-track the analysis for a variety of disciplines. \texttt{ProntoPCR} is a software application that serves this purpose, aiming to efficiently and automatically perform routine qPCR calculations, such as averaging the housekeeper genes, calculating \Delta Cq, \Delta\Delta Cq, relative fold-change (2^{-\Delta Cq}), and fold-change (2^{-\Delta\Delta Cq}) of the target gene. It also provides the user with options to perform statistics and graphing of the data. 
 
 
 # Statement of Need
