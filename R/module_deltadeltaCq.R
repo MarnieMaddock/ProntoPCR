@@ -23,7 +23,7 @@ ddcqSidebar <- function(id){
 ddcqMain <- function(id){
   ns <- NS(id)
   tagList(
-    h4(HTML("<b>Average ∆Cq for control and perform 2<sup>-∆ΔCq</sup></b>")),
+    h4(HTML("<b>Average ∆Cq for Control and Calculate 2<sup>-∆ΔCq</sup></b>")),
     DT::DTOutput(ns("ddcq_data")), #display processed ddcq data
     downloadUI(ns("download_ddcq_data"), "Download Processed Data"), #download ddcq data as a csv
     tags$br()
