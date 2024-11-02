@@ -16,7 +16,7 @@ about_text <- div(
   shiny::tags$br(),
   shiny::tags$br(),
   #add footer image
-  div(id = "footer", bslib::card_image(file = "inst/www/footer.svg", fill = FALSE, width = "800px")),
+  div(id = "footer", bslib::card_image(file = "www/footer.svg", fill = FALSE, width = "800px")),
   shiny::tags$br(),
   shiny::tags$br(),
   shiny::tags$br()
