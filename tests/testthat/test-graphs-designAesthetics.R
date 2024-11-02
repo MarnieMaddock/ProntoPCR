@@ -177,7 +177,8 @@ test_that("Graph Design aesthetics", {
   
   app$set_inputs(`graphsModule-width` = 6)
   app$set_inputs(`graphsModule-height` = 4)
-  app$expect_download("graphsModule-downloadGraph")
+  filename <- "Graph_IL6_test.svg"  # Static name for testing
+  app$expect_download("graphsModule-downloadGraph", name = filename)
   app$wait_for_idle()  # Give the app enough time to update
   # Take a full-page screenshot of basic graph
   app$expect_screenshot(screenshot_args = list(
