@@ -36,7 +36,8 @@ Imports:
     Cairo,
     remotes,
     showtext,
-    sysfonts
+    sysfonts,
+    svglite
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Depends: R (>= 4.2.3)

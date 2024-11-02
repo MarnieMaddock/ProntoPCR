@@ -31,6 +31,7 @@ library(Cairo)
 library(remotes)
 library(showtext)
 library(sysfonts)
+library(svglite)
 
 # Source modules for shinyapps --------------------------------------------------
 # Dynamically source all module files in the R/ directory
