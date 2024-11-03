@@ -19,20 +19,16 @@ about_text <- div(
   div(
     id = "footer",
     bslib::card_image(
-      file = if (file.exists(system.file("www", "footer.svg", package = "ProntoPCR"))) {
-        system.file("www", "footer.svg", package = "ProntoPCR")
+      file = if (shiny::isRunning()) {
+        "inst/www/footer.svg"  # Path for shinyapps.io
       } else {
-        NULL
-      },
-      src = if (!file.exists(system.file("inst/www", "footer.svg", package = "ProntoPCR"))) {
-        "www/footer.svg"
-      } else {
-        NULL
+        system.file("www", "footer.svg", package = "ProntoPCR")  # Path for local
       },
       fill = FALSE,
       width = "800px"
     )
   ),
+  
   
   #div(id = "footer", bslib::card_image(src = "www/footer.svg", fill = FALSE, width = "800px")),
   shiny::tags$br(),
