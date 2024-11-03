@@ -1,4 +1,12 @@
 # module_inputData.R
+#define function to dynamically change file path of exampledatafile depending on if shinyapps.io or github is running
+get_data_path <- function(file) {
+  if (file.exists(paste0("inst/www/", file))) {
+    return(paste0("inst/www/", file)) #shinyapps.io
+  } else {
+    return(system.file("www", file, package = "ProntoPCR")) #github
+  }
+}
 
 inputFileUI <- function(id) {
   ns <- NS(id)
@@ -33,7 +41,7 @@ inputFileUI <- function(id) {
 }
 
 
-downloadExampleData <- function(id, dataset_path = system.file("www", "exampledata.csv", package = "ProntoPCR")) {
+downloadExampleData <- function(id, dataset_path = get_data_path("exampledata.csv")) {
   moduleServer(
     id,
     function(input, output, session) {

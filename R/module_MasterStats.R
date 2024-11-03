@@ -1,4 +1,14 @@
 #module_MasterStats.R
+#define function to dynamically change file path of rmd file
+get_rmd_template_path <- function(file) {
+  if (file.exists(paste0("inst/rmd_templates/", file))) {
+    return(paste0("inst/rmd_templates/", file))
+  } else {
+    return(system.file("rmd_templates", file, package = "ProntoPCR"))
+  }
+}
+
+
 statsSidebar <- function(id) {
   ns <- NS(id)
   tagList(
@@ -175,8 +185,8 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
       },
       content = function(file) {
         # Specify the path to Statistics Report R Markdown template
-        rmdTemplate <- system.file("rmd_templates", "StatisticsReport.Rmd", package = "ProntoPCR")
-
+        #rmdTemplate <- system.file("rmd_templates", "StatisticsReport.Rmd", package = "ProntoPCR")
+        rmdTemplate <- get_rmd_template_path("StatisticsReport.Rmd")
         # Print dcq or ddcq
         analysisHTML <- if (selected_stat() == "dcq_stats") {
           "2<sup>-(ΔCq)</sup>"

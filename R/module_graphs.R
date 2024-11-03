@@ -1,4 +1,13 @@
 #module_graphs.R
+#define function to dynamically change file path of rmd file
+get_rmd_template_path <- function(file) {
+  if (file.exists(paste0("inst/rmd_templates/", file))) {
+    return(paste0("inst/rmd_templates/", file))
+  } else {
+    return(system.file("rmd_templates", file, package = "ProntoPCR"))
+  }
+}
+
 graphsSidebar <- function(id) {
   ns <- NS(id)
   tagList(
@@ -1271,7 +1280,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       },
       content = function(file) {
         # Specify the path to Graphs Report R Markdown template
-        rmdTemplate <- system.file("rmd_templates", "GraphOptions.Rmd", package = "ProntoPCR")
+        #rmdTemplate <- system.file("rmd_templates", "GraphOptions.Rmd", package = "ProntoPCR")
+        rmdTemplate <- get_rmd_template_path("GraphOptions.Rmd")
         
         #Render the Rmd file, passing the sample size table data as a parameter
         rmarkdown::render(input = rmdTemplate,
