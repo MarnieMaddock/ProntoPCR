@@ -29,8 +29,6 @@ about_text <- div(
   shiny::tags$br(),
   #add footer image. Dynamic due to differences in format requirements for running online through shinyapps.io vs locally from github
   div(id = "footer", bslib::card_image(file = get_footer_path(), fill = FALSE, width = "800px")),
-  
-  #div(id = "footer", bslib::card_image(src = "inst/www/footer.svg", fill = FALSE, width = "800px")),
   shiny::tags$br(),
   shiny::tags$br(),
   shiny::tags$br()

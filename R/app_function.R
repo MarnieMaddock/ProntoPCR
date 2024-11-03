@@ -44,20 +44,57 @@
 #' @importFrom ggbeeswarm geom_beeswarm
 #' @importFrom ggpubr stat_pvalue_manual
 #' @export
+
+# Define a function sto get the correct file paths depending on whether app is run in shinyapps.io or locally from github
+get_css_path <- function() {
+  if (file.exists("inst/www/style.css")){
+    return("inst/www/style.css") #shinyapps.io
+  } else {
+    return(system.file("www", "style.css", package = "ProntoPCR")) #github
+  }
+}
+
+get_logo_path <- function() {
+  if (file.exists("inst/www/dottori_lab_pentagon.svg")) {
+    return("inst/www/dottori_lab_pentagon.svg") #shinyapps.io
+  } else {
+    return(system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR")) #github
+  }
+}
+
+get_UOW_path <- function() {
+  if (file.exists("inst/www/UOW.png")) {
+    return("inst/www/UOW.png") #shinyapps.io
+  } else {
+    return(system.file("www", "UOW.png", package = "ProntoPCR")) #github
+  }
+}
+
+get_font_path <- function(file) {
+  if (file.exists(paste0("inst/www/", file))) {
+    return(paste0("inst/www/", file))
+  } else {
+    return(paste0("www/", file))
+  }
+}
+
 ProntoPCR <-  function(...) {
   
   #Set the locale to ensure it handles UTF-8 encoding properly:
   #Sys.setlocale("LC_ALL", "en_US.UTF-8")
   
-  
+ #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
     #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))),
-    
+    #tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))), #use custom css for UI
+    tags$head(includeCSS(get_css_path())), # Use custom CSS for UI
     # Use bslib::card_image to include images
-    div(id = "logo", bslib::card_image(file = system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR"), fill = FALSE, width = "70px")),
-    div(id = "logo2", bslib::card_image(file = system.file("www", "UOW.png", package = "ProntoPCR"), fill = FALSE, width = "220px")),
+    #div(id = "logo", bslib::card_image(file = system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR"), fill = FALSE, width = "70px")),
+    #div(id = "logo2", bslib::card_image(file = system.file("www", "UOW.png", package = "ProntoPCR"), fill = FALSE, width = "220px")),
+    #add footer image. Dynamic due to differences in format requirements for running online through shinyapps.io vs locally from github
+    div(id = "logo", bslib::card_image(file = get_logo_path(), fill = FALSE, width = "70px")),
+    div(id = "logo2", bslib::card_image(file = get_UOW_path(), fill = FALSE, width = "220px")),
     
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
@@ -67,22 +104,23 @@ ProntoPCR <-  function(...) {
       sidebarPanel(
         style = "height: 85vh; overflow-y: auto;",
         conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
-                         inputFileUI("file")), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
+                         inputFileUI("file")
+                         ), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
         #Calculations tab: #Delta Cq tab
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
-                         wrangleDataSidebar("wrangleDataModule"),
-        ),
+                         wrangleDataSidebar("wrangleDataModule") #display delta Cq data, average housekeepers module
+                        ),
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
-                         ddcqSidebar("ddcqModule") #display ddcq data
-        ),
+                         ddcqSidebar("ddcqModule") #display ddcq data module
+                        ),
         # Statistics tab
         # Suggested workflow tab
         conditionalPanel(condition = "input.tabselected == 4",
-                         statsSidebar("statsModule"),
-        ),
+                         statsSidebar("statsModule") #display stats options module
+                        ),
         conditionalPanel(condition = "input.tabselected == 5",
-                         graphsSidebar("graphsModule")
-        ),
+                         graphsSidebar("graphsModule") #display graphs options
+                        ),
       ), #sidebarPanel closing bracket
       
       mainPanel(
@@ -90,7 +128,8 @@ ProntoPCR <-  function(...) {
           type = "tabs", 
           id = "tabselected", 
           selected = 1, # Default tab selected is 1
-          tabPanel("About", icon = icon("home", lib = "font-awesome"), textOutput("about"), value = 1,
+          tabPanel("About", icon = icon("home", lib = "font-awesome"), #display home icon in the tab
+                   textOutput("about"), value = 1,
                    about_text
           ), #display about text from source("about.R")
           tabPanel("Input Data", textOutput("inputdata"), value = 2,
@@ -142,7 +181,7 @@ ProntoPCR <-  function(...) {
           ),
           #statistics tab
           tabPanel("Statistics", value = 4,
-                   statsMain("statsModule"),
+                   statsMain("statsModule")
           ),
           tabPanel("Graphs", value = 5,
                    graphsMain("graphsModule")
@@ -157,39 +196,73 @@ ProntoPCR <-  function(...) {
     showtext::showtext_auto()
     # Add system fonts
     sysfonts::font_add("Arial", 
-                       regular = "www/arial.ttf", 
-                       italic = "www/ariali.ttf", 
-                       bold = "www/arialbd.ttf", 
-                       bolditalic = "www/arialbi.ttf")
-    sysfonts::font_add("Arial Bold", "www/arialbd.ttf")
+                       regular = get_font_path("arial.ttf"), 
+                       italic = get_font_path("ariali.ttf"), 
+                       bold = get_font_path("arialbd.ttf"), 
+                       bolditalic = get_font_path("arialbi.ttf"))
+    sysfonts::font_add("Arial Bold", get_font_path("arialbd.ttf"))
     sysfonts::font_add("Calibri", 
-                       regular = "www/calibri.ttf", 
-                       italic = "www/calibrii.ttf", 
-                       bold = "www/calibrib.ttf", 
-                       bolditalic = "www/calibriz.ttf")
+                       regular = get_font_path("calibri.ttf"), 
+                       italic = get_font_path("calibrii.ttf"), 
+                       bold = get_font_path("calibrib.ttf"), 
+                       bolditalic = get_font_path("calibriz.ttf"))
     sysfonts::font_add("Times New Roman", 
-                       regular = "www/times.ttf", 
-                       italic = "www/timesi.ttf", 
-                       bold = "www/timesbd.ttf", 
-                       bolditalic = "www/timesbi.ttf")
+                       regular = get_font_path("times.ttf"), 
+                       italic = get_font_path("timesi.ttf"), 
+                       bold = get_font_path("timesbd.ttf"), 
+                       bolditalic = get_font_path("timesbi.ttf"))
     sysfonts::font_add("Georgia", 
-                       regular = "www/georgia.ttf", 
-                       italic = "www/georgiai.ttf", 
-                       bold = "www/georgiab.ttf", 
-                       bolditalic = "www/georgiaz.ttf")
+                       regular = get_font_path("georgia.ttf"), 
+                       italic = get_font_path("georgiai.ttf"), 
+                       bold = get_font_path("georgiab.ttf"), 
+                       bolditalic = get_font_path("georgiaz.ttf"))
     sysfonts::font_add("Comic Sans MS", 
-                       regular = "www/comic.ttf", 
-                       italic = "www/comici.ttf", 
-                       bold = "www/comicbd.ttf", 
-                       bolditalic = "www/comicz.ttf")
+                       regular = get_font_path("comic.ttf"), 
+                       italic = get_font_path("comici.ttf"), 
+                       bold = get_font_path("comicbd.ttf"), 
+                       bolditalic = get_font_path("comicz.ttf"))
     sysfonts::font_add("Century Gothic", 
-                       regular = "www/GOTHIC.TTF", 
-                       italic = "www/GOTHICI.TTF", 
-                       bold = "www/GOTHICB.TTF", 
-                       bolditalic = "www/GOTHICBI.TTF")
+                       regular = get_font_path("GOTHIC.TTF"), 
+                       italic = get_font_path("GOTHICI.TTF"), 
+                       bold = get_font_path("GOTHICB.TTF"), 
+                       bolditalic = get_font_path("GOTHICBI.TTF"))
     sysfonts::font_add("Tahoma", 
-                       regular = "www/tahoma.ttf",
-                       bold = "www/tahomabd.ttf")
+                       regular = get_font_path("tahoma.ttf"),
+                       bold = get_font_path("tahomabd.ttf"))
+    # sysfonts::font_add("Arial", 
+    #                    regular = "www/arial.ttf", 
+    #                    italic = "www/ariali.ttf", 
+    #                    bold = "www/arialbd.ttf", 
+    #                    bolditalic = "www/arialbi.ttf")
+    # sysfonts::font_add("Arial Bold", "www/arialbd.ttf")
+    # sysfonts::font_add("Calibri", 
+    #                    regular = "www/calibri.ttf", 
+    #                    italic = "www/calibrii.ttf", 
+    #                    bold = "www/calibrib.ttf", 
+    #                    bolditalic = "www/calibriz.ttf")
+    # sysfonts::font_add("Times New Roman", 
+    #                    regular = "www/times.ttf", 
+    #                    italic = "www/timesi.ttf", 
+    #                    bold = "www/timesbd.ttf", 
+    #                    bolditalic = "www/timesbi.ttf")
+    # sysfonts::font_add("Georgia", 
+    #                    regular = "www/georgia.ttf", 
+    #                    italic = "www/georgiai.ttf", 
+    #                    bold = "www/georgiab.ttf", 
+    #                    bolditalic = "www/georgiaz.ttf")
+    # sysfonts::font_add("Comic Sans MS", 
+    #                    regular = "www/comic.ttf", 
+    #                    italic = "www/comici.ttf", 
+    #                    bold = "www/comicbd.ttf", 
+    #                    bolditalic = "www/comicz.ttf")
+    # sysfonts::font_add("Century Gothic", 
+    #                    regular = "www/GOTHIC.TTF", 
+    #                    italic = "www/GOTHICI.TTF", 
+    #                    bold = "www/GOTHICB.TTF", 
+    #                    bolditalic = "www/GOTHICBI.TTF")
+    # sysfonts::font_add("Tahoma", 
+    #                    regular = "www/tahoma.ttf",
+    #                    bold = "www/tahomabd.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
@@ -203,10 +276,8 @@ ProntoPCR <-  function(...) {
     #calculate mean housekeepers, delta Cq and fold change dcq
     wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
     
-    
-    # Display and calculate biological replicate average values for dcq
+    # Display and calculate biological replicate average values for dcq. Save variables
     wrangled_data <- wrangled_data_module$wrangled_data
-    
     filter_condition <- wrangled_data_module$filter_condition
     
     #perform biological replicate calculations
