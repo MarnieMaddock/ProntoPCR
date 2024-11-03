@@ -3,6 +3,7 @@ source("helper-initialize.R")
 test_that("Graph Significance", {
   app <- initialize_app_with_housekeepers()
   on.exit(app$stop(), add = TRUE)
+  app$set_window_size(width = 1029, height = 640)
   #set up stats tab so that graphs will gnerate with no errors
   # Simulate selecting the "Stats" tab (value = 4)
   app$set_inputs(tabselected = "4")

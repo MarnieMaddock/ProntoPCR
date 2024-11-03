@@ -5,6 +5,6 @@ account: marniem
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12639029
-bundleId: 9305657
+bundleId: 9307409
 url: https://marniem.shinyapps.io/ProntoPCR/
 version: 1

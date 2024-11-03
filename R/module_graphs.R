@@ -104,7 +104,7 @@ graphsMain <- function(id) {
     tags$br(),
     h4(HTML("Download Graph")),
     tags$br(),
-    h6("SVG graphs are editable in illustrator, inkscape etc and are the recommended option."),
+    h6("Due to differences in screen displays and resolution, the displayed graph may be slightly different to the downloaded graph. Check the downloaded graph to see if the settings are suitable. SVG graphs are editable in illustrator, inkscape, powerpoint etc and are the recommended option."),
     fluidRow(
       column(4,
              selectInput(ns("file_format"), "Choose File Format:",
@@ -1156,8 +1156,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
                 return(final_string)
               })
               
-              
-              
               # Update plot_data with formatted p-values
               plot_data$`p.signif` <- unlist(formatted_pvalues)
               # Finally, add the formatted p-values to the plot
@@ -1223,12 +1221,12 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         # Print the plot
         print(plot)
         graph_generated(TRUE)
-      }, res = 96,  # Set resolution and specify Cairo for rendering
+      }, res = 96,  
       width = function() {
-        input$width * 100  # Adjust the multiplier as needed
+        input$width * 96  # Adjust the multiplier as needed
       },
       height = function() {
-        input$height * 100  # Adjust the multiplier as needed
+        input$height * 96  # Adjust the multiplier as needed
         
       })
 
@@ -1280,9 +1278,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       },
       content = function(file) {
         # Specify the path to Graphs Report R Markdown template
-        #rmdTemplate <- system.file("rmd_templates", "GraphOptions.Rmd", package = "ProntoPCR")
         rmdTemplate <- get_rmd_template_path("GraphOptions.Rmd")
-        
         #Render the Rmd file, passing the sample size table data as a parameter
         rmarkdown::render(input = rmdTemplate,
                           output_file = file,

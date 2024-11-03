@@ -6,7 +6,7 @@ test_that("CSV file upload and calculations work as expected", {
   # Initialize the app using the helper function
   app <- initialize_app()
   on.exit(app$stop(), add = TRUE)
-  
+  app$set_window_size(width = 1029, height = 640)
   # Check that certain values are calculated correctly
   app$expect_values(output = "inputDataModule-table")
   

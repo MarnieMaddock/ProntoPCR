@@ -3,7 +3,7 @@ source("helper-initialize.R")
 test_that("Housekeeper gene inputs are processed correctly", {
   app <- initialize_app_with_housekeepers()
   on.exit(app$stop(), add = TRUE)
-  
+  app$set_window_size(width = 1029, height = 640)
   # Verify the output text
   text1_output <- app$get_value(output = "file-text1")
   
