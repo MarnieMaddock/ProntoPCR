@@ -17,7 +17,7 @@ downloadServer <- function(id, df, filenameFunc) {
         filenameFunc(input, session)  # Generate filename dynamically
       },
       content = function(file) {
-        utils::write.csv(df(), file, row.names = FALSE)  # Assuming df is a reactive expression
+        utils::write.csv(df(), file, row.names = FALSE)  
       }
     )
   })
