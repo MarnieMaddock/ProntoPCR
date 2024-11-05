@@ -7,7 +7,7 @@ get_data_path <- function(file) {
     return(system.file("www", file, package = "ProntoPCR")) #github
   }
 }
-
+#input data UI
 inputFileUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -40,7 +40,7 @@ inputFileUI <- function(id) {
   )
 }
 
-
+#download link for example data
 downloadExampleData <- function(id, dataset_path = get_data_path("exampledata.csv")) {
   moduleServer(
     id,
@@ -62,7 +62,7 @@ inputDataUI <- function(id) {
   ns <- NS(id)
   tagList(
     h3(HTML("Inserted Data")),
-    DT::DTOutput(ns("table")),
+    DT::DTOutput(ns("table")), #display the uploaded data
     tags$br(),
     tags$br()
   )

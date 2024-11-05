@@ -1,3 +1,4 @@
+#function that performs the appropriate statistical test based on the user's selection
 performComparisonTests <- function(test_type, data, column_input = columnInput()) {
   #initialize
   aov_result <- NULL

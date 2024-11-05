@@ -44,7 +44,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
           h4(HTML("<b>Normality Testing</b>"))  # Display the heading
         }
       })
-    
+    #save number of samples
     num_groups <- reactive({
       req(stats_data())
       length(unique(stats_data()$cell))
@@ -76,7 +76,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         
         return(results_df)
     })
-    
+    #residuals vs fitted plot
     res_fit_plot <- reactive({
       req(num_groups() > 2, group_comparison() == "parametric")
       
@@ -97,7 +97,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
         labs(x = "Fitted Values", y = "Residuals") +
         theme_Marnie
     })
-    
+    #display residuals vs fitted plot
     output$residualsFitPlotUI <- renderUI({
       if (group_comparison() == "parametric" && num_groups() > 2 && !is.null(input$normality_test) && length(input$normality_test) > 0 ) {
         tagList(
@@ -251,10 +251,6 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
           theme_Marnie
       }
     })
-    
-    
-
-    
     
     # render the QQ plot
     output$qqPlot <- renderPlot({

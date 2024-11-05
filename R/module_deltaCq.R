@@ -2,6 +2,7 @@
 library(shiny)
 library(dplyr)
 
+#side bar for wrangling data and performing DCQ calculations
 wrangleDataSidebar <- function(id){
   ns <- NS(id)
   tagList(
@@ -27,22 +28,24 @@ wrangleDataSidebar <- function(id){
     uiOutput(ns("condition_filter"))
   )
 }
+
+#main panel UI for wrangling data and performing DCQ calculations
 wrangleDataUI <- function(id) {
   ns <- NS(id)
   tagList(
     h4(HTML("<b>Average the Houskeeping Genes and Calculate ∆Cq and 2<sup>-∆Cq</sup></b>")),
     tags$br(),
-    DT::DTOutput(ns("wrangled_table")),
+    DT::DTOutput(ns("wrangled_table")), #display table with processed data
     downloadUI(ns("download_processed_data"), "Download Processed Data"), #download dcq data as csv
     tags$br(),
     tags$br(),
     h4(HTML("<b>Filter by Condition</b>")),
-    DT::DTOutput(ns("filtered_table")),
+    DT::DTOutput(ns("filtered_table")), #display table with filtered data
     downloadUI(ns("download_filtered_data"), "Download Filtered Data") #download filtered data as csv
   )
 }
 
-
+#data wrangling functions
 wrangleDataServer <- function(id, save_btn, data, saved_variables) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -115,7 +118,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
                       .names = "{.fn}_{.col}"))
       
       #calulcate fold change (relative mRNA)
-      # Calculate fc, considering the case where the data point is 0
+      # Calculate fc, considering the case where the data point is 0 (No amplification. Stays as 0 after normaliziation)
       #supressed warnings as it is inconsequential to the data functionality
       df <- suppressWarnings({df %>%
           dplyr::mutate(across(
@@ -144,6 +147,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       return(df)
     })
     
+    #display table with processed data
     output$wrangled_table <- DT::renderDT({
       req(wrangled_data())
       wrangled_data()
@@ -156,6 +160,7 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
       selectInput(ns("condition"), "Select Condition", choices = conditions)
     })
     
+    #save filter selection
     filter_condition <- reactive({
       req(input$condition)
       input$condition

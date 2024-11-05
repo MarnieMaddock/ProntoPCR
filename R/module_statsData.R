@@ -21,6 +21,7 @@ statsDataServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene,
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    #save selected option i.e. DCQ or DDCQ for stats
     selected_stat <- reactive({
       input$select_dcq_or_ddcq_stats
     })
@@ -83,7 +84,7 @@ statsDataServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene,
     })
     
     
-    #For now use this instead to choose data
+    #Choose data
     stats_data <- reactive({
       if (selected_stat() == "dcq_stats") {
         dcq_data()

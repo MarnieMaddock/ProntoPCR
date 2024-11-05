@@ -1,9 +1,19 @@
+#example data UI
+# Define a functions to get the correct file paths depending on whether app is run in shinyapps.io or locally from github
+get_image_path <- function() {
+  if (file.exists("inst/www/exampleTable.png")){
+    return("inst/www/exampleTable.png") #shinyapps.io
+  } else {
+    return(system.file("www", "exampleTable.png", package = "ProntoPCR")) #github
+  }
+}
 
 exampleDataUI <- function(id) {
   ns <- NS(id)
   tagList(
     h4("Example CSV File"),
-    tags$img(src = "www/exampleTable.png", height = 400, width = 680),
+    div(id = "example", bslib::card_image(file = get_image_path(), fill = FALSE, width = "680px", height = "400px")),
+    #tags$img(src = get_image_path(), height = 400, width = 680),
     tags$br(),
     tags$br(),
     tags$br(),

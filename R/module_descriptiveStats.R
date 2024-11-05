@@ -1,5 +1,5 @@
 # module_descriptiveStats.R
-
+# sidebar UI for descriptive stats
 descriptiveSidebar <- function(id) {
   ns <- NS(id)
   tagList(
@@ -20,7 +20,7 @@ descriptiveSidebar <- function(id) {
 }
 
 
-
+#main panel UI for descriptive stats
 descriptiveMain <- function(id) {
   ns <- NS(id)
   tagList(
@@ -31,7 +31,7 @@ descriptiveMain <- function(id) {
   )
 }
 
-
+# server functions for descriptive stats
 descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -50,39 +50,39 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
       selected_data <- stats_data()[stats_data()$cell %in% sampleInput(), ]
       # Initialize an empty list to store statistics
       stats_list <- list()
-
+      #sample size
       if ("sample_size" %in% input$descriptiveStats) {
         counts <- tapply(selected_data[[columnInput()]], selected_data$cell, function(x) sum(!is.na(x)))
         stats_list$N <- counts[names(counts) %in% sampleInput()]
       }
-
+      #standard deviation
       if ("sd" %in% input$descriptiveStats) {
         sds <- tapply(selected_data[[columnInput()]], selected_data$cell, sd, na.rm = TRUE)
         stats_list$SD <- sds[names(sds) %in% sampleInput()]
       }
-      
+      # mean
       if ("mean" %in% input$descriptiveStats) {
         means <- tapply(selected_data[[columnInput()]], selected_data$cell, mean, na.rm = TRUE)
         stats_list$Mean <- means[names(means) %in% sampleInput()]
       }
-      
+      # geometric mean
       if("geo_mean" %in% input$descriptiveStats) {
         geo_means <- tapply(selected_data[[columnInput()]], selected_data$cell, function(x) exp(mean(log(x), na.rm = TRUE)))
         stats_list$Geo_Mean <- geo_means[names(geo_means) %in% sampleInput()]
       }
-
+      # median
       if ("median" %in% input$descriptiveStats) {
         medians <- tapply(selected_data[[columnInput()]], selected_data$cell, median, na.rm = TRUE)
         stats_list$Median <- medians[names(medians) %in% sampleInput()]
       }
-      
+      # standard error
       if ("se" %in% input$descriptiveStats) {
         sds <- tapply(selected_data[[columnInput()]], selected_data$cell, sd, na.rm = TRUE)
         ns <- tapply(selected_data[[columnInput()]], selected_data$cell, function(x) sum(!is.na(x)))
         ses <- sds / sqrt(ns)
         stats_list$SE <- ses[names(ses) %in% sampleInput()]
       }
-      
+      # 95% confidence interval
       if ("ci" %in% input$descriptiveStats) {
         means <- tapply(selected_data[[columnInput()]], selected_data$cell, mean, na.rm = TRUE)
         sds <- tapply(selected_data[[columnInput()]], selected_data$cell, sd, na.rm = TRUE)
@@ -99,12 +99,12 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
             mean <- means[sample_name]
             sd <- sds[sample_name]
             se <- sd / sqrt(n)
-            if (n >= 30) {
+            if (n >= 30) { # Use z-value for large sample sizes
               z_value <- 1.96
               ci_lower[sample_name] <- mean - z_value * se
               ci_upper[sample_name] <- mean + z_value * se
             } else {
-              t_value <- qt(0.975, df = n - 1, lower.tail = TRUE)
+              t_value <- qt(0.975, df = n - 1, lower.tail = TRUE) # Use t-value for small sample sizes
               ci_lower[sample_name] <- mean - t_value * se
               ci_upper[sample_name] <- mean + t_value * se
             }
@@ -117,12 +117,12 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
         stats_list$CI_Lower <- ci_lower[names(ci_lower) %in% sampleInput()]
         stats_list$CI_Upper <- ci_upper[names(ci_upper) %in% sampleInput()]
       }
-      
+      # variance
       if ("variance" %in% input$descriptiveStats) {
         variances <- tapply(selected_data[[columnInput()]], selected_data$cell, var, na.rm = TRUE)
         stats_list$Variance <- variances[names(variances) %in% sampleInput()]
       }
-      
+      # min/max
       if ("minMax" %in% input$descriptiveStats) {
         mins <- tapply(selected_data[[columnInput()]], selected_data$cell, min, na.rm = TRUE)
         maxs <- tapply(selected_data[[columnInput()]], selected_data$cell, max, na.rm = TRUE)
@@ -139,7 +139,6 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
       stats <- sampleStats()
       
       # Ensure there's data to display
-      #sample_names <- unique(stats_data()$cell)
       sample_names <- sampleInput()  # Use sampleInput to get selected sample names
       if (is.null(sample_names) || length(sample_names) == 0) {
         return(data.frame(Sample = "No data available", stringsAsFactors = FALSE))
@@ -150,7 +149,6 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
       
       # Adding selected statistics
       if ("sample_size" %in% input$descriptiveStats) {
-       # result_df$N <- stats$N[names(stats$N) %in% sample_names]
         result_df$N <- stats$N[sample_names]
       } 
       
@@ -217,12 +215,13 @@ descriptiveServer <- function(id, sampleInput, columnInput, stats_data) {
     
     descriptivesResults <- reactive({
       if (length(input$descriptiveStats) > 0) {
-        descriptivesTable()  # Assuming descriptivesTable() returns the descriptive statistics table
+        descriptivesTable()  
       } else {
         NULL
       }
     })
     
+    #save the selected descriptive stats
     descriptives_input <- reactive({
       input$descriptiveStats
     })

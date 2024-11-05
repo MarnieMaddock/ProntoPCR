@@ -45,7 +45,7 @@
 #' @importFrom ggpubr stat_pvalue_manual
 #' @export
 
-# Define a function sto get the correct file paths depending on whether app is run in shinyapps.io or locally from github
+# Define a functions to get the correct file paths depending on whether app is run in shinyapps.io or locally from github
 get_css_path <- function() {
   if (file.exists("inst/www/style.css")){
     return("inst/www/style.css") #shinyapps.io
@@ -78,31 +78,37 @@ get_font_path <- function(file) {
   }
 }
 
-ProntoPCR <-  function(...) {
+include_analytics_html <- function() {
+  # Check if the file exists locally
+  if (file.exists("inst/www/analytics.html")) {
+    return("inst/www/analytics.html") #shinyapps.io
+  } else {
+    NULL
+  }
   
-  #Set the locale to ensure it handles UTF-8 encoding properly:
-  #Sys.setlocale("LC_ALL", "en_US.UTF-8")
+  # Include the HTML file in the app
+  tags$head(includeHTML(file_path))
+}
+
+
+ProntoPCR <-  function(...) {
   
  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
-    #tags$head(includeHTML(system.file("www", "analytics.html", package = "ProntoPCR"))),
-    #tags$head(includeCSS(system.file("www", "style.css", package = "ProntoPCR"))), #use custom css for UI
+    tags$head(includeHTML(include_analytics_html())), # Include Google Analytics
     tags$head(includeCSS(get_css_path())), # Use custom CSS for UI
     # Use bslib::card_image to include images
-    #div(id = "logo", bslib::card_image(file = system.file("www", "dottori_lab_pentagon.svg", package = "ProntoPCR"), fill = FALSE, width = "70px")),
-    #div(id = "logo2", bslib::card_image(file = system.file("www", "UOW.png", package = "ProntoPCR"), fill = FALSE, width = "220px")),
-    #add footer image. Dynamic due to differences in format requirements for running online through shinyapps.io vs locally from github
     div(id = "logo", bslib::card_image(file = get_logo_path(), fill = FALSE, width = "70px")),
     div(id = "logo2", bslib::card_image(file = get_UOW_path(), fill = FALSE, width = "220px")),
     
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
-    useShinyjs(), 
+    useShinyjs(), # Use shinyjs to hide and show elements
     #sidebar options
     sidebarLayout(
       sidebarPanel(
-        style = "height: 85vh; overflow-y: auto;",
+        style = "height: 85vh; overflow-y: auto;", # Set the sidebar height and add a scroll bar
         conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
                          inputFileUI("file")
                          ), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
@@ -229,44 +235,10 @@ ProntoPCR <-  function(...) {
     sysfonts::font_add("Tahoma", 
                        regular = get_font_path("tahoma.ttf"),
                        bold = get_font_path("tahomabd.ttf"))
-    # sysfonts::font_add("Arial", 
-    #                    regular = "www/arial.ttf", 
-    #                    italic = "www/ariali.ttf", 
-    #                    bold = "www/arialbd.ttf", 
-    #                    bolditalic = "www/arialbi.ttf")
-    # sysfonts::font_add("Arial Bold", "www/arialbd.ttf")
-    # sysfonts::font_add("Calibri", 
-    #                    regular = "www/calibri.ttf", 
-    #                    italic = "www/calibrii.ttf", 
-    #                    bold = "www/calibrib.ttf", 
-    #                    bolditalic = "www/calibriz.ttf")
-    # sysfonts::font_add("Times New Roman", 
-    #                    regular = "www/times.ttf", 
-    #                    italic = "www/timesi.ttf", 
-    #                    bold = "www/timesbd.ttf", 
-    #                    bolditalic = "www/timesbi.ttf")
-    # sysfonts::font_add("Georgia", 
-    #                    regular = "www/georgia.ttf", 
-    #                    italic = "www/georgiai.ttf", 
-    #                    bold = "www/georgiab.ttf", 
-    #                    bolditalic = "www/georgiaz.ttf")
-    # sysfonts::font_add("Comic Sans MS", 
-    #                    regular = "www/comic.ttf", 
-    #                    italic = "www/comici.ttf", 
-    #                    bold = "www/comicbd.ttf", 
-    #                    bolditalic = "www/comicz.ttf")
-    # sysfonts::font_add("Century Gothic", 
-    #                    regular = "www/GOTHIC.TTF", 
-    #                    italic = "www/GOTHICI.TTF", 
-    #                    bold = "www/GOTHICB.TTF", 
-    #                    bolditalic = "www/GOTHICBI.TTF")
-    # sysfonts::font_add("Tahoma", 
-    #                    regular = "www/tahoma.ttf",
-    #                    bold = "www/tahomabd.ttf")
     
     # #insert csv file and check that it meets the required formatting
     csv_data  <- checkCSVfile("file")
-    downloadExampleData("file")
+    downloadExampleData("file") #download example data file link
     # Generate dynamic text input fields for housekeeper genes
     fileModule <- inputFileServer("file")
     
@@ -289,7 +261,6 @@ ProntoPCR <-  function(...) {
     # Display and calculate biological replicate average values for ddcq
     ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
     average_dcq <- ddcq_data_module$average_dcq
-    
     selected_gene <- ddcq_data_module$extracted_gene
     ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
     ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq

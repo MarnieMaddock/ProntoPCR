@@ -82,7 +82,6 @@ statsServer <- function(id, values, dcq_data, ddcq_data, ddcq_selected_gene, sam
       compTest$posthoc_input()
     })
     
-    
     correctionMethod_input <- reactive({
       compTest$correctionMethod_input()
     })

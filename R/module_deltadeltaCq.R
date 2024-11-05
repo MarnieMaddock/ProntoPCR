@@ -1,5 +1,5 @@
 #module_deltadeltaCq.R
-#
+# sidebar for wrangling data and performing DDCQ calculations
 ddcqSidebar <- function(id){
   ns <- NS(id)
   tagList(
@@ -20,6 +20,7 @@ ddcqSidebar <- function(id){
   )
 }
 
+#main panel UI for wrangling data and performing DDCQ calculations
 ddcqMain <- function(id){
   ns <- NS(id)
   tagList(
@@ -29,7 +30,7 @@ ddcqMain <- function(id){
     tags$br()
   )
 }
-
+# server functions for DDCQ calculations
 ddcqServer <- function(id, wrangled_data) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -54,6 +55,7 @@ ddcqServer <- function(id, wrangled_data) {
       selectInput(ns("select_gene"), "Select Gene to calculate ΔΔCq", choices = dcq_columns)
     })
     
+    #save gene name selected without the dcq_ prefix
     extracted_gene <- reactive({
       selected_gene <- input$select_gene
       stringr::str_extract(selected_gene, "(?<=_).*")

@@ -12,7 +12,7 @@ leveneSidebar <- function(id) {
 leveneMain <- function(id) {
   ns <- NS(id)
   tagList(
-    uiOutput(ns("leveneHeading")), # display leven heading if this is selected in the sidebar panel
+    uiOutput(ns("leveneHeading")), # display levene heading if this is selected in the sidebar panel
     uiOutput(ns("leveneUI")), # display levene test results if selected
   )
 }
@@ -81,7 +81,7 @@ leveneServer <- function(id, columnInput, stats_data, selected_stat) {
         NULL
       }
     })
-    
+    #save whether leve is selected
     levene_input <- reactive({
       input$variance
     })

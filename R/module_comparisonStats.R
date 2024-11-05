@@ -1,5 +1,6 @@
 #module_comparisonStats.R
 
+#side bar for comparison tests
 compTestSidebar <- function(id) {
   ns <- NS(id)
   tagList(
@@ -10,7 +11,7 @@ compTestSidebar <- function(id) {
   )
 }
 
-
+#main panel for displaying stats output
 compTestMain <- function(id) {
   ns <- NS(id)
   tagList(
@@ -25,16 +26,18 @@ compTestMain <- function(id) {
   )
 }
 
-
+#compute group comparisons based on selections made by the user
 compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, sample_sizes, all_data, selected_stat) {
   moduleServer(id, function(input, output, session) {
-    ns <- session$ns
+    ns <- session$ns 
     
+    # save number of selected samples
     num_groups <- reactive({
       req(shapiro_data_reactive())
       length(unique(shapiro_data_reactive()$cell))
     })
     
+    # save what group_comp was selected
     group_comparison <- reactive({
       req(input$group_comparison)
       input$group_comparison
@@ -59,12 +62,11 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
         }
       })
     
+    #post hoc
     output$postHocOptions <- renderUI({
       # Dynamically generate UI for post hoc options based on the type of test and number of groups
         # Ensure we have more than 2 groups for post hoc tests to make sense
         req(sampleInput(), columnInput(), input$group_comparison)
-        
-        
         if (input$group_comparison == "parametric" && num_groups() > 2) {
           # Parametric post hoc test options
           radioButtons(ns("postHocTest"), HTML("<b>Select a post hoc test for ANOVA (if <i>p</i> < 0.05):</b>"),
@@ -103,6 +105,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
         }
       })
     
+    #post hoc headings
     output$postHocHeading <- renderUI({
       req(sampleInput(), columnInput(), input$group_comparison, input$postHocTest)
       if (num_groups() <= 2) return(NULL) # No post-hoc tests needed for <= 2 groups
@@ -195,7 +198,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
           } else {
             # Convert the result to a data frame for display. The `pairwise.t.test` function
             # returns a list with two components: p.value and method. The p.value component
-            # is a matrix of the p-values of the tests. We'll convert this matrix to a tidy format.
+            # is a matrix of the p-values of the tests. Convert this matrix to a tidy format.
             p_values_matrix <- post_hoc_result$p.value
             post_hoc_df <- as.data.frame(as.table(p_values_matrix))
             # Add a column to indicate whether the comparison is significant
@@ -467,7 +470,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                 input_column = columnInput(),
                 sample_sizes = sample_sizes()
               )
-              # You can then access each dataframe like this:
+              # Access the dataframe
               post_hoc_df <- results$post_hoc_df
 
               #compact letter display
@@ -484,7 +487,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
                 input_column = columnInput(),
                 sample_sizes = sample_sizes()
               )
-              # You can then access each dataframe like this:
+              # Access the dataframe
               post_hoc_df <- results$post_hoc_df
 
               #compact letter display
@@ -493,7 +496,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
             }, silent = TRUE)
           }else if (input$postHocTest == "scheffe"){
             results <- performPostHoc(data = shapiro_data_reactive(), p_adjust_method = "scheffe", input_column = columnInput(), sample_sizes = sample_sizes())
-            # You can then access each dataframe like this:
+            # Access the dataframe
             post_hoc_df <- results$post_hoc_df
             cld_df <- results$cld_df
             #compact letter display
@@ -717,6 +720,7 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       return(selected_gene_cleaned)
     })
       
+    #save the results in a reactiveValues object
     comparisonResults_rmd <- reactive({
       list(
         test = comparisonResults()$test,

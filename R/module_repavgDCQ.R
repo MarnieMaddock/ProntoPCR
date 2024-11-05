@@ -29,14 +29,6 @@ repDataServer <- function(id, data, filter_condition){
       
       vars <- colnames(data()) %>%
         grep("^fc_dcq", ., value = TRUE)
-      
-
-      
-      # Add and relocate 'cell' column
-      # rep_avg <- data() %>%
-      #   group_by(condition, group) %>%
-      #   summarise_at(vars, list(fc_avg = ~mean(., na.rm = TRUE))) %>%
-      #   gather(key = "Variable", value = "fc_avg", -condition, -group)
 
       rep_avg <- data() %>%
         dplyr::group_by(condition, group) %>%
@@ -55,12 +47,6 @@ repDataServer <- function(id, data, filter_condition){
       #Move column
       rep_avg <- rep_avg %>%
         dplyr::relocate(cell, .after = group)
-      #rep_avg <- datawizard::data_relocate(rep_avg, select = "cell", after = "group")
-      
-
-      #add standard deviation, Standard error and confiencde interval
-
-      
       return(rep_avg)
     })
     

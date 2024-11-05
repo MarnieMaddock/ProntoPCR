@@ -8,6 +8,7 @@ get_rmd_template_path <- function(file) {
   }
 }
 
+#sidebar options for graphs
 graphsSidebar <- function(id) {
   ns <- NS(id)
   tagList(
@@ -92,7 +93,7 @@ graphsSidebar <- function(id) {
   )
 }
 
-    
+#display graph in main panel. Give options for downloading
 graphsMain <- function(id) {
   ns <- NS(id)
   tagList(
@@ -133,7 +134,7 @@ graphsMain <- function(id) {
     tags$br()
   )
 }
-
+# server functions to render customisable graph
 graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable, theme_Marnie, wrangled_data, ddcq_selected_gene, ddcq_data, select_dcq_or_ddcq_stats, stats_gene, shapiro_data_reactive, graph_generated, rep_avg_data, rep_avg_data_ddcq, comparisonResults, group_comparison) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -175,18 +176,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
                      numericInput(ns("error_bar_thickness"), "Error Bar Thickness:", value = 1.5, min = 0.05, step = 0.2),
                      numericInput(ns("average_line_thickness"), "Average Line Thickness:", value = 1, min = 0.05, step = 0.1)),
               uiOutput(ns("error_bar_colUI")),
-              #column(width = 3.5,
-                     # checkboxInput(ns("use_geo_mean"), 
-                     #               label = tags$span(
-                     #                 "Use Geometric Mean for Average Line",
-                     #                 tags$i(
-                     #                   class =  "glyphicon glyphicon-info-sign", 
-                     #                   style = "color:#00359bff;",
-                     #                   title = "If selected, it is highly recommended to select 95% confidence interval as your error bar type."
-                     #                 )),
-                     #                FALSE),
-                     #checkboxInput(ns("match_colour_error"), "Match error bar colour with dot points", FALSE),
-                     #checkboxInput(ns("match_colour_avg"), "Match average line colour with dot points", FALSE))
             ),
             h5(HTML("<b>Point Design</b>")),
             numericInput(ns("point_size"), "Point Size:", value = 4.5, min = 0.5, max = 20, step = 0.5),
@@ -240,15 +229,12 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           NULL
         }
       })
-
-   
-    
     
     # Reactive values to store user selections
     selected_stats <- reactive({
       sub("_stats", "", select_dcq_or_ddcq_stats())
     })
-    
+    #save wehther dcq or ddcq was selected
     selected_graphs <- reactive({
       input$select_dcq_or_ddcq
     })
@@ -263,7 +249,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       selected_stat_column <- stats_gene()
       # If input$select_dcq_or_ddcq equals "dcq", it uses input$fc_dcq_column (the column selected for DCq plotting).
       # Otherwise, it uses input$fc_ddcq (the column selected for DDCq plotting).
-      #selected_plot_column <- if(input$select_dcq_or_ddcq == "dcq") input$fc_dcq_column else "fc_ddcq"
       # Determine selected plot column based on the input
       selected_plot_column <- if (input$select_dcq_or_ddcq == "dcq") {
         input$fc_dcq_column
@@ -358,24 +343,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         selected_gene_cleaned <- gsub("^dcq_", "", ddcq_selected_gene())
         paste("You are currently graphing gene:", selected_gene_cleaned)
       })
-
-    
-    # Observe changes in the use_geo_mean checkbox
-    # observeEvent(input$use_geo_mean, {
-    #   if (input$use_geo_mean) {
-    #     # Update radio buttons to select CI when geometric mean is used
-    #     updateRadioButtons(session, "error_type",
-    #                        choices = list("95% Confidence Interval" = "ci"),
-    #                        selected = "ci")
-    #   } else {
-    #     # Enable all options if the geometric mean is not selected
-    #     updateRadioButtons(session, "error_type",
-    #                        choices = list("Standard Deviation" = "sd", 
-    #                                       "Standard Error" = "se",
-    #                                       "95% Confidence Interval" = "ci"),
-    #                        selected = input$error_type)
-    #   }
-    # })
     
     output$dynamic_y_label_input <- renderUI({
         # Initialize variable to store cleaned gene name
@@ -407,7 +374,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     
     
     # Dynamic generation of text inputs based on positions
-    #check this works
     xAxis_positions <- observeEvent(input$labels_positions, {
         # Parse labels if user entered them
         filtered_labels <- if (!is.null(input$labels_positions)) {
@@ -418,7 +384,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         
         # Update the UI with text boxes for custom labels
         label_textboxes <- lapply(filtered_labels, function(label) {
-          #NAMESPACE THIS?
           textInput(paste0("label_", label), label, label)
         })
         # Render UI for text boxes
@@ -469,8 +434,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         })
       }
     })
-    
-          
+    #calculate mean, sd, se, ci
     mean_sd <- function(x) {
       n <- sum(!is.na(x)) # Number of non-NA values
       if (n > 1) { # Can only calculate sd if n > 1
@@ -508,7 +472,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     
     # Reactive function to get col names (i.e. gene)
     # access `fc_dcq_columns_reactive()` as a reactive value.
-    #check works
     fc_dcq_columns_reactive <- reactive({
         req(wrangled_data())  # Ensure data is available
         grep("^fc_dcq", colnames(wrangled_data()), value = TRUE)
@@ -529,7 +492,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         )
       })
     
-    
+    # UI for significance options
     output$significanceOptions <- renderUI({
       req(input$plot_type !="dot_group")# Only show if plot_type is not "dot_group"
       tagList(
@@ -621,29 +584,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         
        #set seed for the graph
         set.seed(input$seed_input)
-        # select only the samples selected for the grpah by the user 
-        #add for geo mean graphing
-        # if(input$select_dcq_or_ddcq == "dcq"){
-        #   if(input$use_geo_mean == FALSE){
-        #     filtered_data <- dcq_or_ddcq() %>%
-        #       filter(cell %in% input$selected_condition)
-        #     filtered_rep_avg_data <- rep_avg_data() %>%
-        #       filter(cell %in% input$selected_condition)
-        #   } else if (input$use_geo_mean == TRUE){
-        #     print(head(descriptivesTable()))
-        #     gene_name <- input$fc_dcq_column
-        #     filtered_data <- dcq_or_ddcq() %>%
-        #       filter(cell %in% input$selected_condition)
-        #     
-        #     filtered_rep_avg_data  <- descriptivesTable() %>% 
-        #       dplyr::filter(Sample %in% input$selected_condition) %>% 
-        #       dplyr::select(Sample, "Geometric Mean") %>% 
-        #       dplyr::rename(cell = Sample) %>% 
-        #       mutate(group = str_extract(cell, "(?<=_).*")) %>% 
-        #       dplyr::rename(!!input$fc_dcq_column := `Geometric Mean`)
-        #   }
         
-        
+        #graph options if dcq is selected. Choose correct dataset
         if(input$select_dcq_or_ddcq == "dcq"){
           filtered_data <- dcq_or_ddcq() %>%
             filter(cell %in% input$selected_condition)
@@ -701,15 +643,12 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           }
         }
         
-        
-        
         # Check if x-axis categories are available
         if (is.null(input$x_axis_positions) || input$x_axis_positions == "") {
           validate(
             need(FALSE, "Please enter x-axis categories to build the graph.")
           )
         }
-
         # colours to use for graphing
         color_schemes <- reactiveValues(colourblind1 = c("#00359c", "#648fff", "#785ef0", "#dc267f", "#fe6100", "#ffb000"),
                                                  colourblind2 = c("#ffbd00", "#ff5400", "#ff0054", "#9e0059", "#390099"),
@@ -906,6 +845,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           }
         })
 
+        # Reactive values to store legend text sizes
         legendSizes <- reactiveValues(
           title =14,
           groups =12)
@@ -922,6 +862,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             legendSizes$groups <- input$legend_text_size
           })
         
+          # Dynamic UI for legend customization
         output$legendCustomization <- renderUI({
           req(input$plot_type == "dot_group")  # Only show if dot_group is selected
           tagList(
@@ -1089,6 +1030,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         max_y <- max(filtered_data[[y_aes]], na.rm = TRUE)
         y_position_auto <- max_y + (0.1 * max_y)
         
+        #adding significance
         if(input$add_significance == "asterix"){
           num_groups <- length(unique(shapiro_data_reactive()$cell))
           if(num_groups > 2){
@@ -1107,7 +1049,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           
         }else if(input$add_significance == "cld"){
           req(comparisonResults()$cld)
-          # Assuming comparisonResults()$cld_df has columns 'group' and 'Letters'
           cld_data <- comparisonResults()$cld
           # Transform cld_data to have group1 and group2 columns, both containing the same group values
           cld_data <- cld_data %>%
@@ -1223,10 +1164,10 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         graph_generated(TRUE)
       }, res = 96,  
       width = function() {
-        input$width * 96  # Adjust the multiplier as needed
+        input$width * 96  
       },
       height = function() {
-        input$height * 96  # Adjust the multiplier as needed
+        input$height * 96  
         
       })
 

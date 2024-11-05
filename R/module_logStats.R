@@ -1,5 +1,5 @@
 #module_logStats.R#
-
+# log transform sidebar
 logSidebar <- function(id) {
   ns <- NS(id)
   tagList(

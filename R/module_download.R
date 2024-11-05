@@ -1,5 +1,6 @@
 # # module_download.R
 
+#functions that allow downloading of csv files
 downloadUI <- function(id, label = "Download Data") {
   ns <- NS(id)
   tagList(
