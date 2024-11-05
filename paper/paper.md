@@ -3,6 +3,7 @@ title: 'ProntoPCR: Efficient qPCR Data Analysis Software'
 authors:
 - name: Marnie Maddock
   orcid: "0000-0001-6393-4837"
+  corresponding: true
   affiliation: 1,3
 - name: Mirella Dottori
   orcid: "0000-0002-9975-0367"
@@ -14,10 +15,10 @@ authors:
 affiliations:
 - name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, 
   index: 1
-- name: University of Wollongong, Wollongong NSW 2522, Australia
-  index: 3
 - name: National Institute for Applied Statistics Research Australia
   index: 2
+- name: University of Wollongong, Wollongong NSW 2522, Australia
+  index: 3
 tags:
 - R
 - R Shiny
