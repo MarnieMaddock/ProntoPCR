@@ -79,16 +79,24 @@ get_font_path <- function(file) {
 }
 
 include_analytics_html <- function() {
-  # Check if the file exists locally
-  if (file.exists("inst/www/analytics.html")) {
-    return("inst/www/analytics.html") #shinyapps.io
+  # Check if the file exists locally or for shinyapps.io
+  file_path <- if (file.exists("inst/www/analytics.html")) {
+    "inst/www/analytics.html"
+  } else if (file.exists("www/analytics.html")) {
+    # Use relative path for shinyapps.io
+    "www/analytics.html"
   } else {
     NULL
   }
   
-  # Include the HTML file in the app
-  tags$head(includeHTML(file_path))
+  # Include the HTML file in the app only if the file path is valid
+  if (!is.null(file_path)) {
+    tags$head(includeHTML(file_path))
+  } else {
+    NULL
+  }
 }
+
 
 
 ProntoPCR <-  function(...) {
@@ -96,7 +104,7 @@ ProntoPCR <-  function(...) {
  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
-    tags$head(includeHTML(include_analytics_html())), # Include Google Analytics
+    include_analytics_html(), # Include Google Analytics
     tags$head(includeCSS(get_css_path())), # Use custom CSS for UI
     # Use bslib::card_image to include images
     div(id = "logo", bslib::card_image(file = get_logo_path(), fill = FALSE, width = "70px")),
