@@ -1013,6 +1013,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         #allow markdown on y and x axis
         plot <- plot + theme(axis.title.y = element_markdown())
         plot <- plot + theme(axis.title.x = element_markdown())
+        plot <- plot + theme(axis.text.x = element_markdown())
+        plot <- plot + theme(axis.text.y = element_markdown())
         
         observe({
           req(input$add_significance != "none")
