@@ -43,7 +43,7 @@
 #' @importFrom ggplot2 last_plot
 #' @importFrom ggbeeswarm geom_beeswarm
 #' @importFrom ggpubr stat_pvalue_manual
-#' @export
+
 
 # Define a functions to get the correct file paths depending on whether app is run in shinyapps.io or locally from github
 get_css_path <- function() {
@@ -98,7 +98,7 @@ include_analytics_html <- function() {
 }
 
 
-
+#' @export
 ProntoPCR <-  function(...) {
   
  #set up UI 
