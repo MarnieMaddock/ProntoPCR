@@ -179,7 +179,12 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             ),
             h5(HTML("<b>Point Design</b>")),
             numericInput(ns("point_size"), "Point Size:", value = 4.5, min = 0.5, max = 20, step = 0.5),
-            checkboxInput(ns("change_shapes"), "Change to paired shapes.", FALSE),
+            selectInput(ns("change_shapes"), "Shape Option:", 
+                        choices = list("Default" = "default", 
+                                       "Paired Shapes" = "paired", 
+                                       "Double Paired Shapes" = "double",
+                                       "All Circles" = "circles"), 
+                        selected = "default"),
             fluidRow(
               column(width = 6, numericInput(ns("stroke_thickness"), "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
               column(width = 6, numericInput(ns("jitter_amount"), "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1))
@@ -725,15 +730,14 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         
         #define the shapes to be used in the graph
         shapes_reactive <- reactive({
-          if (input$change_shapes) {
-            # New order when checkbox is selected
-            setNames(c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions)
-          } else {
-            # Default order
-            setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)
-          }
+          req(input$change_shapes)
+          switch(as.character(input$change_shapes),
+                 "paired" = setNames(c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14), positions),
+                 "double" = setNames(c(16, 16, 21, 21, 17, 17, 24, 24, 15, 15, 22, 22, 18, 18, 23, 23), positions),
+                 "circles" = setNames(rep(16, length(positions)), positions),  # All circles
+                 setNames(c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25), positions)  # Default
+          )
         })
-        
 
         # Determine which function to use based on user input
         error_fun <- if(input$error_type == "sd") {
@@ -932,10 +936,16 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           shapes_reactive <- reactive({
             unique_conditions <- length(unique(filtered_data$condition))
             
-            if (input$change_shapes) {
+            if (input$change_shapes == "paired") {
               # Ensure the number of shapes matches the number of unique conditions
               shapes <- c(16, 21, 17, 24, 15, 22, 18, 23, 4, 3, 8, 10, 9, 11, 12, 13, 14)
               setNames(shapes[1:unique_conditions], unique(filtered_data$condition))
+            } else if  (input$change_shapes == "double") {
+              shapes <- c(16, 16, 21, 21, 17, 17, 24, 24, 15, 15, 22, 22, 18, 18, 23, 23)
+              setNames(shapes[1:unique_conditions], unique(filtered_data$condition))
+            } else if  (input$change_shapes == "circles") {
+              shapes <- rep(16, unique_conditions)
+              setNames(shapes, unique(filtered_data$condition))
             } else {
               # Default shape order
               shapes <- c(16, 17, 15, 18, 4, 3, 8, 10, 9, 11, 12, 13, 14, 21, 22, 23, 24, 25)

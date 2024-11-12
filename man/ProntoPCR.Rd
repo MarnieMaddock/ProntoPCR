@@ -2,9 +2,10 @@
 % Please edit documentation in R/app_function.R
 \name{ProntoPCR}
 \alias{ProntoPCR}
+\alias{get_css_path}
 \title{Run the ProntoPCR Shiny Application}
 \usage{
-ProntoPCR(...)
+get_css_path()
 }
 \arguments{
 \item{...}{Additional arguments to pass to the ProntoPCR function.}
