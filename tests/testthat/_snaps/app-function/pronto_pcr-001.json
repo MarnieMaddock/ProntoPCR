@@ -58,6 +58,22 @@
         "validation"
       ]
     },
+    "ddcqModule-select_control2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
+    "ddcqModule-select_samples2": {
+      "message": "",
+      "call": "NULL",
+      "type": [
+        "shiny.silent.error",
+        "validation"
+      ]
+    },
     "file-groups": {
       "html": "<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group1-label\" for=\"file-group1\">Enter the name of housekeeper 1<\/label>\n  <input id=\"file-group1\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group2-label\" for=\"file-group2\">Enter the name of housekeeper 2<\/label>\n  <input id=\"file-group2\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>\n<div class=\"form-group shiny-input-container\">\n  <label class=\"control-label\" id=\"file-group3-label\" for=\"file-group3\">Enter the name of housekeeper 3<\/label>\n  <input id=\"file-group3\" type=\"text\" class=\"shiny-input-text form-control\" value=\"\"/>\n<\/div>",
       "deps": [
