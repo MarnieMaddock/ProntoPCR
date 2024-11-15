@@ -592,8 +592,17 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     output$plot <- renderPlot({
         req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
       
+      # Check if x-axis categories are available
+      if (is.null(input$x_axis_positions) || input$x_axis_positions == "") {
+        validate(
+          need(FALSE, "Please enter x-axis categories to build the graph.")
+        )
+      }
+      
       # Require that there is at least one comma in the x_axis_positions input
       req(grepl(",", input$x_axis_positions), cancelOutput = TRUE)
+      
+
       
       #graph options if dcq is selected. Choose correct dataset
       if(input$select_dcq_or_ddcq == "dcq"){
