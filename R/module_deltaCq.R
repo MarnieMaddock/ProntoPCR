@@ -65,8 +65,8 @@ wrangleDataServer <- function(id, save_btn, data, saved_variables) {
         return(NULL)
       }
       # Remove Cq.SD and Quality issues columns
-      df <- df[, c(1, 2, 4)]
-
+      df <- df[, c("Sample", "Target", "Cq.Mean")]
+      
       # Check if 'NTC' is present in the 'Sample' column and remove if present
       df <- df[!grepl('NTC', df$Sample), ]
 

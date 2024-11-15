@@ -585,7 +585,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       }
     })
     
-    
     # render plot according to user input options
     # PLOT CODE
     ## EXTENISVE code for generating customisable graphs:
@@ -602,21 +601,20 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       # Require that there is at least one comma in the x_axis_positions input
       req(grepl(",", input$x_axis_positions), cancelOutput = TRUE)
       
-
-      
       #graph options if dcq is selected. Choose correct dataset
       if(input$select_dcq_or_ddcq == "dcq"){
-        filtered_data <- dcq_or_ddcq() %>%
-          filter(cell %in% input$selected_condition) %>% 
-          na.omit()  # Removes rows with any NA values in all columns
+        filtered_data <- dcq_or_ddcq()$cell 
       }else if(input$select_dcq_or_ddcq == "ddcq"){
-        filtered_data <- dcq_or_ddcq()
+        filtered_data <- dcq_or_ddcq()$cell
       }
+      
       # Split input x-axis positions
       user_positions <- unlist(strsplit(input$x_axis_positions, ","))
-      valid_positions <- unique(filtered_data$cell)  
+      valid_positions <- unique(filtered_data)  
+      
       
       invalid_positions <- setdiff(user_positions, valid_positions)
+      
       
       # Use validate() to display a message if there are invalid positions
       validate(
@@ -647,11 +645,9 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         #graph options if dcq is selected. Choose correct dataset
         if(input$select_dcq_or_ddcq == "dcq"){
           filtered_data <- dcq_or_ddcq() %>%
-            filter(cell %in% input$selected_condition) %>% 
-            na.omit()  # Removes rows with any NA values in all columns
+            filter(cell %in% input$selected_condition)
           filtered_rep_avg_data <- rep_avg_data() %>%
-            filter(cell %in% input$selected_condition) %>% 
-            na.omit()  # Removes rows with any NA values in all columns
+            filter(cell %in% input$selected_condition) 
           
           
           #If filtered_rep_avg_data has column fc_avg, rename to input$selected_condition
