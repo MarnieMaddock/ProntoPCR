@@ -397,14 +397,35 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         })
       })
 
+    # # Reactive value to store processed x-axis positions
+    # processed_positions <- reactive({
+    #   req(input$x_axis_positions, input$plot_type)  # Ensure there are positions to process
+    #   positions <- if (!is.null(input$x_axis_positions)) {
+    #     unlist(strsplit(input$x_axis_positions, ","))
+    #   } else {
+    #     NULL
+    #   }
+    #   
+    #   if (input$plot_type == "dot_group" && !is.null(positions)) {
+    #     # Remove anything before the underscore and keep the part after the underscore
+    #     unique(sapply(positions, function(pos) {
+    #       strsplit(pos, "_")[[1]][2]
+    #     }))
+    #   } else {
+    #     positions
+    #   }
+    # })
     # Reactive value to store processed x-axis positions
     processed_positions <- reactive({
       req(input$x_axis_positions, input$plot_type)  # Ensure there are positions to process
-      positions <- if (!is.null(input$x_axis_positions)) {
-        unlist(strsplit(input$x_axis_positions, ","))
-      } else {
-        NULL
+      
+      # Check if input$x_axis_positions contains a comma
+      if (!grepl(",", input$x_axis_positions)) {
+        return(NULL)  # Return NULL if no comma is present to prevent further processing
       }
+      
+      # Split input by comma if a comma is present
+      positions <- unlist(strsplit(input$x_axis_positions, ","))
       
       if (input$plot_type == "dot_group" && !is.null(positions)) {
         # Remove anything before the underscore and keep the part after the underscore
@@ -571,6 +592,30 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     output$plot <- renderPlot({
         req(input$select_dcq_or_ddcq, input$y_label, input$x_label)
       
+      # Require that there is at least one comma in the x_axis_positions input
+      req(grepl(",", input$x_axis_positions), cancelOutput = TRUE)
+      
+      #graph options if dcq is selected. Choose correct dataset
+      if(input$select_dcq_or_ddcq == "dcq"){
+        filtered_data <- dcq_or_ddcq() %>%
+          filter(cell %in% input$selected_condition) %>% 
+          na.omit()  # Removes rows with any NA values in all columns
+      }else if(input$select_dcq_or_ddcq == "ddcq"){
+        filtered_data <- dcq_or_ddcq()
+      }
+      # Split input x-axis positions
+      user_positions <- unlist(strsplit(input$x_axis_positions, ","))
+      valid_positions <- unique(filtered_data$cell)  
+      
+      invalid_positions <- setdiff(user_positions, valid_positions)
+      
+      # Use validate() to display a message if there are invalid positions
+      validate(
+        need(length(invalid_positions) == 0, 
+             paste("The following x-axis groups are not found in the data:", paste(invalid_positions, collapse = ", ")))
+      )
+      
+      
         # Check if the graph has been generated and the data selection has changed
         if (graph_generated() && selected_stats() != selected_graphs()) {
           showNotification("Data selection has changed: Please re-generate the graph after selecting the correct data type.", type = "error")
@@ -593,9 +638,11 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         #graph options if dcq is selected. Choose correct dataset
         if(input$select_dcq_or_ddcq == "dcq"){
           filtered_data <- dcq_or_ddcq() %>%
-            filter(cell %in% input$selected_condition)
+            filter(cell %in% input$selected_condition) %>% 
+            na.omit()  # Removes rows with any NA values in all columns
           filtered_rep_avg_data <- rep_avg_data() %>%
-            filter(cell %in% input$selected_condition)
+            filter(cell %in% input$selected_condition) %>% 
+            na.omit()  # Removes rows with any NA values in all columns
           
           
           #If filtered_rep_avg_data has column fc_avg, rename to input$selected_condition
@@ -743,7 +790,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         error_fun <- if(input$error_type == "sd") {
           mean_sd
         } else if(input$error_type == "se") {
-          mean_se 
+          se 
         } else if(input$error_type == "ci") {
           ci
         } else{
