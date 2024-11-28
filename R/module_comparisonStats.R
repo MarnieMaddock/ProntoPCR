@@ -406,6 +406,28 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       
       num_groups <- as.numeric(length(unique(data$cell)))
       
+      # Check if "None" is selected
+
+    if (input$group_comparison != "none") {
+      # Check for insufficient groups and display appropriate error messages
+      validate(
+        need(num_groups >= 2, "Error: At least two groups are required for statistical tests.")
+      )
+      
+      # Check for sufficient observations in the `y` variable
+      sufficient_observations <- data %>%
+        group_by(columnInput()) %>%  
+        summarise(n_obs = sum(!is.na(columnInput())), .groups = "drop") %>%  #
+        filter(n_obs < 2)  # Find groups with fewer than 2 observations
+      
+      validate(
+        need(nrow(sufficient_observations) == 0,
+             paste(
+               "Error: Insufficient observations for the selected gene to perform Comparison's Tests.")
+             ))
+    } else {
+      return(NULL)  # Do nothing and display no output if "None" is selected
+    }
       # Function to perform the test and CLD
       performTestAndCLD <- function(test_type, p_colname, remove_NA = FALSE) {
         test_result <- performComparisonTests(test_type = test_type, data = data, column_input = columnInput())

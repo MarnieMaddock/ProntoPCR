@@ -46,9 +46,10 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
       })
     #save number of samples
     num_groups <- reactive({
-      req(stats_data())
-      length(unique(stats_data()$cell))
+      req(stats_data())  # Ensure data and user input are available
+      length(unique(stats_data()$cell))  # Calculate unique groups in the selected column
     })
+
     
     #shapiro test for residuals after ANOVA
     residuals_sw <- reactive({
@@ -110,11 +111,12 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
     output$residualsFitPlot <- renderPlot({
       req(res_fit_plot())
       res_fit_plot()
-    }, width = 600, height = 400)
+    }, width = 500, height = 300)
     
     # Reactive expression for performing the Shapiro-Wilk test on raw data
     test_results_shapiro <- reactive({
         req(input$normality_test == "shapiro") # Proceed only if Shapiro-Wilk is selected
+
       
       # Check if the column exists in the dataset
       if (!columnInput() %in% colnames(stats_data())) {
@@ -238,6 +240,7 @@ normalityServer <- function(id, sampleInput, columnInput, stats_data, theme_Marn
     # generate the QQ plot reactive expression
     qqPlot_reactive <- reactive({
       req("qqplot" %in% input$normality_test)  # Proceed only if QQ plot is selected
+      
       if (group_comparison() == "parametric" && num_groups() > 2) {
         qqPlot_residuals()  # Use the residuals QQ plot
       } else {

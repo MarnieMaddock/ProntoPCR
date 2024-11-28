@@ -32,6 +32,27 @@ leveneServer <- function(id, columnInput, stats_data, selected_stat) {
     # calculate and display homogenity of variance levenes results
     levene_reactive <- reactive({
         req(input$variance == TRUE, columnInput())
+        
+        unique_groups <- unique(stats_data()$cell)  
+        validate(
+          need(length(unique_groups) >= 2, "Error: At least two groups are required to perform Levene's test.")
+        )
+        
+        # Check if each group has at least 2 observations
+        group_counts <- stats_data() %>%
+          group_by(cell) %>% 
+          summarise(n = sum(!is.na(.data[[columnInput()]])), .groups = "drop")
+        
+        insufficient_groups <- group_counts %>% filter(n < 2)
+        
+        validate(
+          need(nrow(insufficient_groups) == 0,
+               paste(
+                 "Error: Insufficient Observations to perform Levene's Test. The following groups have fewer than 2 observations:",
+                 paste(insufficient_groups$cell, collapse = ", ")
+               ))
+        )
+        
         levene_test_data <- stats_data()
         test_result <- car::leveneTest(levene_test_data[[columnInput()]] ~ levene_test_data$cell)
         # Extracting values from the test_result
