@@ -34,12 +34,13 @@ Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to 
 
 # Statement of Need
 
-Methods of quantifying relative gene expression through qPCR have remained largely unchanged since its implementation in 2001 [@livak2001analysis]. These calculations rely on raw quantification cycle (Cq) results from a qPCR reaction, which can then be normalised in various manners (Table X). These methods however, are usually performed manually in programs such as Excel. Although this quantification is relatively simple, there are caveats to manual analysis such as being time consuming and prone to human or data entry errors. There is a growing need to automate these tasks, especially for handling large volumes of data. Presenting data in graphical formats is also a laborious task for many samples and targets. Therefore, we developed an application called \texttt{ProntoPCR} to address these issues by seamlessly semi-automating the calculations and analysis of qPCR data. A user can go from raw data to results, including statistics and graphs in just a few clicks. The online application is available here: [ProntoPCR](https://marniem.shinyapps.io/ProntoPCR/). Installation instructions to run the application locally are available on the GitHub page as the ProntoPCR Handbook: [ProntoPCR GitHub](https://github.com/MarnieMaddock/ProntoPCR).
+Methods of quantifying relative gene expression through qPCR have remained largely unchanged since its implementation in 2001 [@livak2001analysis]. These calculations rely on raw quantification cycle (Cq) results from a qPCR reaction, which can then be normalised in various manners (Table 1). These methods however, are usually performed manually in programs such as Excel. Although this quantification is relatively simple, there are caveats to manual analysis such as being time consuming and prone to human or data entry errors. There is a growing need to automate these tasks, especially for handling large volumes of data. Presenting data in graphical formats is also a laborious task for many samples and targets. Therefore, we developed an application called \texttt{ProntoPCR} to address these issues by seamlessly semi-automating the calculations and analysis of qPCR data. A user can go from raw data to results, including statistics and graphs in just a few clicks. The online application is available here: [ProntoPCR](https://marniem.shinyapps.io/ProntoPCR/). Installation instructions to run the application locally are available on the GitHub page as the ProntoPCR Handbook: [ProntoPCR GitHub](https://github.com/MarnieMaddock/ProntoPCR).
 
-|  **Term**           | **ProntoPCR Alias** | **Formula/Explanation** |
+: Table 1: Description of terms and formulas used in qPCR calculations within ProntoPCR.
+
+|  **Term**            | **ProntoPCR Alias**  | **Formula/Explanation** |
 | :------------------- | :------------------- | :----------- |
-| Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub>*1*</sub>, Housekeeper Gene<sub>*n*</sub>) $Mean(\text{Housekeeper Gene}_1, \text{Housekeeper Gene}_n)$
- |
+| Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub> *1*</sub>, Housekeeper Gene<sub> *n*</sub>)  |
 | ΔCq (Delta Cq)      | dcq_gene            | = Cq (Gene of Interest) - Cq (Housekeeper Average) |
 | 2^-(ΔCq) (Relative Fold Change) |  fc_dcq_gene | = 2^-(ΔCq) |
 | ΔCq Control Average    | dcq_ctrl_avg | The average ΔCq value for the control group for the selected gene. Used for ΔΔCq calculations   |
