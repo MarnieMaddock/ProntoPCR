@@ -38,12 +38,13 @@ Methods of quantifying relative gene expression through qPCR have remained large
 
 |  **Term**           | **ProntoPCR Alias** | **Formula/Explanation** |
 | :------------------- | :------------------- | :----------- |
-| Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub>*1*</sub>, Housekeeper Gene<sub>*n*</sub>) |
+| Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub>*1*</sub>, Housekeeper Gene<sub>*n*</sub>) $Mean(\text{Housekeeper Gene}_1, \text{Housekeeper Gene}_n)$
+ |
 | ΔCq (Delta Cq)      | dcq_gene            | = Cq (Gene of Interest) - Cq (Housekeeper Average) |
-| 2<sup>-(ΔCq)</sup> (Relative Fold Change) |  fc_dcq_gene | = 2<sup>-(ΔCq)</sup>  |
+| 2^-(ΔCq) (Relative Fold Change) |  fc_dcq_gene | = 2^-(ΔCq) |
 | ΔCq Control Average    | dcq_ctrl_avg | The average ΔCq value for the control group for the selected gene. Used for ΔΔCq calculations   |
 | ΔΔCq (Delta Delta Cq) | ddcq_gene | = ΔCq (Gene of Interest) - ΔCq (Control Average) |
-| 2<sup>-(ΔΔCq)</sup> (Fold Change) | fc_ddcq_gene | = 2<sup>-(ΔΔCq)</sup>  |
+| 2^-(ΔΔCq) (Fold Change) | fc_ddcq_gene | = 2^-(ΔΔCq) |
 
 # Overview
 
