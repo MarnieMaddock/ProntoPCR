@@ -1,4 +1,4 @@
-# ProntoPCR <img src="/images/dottori_lab_pentagon.svg" alt="Logo" align="right" width="200">
+# ProntoPCR <img src="/images/dottori_lab_pentagon.svg" alt="Logo" align="right" width="180">
 
 **ProntoPCR** is a user-friendly and efficient R Shiny application designed for real-time PCR (qPCR) or reverse transcriptase qPCR (RT-qPCR) data analysis. It automates calculations such as averaging housekeeper genes, ΔCq, ΔΔCq, 2^-ΔCq, 2^-ΔΔCq, making it easy to analyse gene expression data.
 
@@ -16,7 +16,7 @@ ProntoPCR has been designed to operate both online and locally. Whilst we aim to
 
 ### Local Installation
 
-For detailed installation instructions, especially for users unfamilar with the R coding language, refer to the ProntoPCR Handbook. 
+For detailed installation instructions, especially for users unfamilar with the R coding language, refer to the [ProntoPCR Handbook](). 
 
 To use **ProntoPCR**, you can install it directly from GitHub within the R console:
 
@@ -38,7 +38,7 @@ ProntoPCR()
 [ProntoPCR Online](https://marniem.shinyapps.io/ProntoPCR/)
 
 ## Instuctions for Use
-How to use instructions are available within the [ProntoPCR Handbook]()
+How to use instructions are available within the [ProntoPCR Handbook]().
 
 ## Citation
 If ProntoPCR is used for your analysis, please cite the journal article:
