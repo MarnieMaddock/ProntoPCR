@@ -168,8 +168,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             selectInput(ns("fill_color_toggle"), "Choose Fill or Border:",
                         choices = c("Fill" = "fill", "Border" = "color"),
                         selected = "fill"),
-            numericInput(ns("dot_size"), "Point Size:", value = 1.5, min = 1, max = 10, step = 0.5),
-            numericInput(ns("dot_spacing"), "Point Spacing:", value = 2.7, min = 0.1, max = 5, step = 0.1)
+            numericInput(ns("dot_size"), "Point Size:", value = 2, min = 1, max = 10, step = 0.5),
+            numericInput(ns("dot_spacing"), "Point Spacing:", value = 0.1, min = 0, max = 5, step = 0.1)
           )
         } else if (input$plot_type == "dot" || input$plot_type == "dot_group") {
           # UI for scatter plot options
@@ -975,7 +975,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             plot <- ggplot(filtered_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes))) +
               geom_bar(data = filtered_rep_avg_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg), fill = as.factor(!!x_aes)), stat = "identity", inherit.aes = FALSE, color = "black", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
               stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, color = "black", linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
-              geom_jitter(aes(color = as.factor(!!x_aes)), size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
+              geom_jitter(color = "black", size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
               #geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
               labs(y = input$y_label, x = input$x_label) +
               scale_fill_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
