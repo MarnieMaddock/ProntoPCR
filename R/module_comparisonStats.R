@@ -415,13 +415,14 @@ compTestServer <- function(id, sampleInput, columnInput, shapiro_data_reactive, 
       )
       
       # Check for sufficient observations in the `y` variable
-      sufficient_observations <- data %>%
-        group_by(columnInput()) %>%  
-        summarise(n_obs = sum(!is.na(columnInput())), .groups = "drop") %>%  #
-        filter(n_obs < 2)  # Find groups with fewer than 2 observations
+      # Extract sample sizes
+      sample_sizes_vec <- sample_sizes()
+      
+      # Find groups with fewer than 2 observations
+      insufficient_groups <- names(sample_sizes_vec)[sample_sizes_vec < 2]
       
       validate(
-        need(nrow(sufficient_observations) == 0,
+        need(length(insufficient_groups) == 0,
              paste(
                "Error: Insufficient observations for the selected gene to perform Comparison's Tests.")
              ))
