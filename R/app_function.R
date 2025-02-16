@@ -100,7 +100,7 @@ include_analytics_html <- function() {
 
 #' @export
 ProntoPCR <-  function(...) {
-  
+  check_for_updates()
  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
