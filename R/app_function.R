@@ -101,6 +101,17 @@ include_analytics_html <- function() {
 #' @export
 ProntoPCR <-  function(...) {
   check_for_updates()
+  
+  # Display formal citation message in console
+  message("\n==================================================================",
+          "\n📖 If you use ProntoPCR for data analysis or in a journal article,",
+          "\nplease cite the following reference:",
+          "\n",
+          "\n📌 Citation Here",
+          "\n",
+          "\n🙏 Thank you for supporting open-source research! 😊",
+          "\n==================================================================\n")
+  
  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme

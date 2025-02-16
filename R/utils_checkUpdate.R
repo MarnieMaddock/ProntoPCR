@@ -16,7 +16,7 @@ check_for_updates <- function(repo = "MarnieMaddock/ProntoPCR") {
   
   # Compare versions
   if (!is.na(remote_version) && remote_version != local_version) {
-    message("A new version of ProntoPCR (", remote_version, ") is available on GitHub.\n",
+    message("A new version of ProntoPCR is available on GitHub.\n",
             "Run devtools::install_github('", repo, "') to update.")
   } else {
     message("You have the latest version of ProntoPCR (", local_version, ").")
