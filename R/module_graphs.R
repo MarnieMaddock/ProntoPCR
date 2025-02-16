@@ -193,7 +193,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
                         selected = "default"),
             fluidRow(
               column(width = 6, numericInput(ns("stroke_thickness"), "Shape Outline Thickness", value = 1.5, min = 0.1, step = 0.2)),
-              column(width = 6, numericInput(ns("jitter_amount"), "Point Spread:", value = 0.2, min = 0, max = 1.5, step = 0.1))
+              column(width = 6, numericInput(ns("jitter_amount"), "Point Spread:", value = 0.1, min = 0, max = 1.5, step = 0.1))
             ),
             numericInput(ns("seed_input"), 
                          label = tags$span("Set Seed:", 
@@ -469,36 +469,36 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
     #calculate mean, sd, se, ci
     mean_sd <- function(x) {
       n <- sum(!is.na(x)) # Number of non-NA values
+      mean_x <- mean(x, na.rm = TRUE) # Compute mean
       if (n > 1) { # Can only calculate sd if n > 1
         sd_x <- sd(x, na.rm = TRUE)
-        mean_x <- mean(x, na.rm = TRUE)
         return(data.frame(y = mean_x, ymin = mean_x - sd_x, ymax = mean_x + sd_x))
       } else {
-        return(data.frame(y = NA, ymin = NA, ymax = NA)) # Return NA if not enough data
+        return(data.frame(y = mean_x, ymin = mean_x, ymax = mean_x)) # Return NA if not enough data
       }
     }
     
     se <- function(x) {
       n <- sum(!is.na(x))
+      mean_x <- mean(x, na.rm = TRUE) # Compute mean
       if (n > 1) {
         sd_x <- sd(x, na.rm = TRUE) / sqrt(n)
-        mean_x <- mean(x, na.rm = TRUE)
         return(data.frame(y = mean_x, ymin = mean_x - sd_x, ymax = mean_x + sd_x))
       } else {
-        return(data.frame(y = NA, ymin = NA, ymax = NA))
+        return(data.frame(y = mean_x, ymin = mean_x, ymax = mean_x))
       }
     }
     
     ci <- function(x, confidence_level = 0.95) {
       n <- sum(!is.na(x))
+      mean_x <- mean(x, na.rm = TRUE) # Compute mean
       if (n > 1) {
         sd_x <- sd(x, na.rm = TRUE)
-        mean_x <- mean(x, na.rm = TRUE)
         z <- qnorm((1 + confidence_level) / 2)  # Calculates the z-value for the specified confidence level
         error_margin <- z * sd_x / sqrt(n)
         return(data.frame(y = mean_x, ymin = mean_x - error_margin, ymax = mean_x + error_margin))
       } else {
-        return(data.frame(y = NA, ymin = NA, ymax = NA))  # Return NA if not enough data
+        return(data.frame(y = mean_x, ymin = mean_x, ymax = mean_x))  # Return NA if not enough data
       }
     }
     
@@ -961,20 +961,22 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           req(input$fill_color_toggle, input$errorbar_width, input$errorbar_thickness, input$dot_size, input$dot_spacing)
           req(!is.null(filtered_data$condition))  # Ensure the condition column is not null
           if (input$fill_color_toggle == "color"){
-            plot <- ggplot(filtered_data, aes(x = !!x_aes, y = !!y_aes)) +
-              geom_bar(data = filtered_rep_avg_data, aes(x = !!x_aes, y = !!y_aes_avg, color = !!x_aes), stat = "identity", inherit.aes = FALSE, fill = "white", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
-              stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, aes(color = !!x_aes), linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
-              geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
+            plot <- ggplot(filtered_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes))) +
+              geom_bar(data = filtered_rep_avg_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg), color = as.factor(!!x_aes)), stat = "identity", inherit.aes = FALSE, fill = "white", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+              stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, aes(color = as.factor(!!x_aes)), linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
+              geom_jitter(aes(color = as.factor(!!x_aes)), size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
+              #geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
               labs(y = input$y_label, x = input$x_label) +
               scale_color_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
               theme_Marnie +
               scale_x_discrete(limits = positions, labels = user_labels()) +
               x_axis_theme 
           }else if (input$fill_color_toggle == "fill"){
-            plot <- ggplot(filtered_data, aes(x = !!x_aes, y = !!y_aes)) +
-              geom_bar(data = filtered_rep_avg_data, aes(x = !!x_aes, y = !!y_aes_avg, fill = !!x_aes), stat = "identity", inherit.aes = FALSE, color = "black", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
+            plot <- ggplot(filtered_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes))) +
+              geom_bar(data = filtered_rep_avg_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg), fill = as.factor(!!x_aes)), stat = "identity", inherit.aes = FALSE, color = "black", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
               stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, color = "black", linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
-              geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
+              geom_jitter(aes(color = as.factor(!!x_aes)), size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
+              #geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(fill = !!x_aes),  show.legend = FALSE) +
               labs(y = input$y_label, x = input$x_label) +
               scale_fill_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select
               theme_Marnie +
@@ -985,11 +987,11 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           # Dot plot
           req(!is.null(filtered_data$condition))  # Ensure the condition column is not null
           req(input$point_size, input$stroke_thickness, input$jitter_amount, input$error_bar_width, input$error_bar_thickness, input$average_line_width, input$average_line_thickness)
-          plot <- ggplot(dotplot_data_reactive(), aes(x = !!x_aes, y = !!y_aes)) +
-            geom_point(size = input$point_size, na.rm = TRUE, aes(color = !!x_aes, shape = !!x_aes),
-                       show.legend = FALSE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
+          plot <- ggplot(dotplot_data_reactive(), aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes))) +
+            geom_jitter(size = input$point_size, na.rm = TRUE, aes(color = as.factor(!!x_aes), shape = as.factor(!!x_aes)),
+                       show.legend = FALSE, stroke = input$stroke_thickness, width = input$jitter_amount, height = 0) +
             stat_summary(fun.data = error_fun, geom = "errorbar", width = input$error_bar_width,  aes(colour = error_bar_color), linewidth = input$error_bar_thickness, na.rm = TRUE,  show.legend = FALSE) +
-            stat_summary(data = dotplot_data_reactive_avg(), aes(x = !!x_aes, y = !!y_aes_avg, color = avg_bar_color), inherit.aes = FALSE,
+            stat_summary(data = dotplot_data_reactive_avg(), aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg), color = avg_bar_color), inherit.aes = FALSE,
                          fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE, na.rm = TRUE) +  # Add average line for each column x
             labs(y = input$y_label, x = input$x_label) +
             scale_color_manual(values = c(setNames(colors, positions), "black" = "black"))+
@@ -1028,13 +1030,13 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
           # Dynamically assign colors to conditions
           condition_colors <- setNames(colors[1:length(unique_conditions)], unique_conditions)
           
-          plot <- ggplot(filtered_data, aes(x = !!x_aes, y = !!y_aes, color = !!sym("condition"))) +
+          plot <- ggplot(filtered_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes), color = !!sym("condition"))) +
             geom_point(size = input$point_size, na.rm = TRUE, aes(shape = !!sym("condition")),
                        show.legend = TRUE, stroke = input$stroke_thickness, position = position_jitter(width = input$jitter_amount)) +
             geom_errorbar(data = grouped_dotplot_data_reactive_avg(),
                           aes(x = group, ymin = ymin, ymax = ymax),
                           width = input$error_bar_width, linewidth = input$error_bar_thickness, na.rm = TRUE, show.legend = FALSE, inherit.aes = FALSE) +
-            stat_summary(data = grouped_dotplot_data_reactive_avg(), aes(x = !!x_aes, y = !!y_aes_avg_group, fill = "black"), inherit.aes = FALSE,
+            stat_summary(data = grouped_dotplot_data_reactive_avg(), aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg_group), fill = "black"), inherit.aes = FALSE,
                          fun = mean, geom = "crossbar", width = input$average_line_width, linewidth = input$average_line_thickness, show.legend = FALSE, na.rm = TRUE) +  # Add average line for each column x
             labs(y = input$y_label, x = input$x_label, shape = input$legend_title, color = input$legend_title) +
             scale_color_manual(values = condition_colors, labels = user_legend_labels()) +
@@ -1050,11 +1052,12 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
               )
         }
        
-        
+        #change y axis to start at 0, or give buffer room
         if (input$start_at_zero) {
           plot <- plot +
             scale_y_continuous(expand=expansion(mult=c(0,0.1)), limits = c(0,NA))
         }
+        
         
         # Customize x-axis and y-axis label font size using numeric input
         axis_label_theme <- theme()
