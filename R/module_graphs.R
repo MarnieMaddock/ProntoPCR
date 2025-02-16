@@ -964,7 +964,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             plot <- ggplot(filtered_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes))) +
               geom_bar(data = filtered_rep_avg_data, aes(x = as.factor(!!x_aes), y = as.numeric(!!y_aes_avg), color = as.factor(!!x_aes)), stat = "identity", inherit.aes = FALSE, fill = "white", linewidth = 1, width = 0.7, show.legend = FALSE, na.rm = TRUE) +
               stat_summary(fun.data = error_fun, geom = "errorbar", width = input$errorbar_width, aes(color = as.factor(!!x_aes)), linewidth = input$errorbar_thickness, na.rm = TRUE,  show.legend = FALSE) +
-              geom_jitter(aes(color = as.factor(!!x_aes)), size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
+              ggplot2::geom_jitter(aes(color = as.factor(!!x_aes)), size = input$dot_size, width = input$dot_spacing, height = 0, show.legend = FALSE, na.rm = TRUE) +
               #geom_beeswarm(size = input$dot_size, method = "hex", cex = input$dot_spacing, na.rm = TRUE, aes(color = !!x_aes),  show.legend = FALSE) +
               labs(y = input$y_label, x = input$x_label) +
               scale_color_manual(values = setNames(colors, positions)) +  # Set custom colors using values from input$color_scheme_select

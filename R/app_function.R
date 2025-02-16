@@ -24,6 +24,7 @@
 #' @importFrom ggplot2 aes
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 geom_point
+#' @importFrom ggplot2 geom_jitter
 #' @importFrom ggplot2 position_jitter
 #' @importFrom ggplot2 scale_y_continuous
 #' @importFrom ggplot2 scale_x_discrete
