@@ -71,12 +71,16 @@ get_UOW_path <- function() {
   }
 }
 
+# get_font_path <- function(file) {
+#   if (file.exists(paste0("inst/www/", file))) {
+#     return(paste0("inst/www/", file))
+#   } else {
+#     return(paste0("www/", file))
+#   }
+# }
+
 get_font_path <- function(file) {
-  if (file.exists(paste0("inst/www/", file))) {
-    return(paste0("inst/www/", file))
-  } else {
-    return(paste0("www/", file))
-  }
+  system.file("www", file, package = "ProntoPCR")
 }
 
 include_analytics_html <- function() {
