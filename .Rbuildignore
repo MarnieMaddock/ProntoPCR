@@ -2,3 +2,5 @@
 ^\.Rproj\.user$
 _\.new\.png$
 ^tests/testthat/_snaps/
+^docs$
+^handbook$

@@ -1,0 +1,50 @@
+project:
+  type: website
+  output-dir: ../docs          # write HTML into docs/
+
+website:
+  title: "ProntoPCR Handbook"
+  site-url: "https://marnie-maddock.github.io/ProntoPCR/"
+
+  navbar:
+    left:
+      - text: "Overview"
+        file: overview.qmd
+
+      - text: "Getting Started"
+        menu:
+          - text: "Local Access"
+            file: local_access.qmd
+          - text: "Online Access"
+            file: online_access.qmd
+
+      - text: "How to Use"
+        menu:
+          - text: "Data Input"
+            file: data_input.qmd
+          - text: "Calculations"
+            file: calculations.qmd
+          - text: "Statistics"
+            file: statistics.qmd
+          - text: "Graphs"
+            file: graphs.qmd
+
+      - text: "Errors"
+        menu:
+          - text: "Input Data Errors"
+            file: input_errors.qmd
+          - text: "Stat & Graph Errors"
+            file: stat_graph_errors.qmd
+
+      - text: "Version History"
+        file: version_history.qmd
+      - text: "Feature Requests"
+        file: features_issues.qmd
+      - text: "References"
+        file: references.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
