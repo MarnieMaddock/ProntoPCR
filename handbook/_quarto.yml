@@ -1,10 +1,12 @@
 project:
   type: website
   output-dir: ../docs          # write HTML into docs/
+resources:
+  - google77395b81a4e5778b.html
 
 website:
   title: "ProntoPCR Handbook"
-  site-url: "https://marnie-maddock.github.io/ProntoPCR/"
+  site-url: "https://marniemaddock.github.io/ProntoPCR/"
 
   navbar:
     left:

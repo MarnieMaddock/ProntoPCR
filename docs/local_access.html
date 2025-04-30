@@ -98,7 +98,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-getting-started">    
         <li>
     <a class="dropdown-item" href="./local_access.html">
- <span class="dropdown-text">Local Access</span></a>
+ <span class="dropdown-text">Local Access (Recommended)</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./online_access.html">
@@ -289,7 +289,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp("https:\/\/marnie-maddock\.github\.io\/ProntoPCR\/");
+      var filterRegex = new RegExp("https:\/\/marniemaddock\.github\.io\/ProntoPCR\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
