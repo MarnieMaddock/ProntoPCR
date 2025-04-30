@@ -13,7 +13,7 @@ website:
 
       - text: "Getting Started"
         menu:
-          - text: "Local Access"
+          - text: "Local Access (Recommended)"
             file: local_access.qmd
           - text: "Online Access"
             file: online_access.qmd

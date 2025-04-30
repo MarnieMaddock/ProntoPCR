@@ -9,12 +9,26 @@ navbar: false         # HIDE the top nav bar only on this page
 page-layout: full     # optional: no side gutters
 ---
 
-::: {.text-center .mt-5}
+::: {.text-center .mt-1}
 
 # **ProntoPCR**
 
-### Interactive qPCR analysis & visualisation app
+![](images/dottori_lab_pentagon.svg){width=180px .center}
+
+## Interactive qPCR analysis & visualisation app
 
 [Get Started »](overview.qmd){.btn .btn-primary .btn-lg}
 
+##### **Developed by Marnie Maddock**
+##### Prof Mirella Dottori and Prof Alberto Nettel-Aguirre
+
+:::
+
+::: {.my-5} :::
+
+::: {.text-center .mt-1 .fs-6}
+License Authors retain copyright and release the ProntoPCR Handbook work under a Creative Commons Attribution 4.0 International License (CC BY 4.0). The accompanying software code is licensed under the [MIT License](https://github.com/MarnieMaddock/ProntoPCR/blob/main/LICENSE). Please refer to the [LICENSE](https://github.com/MarnieMaddock/ProntoPCR/blob/main/LICENSE) file included with the code for the full terms.
+
+
+![](images/footer.svg){width=700px .center}
 :::
