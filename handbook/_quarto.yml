@@ -50,3 +50,4 @@ format:
     theme: cosmo
     toc: true
     toc-depth: 3
+    css: styles.css

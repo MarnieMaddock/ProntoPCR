@@ -1,5 +1,49 @@
 ---
-title: "Local Access"
+title: "Local Access (Recommended)"
 ---
 
-About this site
+## For New R Users:
+
+1.  Download R and RStudio (Free).
+
+    <https://rstudio-education.github.io/hopr/starting.html>
+
+2.  Open RStudio
+
+3.  Within the Console, type these pieces of code. After each line of code, highlight the line, or ensure the cursor is on the line of code. Press control/command enter to run it:
+
+::: {.gray-box}
+```         
+install.packages("devtools")
+```
+:::
+
+Once the installation has completed, a \> will appear in the console.
+
+::: {.callout-note title=""}
+It may ask you to download Rtools, but this is not necessary to use ProntoPCR. Disregard this message.
+:::
+
+4.  Next, type this line of code in the Console and press control/command enter to run it:
+
+::: {.gray-box}
+```         
+library(devtools)
+```
+:::
+
+
+![](images/clipboard-690767370.png)
+
+
+5.  Similarly run:
+
+::: {.gray-box}
+```         
+devtools::install_github("MarnieMaddock/ProntoPCR")
+```
+:::
+
+This will load the ProntoPCR app from GitHub. It may ask you to update some packages. Press 1 and enter to update these. If this message does not appear, the required packages are up to date.
+
+![](images/clipboard-2242457864.png)

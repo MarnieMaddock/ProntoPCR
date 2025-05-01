@@ -13,6 +13,8 @@ We request that users of ProntoPCR cite the associated journal article if the ap
 ProntoPCR has been designed to operate both online and locally. While we aim to maintain online availability, the hosted platform may change or become unavailable. Note the online application times out after 5 minutes of inactivity. Therefore, it is recommended to rely on the local version, which functions with the same features as the online option. The local version also does not require internet access once installed.
 
 
-To run the application locally, the user needs to download R: https://cran.r-project.org/ and RStudio: https://posit.co/downloads/. A step-by-step guide on how to install the ProntoPCR application locally can be found in the [Getting Started – Local Access](local_access.qmd) section. Online access instructions are available in the [Getting Started – Online Access](online_access.qmd) section. The guide is aimed at users with minimal programming expertise. If any instructions are unclear, please contact the developers.
+To run the application locally, the user needs to download [R](https://cran.r-project.org/) and [RStudio](https://posit.co/downloads/). A step-by-step guide on how to install the ProntoPCR application locally can be found in the [Getting Started – Local Access](local_access.qmd) tab. This guide is aimed at users with minimal programming expertise.
+
+Online access instructions are available in the [Getting Started – Online Access](online_access.qmd) section.
 
 

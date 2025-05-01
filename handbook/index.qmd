@@ -15,7 +15,9 @@ page-layout: full     # optional: no side gutters
 
 ![](images/dottori_lab_pentagon.svg){width=180px .center}
 
-## Interactive qPCR analysis & visualisation app
+## Efficient qPCR Data Analysis Software
+
+#### Interactive qPCR Analysis & Visualisation App
 
 [Get Started »](overview.qmd){.btn .btn-primary .btn-lg}
 
@@ -24,7 +26,8 @@ page-layout: full     # optional: no side gutters
 
 :::
 
-::: {.my-5} :::
+::: {.my-5} 
+:::
 
 ::: {.text-center .mt-1 .fs-6}
 License Authors retain copyright and release the ProntoPCR Handbook work under a Creative Commons Attribution 4.0 International License (CC BY 4.0). The accompanying software code is licensed under the [MIT License](https://github.com/MarnieMaddock/ProntoPCR/blob/main/LICENSE). Please refer to the [LICENSE](https://github.com/MarnieMaddock/ProntoPCR/blob/main/LICENSE) file included with the code for the full terms.
