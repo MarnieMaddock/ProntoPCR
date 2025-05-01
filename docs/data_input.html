@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Data Input – ProntoPCR Handbook</title>
+<title>Input Data – ProntoPCR Handbook</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -69,6 +69,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -114,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-how-to-use">    
         <li>
     <a class="dropdown-item" href="./data_input.html">
- <span class="dropdown-text">Data Input</span></a>
+ <span class="dropdown-text">Input Data</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./calculations.html">
@@ -168,15 +169,21 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data-input" id="toc-data-input" class="nav-link active" data-scroll-target="#data-input">Data Input</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Data Input</h1>
+<h1 class="title">Input Data</h1>
 </div>
 
 
@@ -193,9 +200,169 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>About this site</p>
+<p>An example data file can be directly downloaded from the ProntoPCR app under the Input Data Tab. All the example outputs in the images in the following tabs came from the exampledata.csv file.</p>
+<p><img src="images/picture6.png" class="img-fluid" width="350"></p>
+<section id="data-input" class="level2">
+<h2 class="anchored" data-anchor-id="data-input">Data Input</h2>
+<ol type="1">
+<li>Collate all PCR Cq values into one .csv file. It must be in the following format:</li>
+</ol>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 9%">
+<col style="width: 23%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 28%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Sample</th>
+<th>Target</th>
+<th>Num.of.Replicates</th>
+<th>Cq.Mean</th>
+<th>Cq.SD</th>
+<th>Result.Quality.Issues</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>sample1_1_F</td>
+<td>IL6</td>
+<td>3</td>
+<td>25.30085</td>
+<td>0.072676</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>sample1_1_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>24.23049</td>
+<td>0.048782</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>sample1_2_F</td>
+<td>IL6</td>
+<td>3</td>
+<td>26.19892</td>
+<td>0.095016</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>sample1_2_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>24.71755</td>
+<td>0.245184</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>sample1_3_F</td>
+<td>IL6</td>
+<td>3</td>
+<td>26.67306</td>
+<td>0.148824</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>sample1_3_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>24.62151</td>
+<td>0.110833</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>sample1_4_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>27.77184</td>
+<td>0.216552</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>sample2_1_F</td>
+<td>IL6</td>
+<td>3</td>
+<td>26.76899</td>
+<td>0.204109</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>sample2_1_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>24.84037</td>
+<td>0.245151</td>
+<td>NA</td>
+</tr>
+<tr class="even">
+<td>sample2_2_F</td>
+<td>IL6</td>
+<td>3</td>
+<td>26.54405</td>
+<td>0.041040</td>
+<td>NA</td>
+</tr>
+<tr class="odd">
+<td>sample2_2_M</td>
+<td>IL6</td>
+<td>3</td>
+<td>25.25585</td>
+<td>0.161338</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+<p>Columns Included in the .csv file:</p>
+<ul>
+<li><strong>Sample</strong>: The sample name. This can be any name, but it must be unique for each sample. The sample name must not contain any spaces or special characters (e.g., #, $, %, &amp;, etc.). The sample name must be in the format Grouping1_BioRepNumber_Grouping2. For example depression_1_Female, depression_1_Male, ctrl_1_Female etc.</li>
+<li><strong>Target</strong>: The target gene name.</li>
+<li><strong>Num.of.Replicates</strong>: The number of technical PCR replicates for each sample. This column is not used in the analysis but is included for reference.</li>
+<li><strong>Cq.Mean</strong>: The mean Cq value for each sample. This is the average of the Cq values for the technical replicates.</li>
+<li><strong>Cq.SD</strong>: The standard deviation of the Cq values for each sample. This is the standard deviation of the Cq values for the technical replicates. This column is not used in the analysis but is included for reference.</li>
+<li><strong>Result.Quality.Issues</strong>: This column is not used in the analysis but is included for reference.</li>
+</ul>
+<p>Checklist:</p>
+<ul>
+<li>CSV file containing PCR data with the formatting given above?</li>
+<li>Column names have capital letters when specified?</li>
+<li>Column names have full-stops . when specified?</li>
+<li>There are no spaces present in the column names?</li>
+<li>There are no gaps between rows in your dataset. Each row should have at least one measurement.</li>
+<li>If you have ‘undetermined’ amplification i.e.&nbsp;no amplification, 0 has been entered in your dataset for those instances. Any NA values will be disregarded.</li>
+<li>All Sample names have no spaces and use underscores (_) in the naming system. Note the format is given by group1_biologicalReplicateNumber_group2. <strong>If there is no second group</strong>, write NIL. E.g. sample2_1_NIL.</li>
+<li>All non-template controls (NTC) and no reverse transcriptase controls (-RT) have been removed.</li>
+</ul>
+<div class="Callout-note" title="">
+<p>This file format is compatible with the output given by the QuantStudio5 PCR machine (ThermoFisher Scientific). To do this, set up the plate format similar to below in the Quantstudio Design and Analysis Software:</p>
+<details>
+<summary>
+Click to Expand
+</summary>
+<p><img src="images/picture7.png" class="img-fluid" width="450"></p>
+<p>To export the results go to the Quality Check tab &gt; Replicate Group &gt; Export:</p>
+<img src="images/picture8.png" class="img-fluid" width="700">
+</details>
+</div>
+<ol start="2" type="1">
+<li>Open ProntoPCR and select the Input Data Tab.</li>
+<li>Insert .csv file of PCR data by clicking on Browse…</li>
+<li>Enter how many housekeeping genes to normalise the data to.</li>
+<li>Enter the name of the housekeeping gene – exactly as it appears in the .csv file.</li>
+</ol>
+<p><img src="images/picture9.png" class="img-fluid" width="700"></p>
+<ol start="6" type="1">
+<li>Save the names of the housekeeper genes by selecting the ‘Save housekeeper names’ button. An error message will appear if the housekeeper’s name is incorrect or not found. If the names of the housekeepers are correct, they will be displayed below the button:</li>
+</ol>
+<p><img src="images/picture10.png" class="img-fluid" width="300"></p>
+<p><a href="./calculations.html" class="btn btn-md" style="background:#00359bff;border-color:#00359bff;color:#fff;">Calculations »</a></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

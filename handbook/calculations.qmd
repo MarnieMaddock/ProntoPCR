@@ -2,4 +2,57 @@
 title: "Calculations"
 ---
 
-About this site
+To perform the calculations, select the Calculations Tab. 
+
+Description of terms and formulas used in qPCR calculations within ProntoPCR.
+
+|  **Term**            | **ProntoPCR Alias**  | **Formula/Explanation** |
+| :------------------- | :------------- | :---------------------- |
+| Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub> *1*</sub>, Housekeeper Gene<sub> *n*</sub>)  |
+| ΔCq (Delta Cq)      | dcq_gene            | = Cq (Gene of Interest) - Cq (Housekeeper Average) |
+| 2^-(ΔCq) (Relative Fold Change) |  fc_dcq_gene | = 2^-(ΔCq) |
+| ΔCq Control Average    | dcq_ctrl_avg | The average ΔCq value for the control group for the selected gene. Used for ΔΔCq calculations   |
+| ΔΔCq (Delta Delta Cq) | ddcq_gene | = ΔCq (Gene of Interest) - ΔCq (Control Average) |
+| 2^-(ΔΔCq) (Fold Change) | fc_ddcq_gene | = 2^-(ΔΔCq) |
+
+
+The 2^-ΔCq calculations will auto populate with the data from the Input Data Tab. The 2^ΔΔCq requires the user to specify a few more inputs before the calculations can be performed. For both calculations, the average of the housekeeper genes will automatically be calculated using arithmetic mean. This is within the 2^-(ΔCq) tab. This will be displayed as the mean_hk column on the right. E.g. the mean_hk for sample1_1_F is calculated as follows:
+
+$$
+\begin{aligned}
+\text{mean}_{\text{hk}} &= \frac{29.0352 + 20.6732 + 23.1307}{3} \\
+                        &= 24.2797
+\end{aligned}
+$$
+
+<details><summary>Click to Expand</summary>
+![](images/picture11.png){width=700px}
+</details>
+
+To use geometric mean, select this option on the side panel:
+
+![](images/picture12.png){width=300px}
+
+
+The geometric mean is calculated as follows for sample1_1_F:
+
+$$
+\begin{aligned}
+\text{Product} &= 29.0352 \times 20.6732 \times 23.1307 = 13{,}884.29033 \\
+N_{\text{housekeepers}} &= 3 \\
+\text{Geometric mean} &= \sqrt[3]{\text{Product}}
+                       = \sqrt[3]{13{,}884.29033} \\
+                      &\approx 24.03483
+\end{aligned}
+$$
+<details><summary>Click to Expand</summary>
+![](images/picture13.png){width=700px}
+</details>
+
+## 2^-(ΔCq)
+
+The ΔCq is calculated as follows:
+
+::: {.gray-box}
+ ΔCq = Cq (gene of interest) – Cq (average of the housekeeping genes)
+:::

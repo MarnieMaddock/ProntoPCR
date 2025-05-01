@@ -68,7 +68,37 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -114,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-how-to-use">    
         <li>
     <a class="dropdown-item" href="./data_input.html">
- <span class="dropdown-text">Data Input</span></a>
+ <span class="dropdown-text">Input Data</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./calculations.html">
@@ -168,8 +198,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#δcq" id="toc-δcq" class="nav-link active" data-scroll-target="#δcq">2^-(ΔCq)</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -193,9 +229,90 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>About this site</p>
+<p>To perform the calculations, select the Calculations Tab.</p>
+<p>Description of terms and formulas used in qPCR calculations within ProntoPCR.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 24%">
+<col style="width: 40%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"><strong>Term</strong></th>
+<th style="text-align: left;"><strong>ProntoPCR Alias</strong></th>
+<th style="text-align: left;"><strong>Formula/Explanation</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Housekeeper Average</td>
+<td style="text-align: left;">mean_hk</td>
+<td style="text-align: left;">= Mean(Housekeeper Gene<sub> <em>1</em></sub>, Housekeeper Gene<sub> <em>n</em></sub>)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ΔCq (Delta Cq)</td>
+<td style="text-align: left;">dcq_gene</td>
+<td style="text-align: left;">= Cq (Gene of Interest) - Cq (Housekeeper Average)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2^-(ΔCq) (Relative Fold Change)</td>
+<td style="text-align: left;">fc_dcq_gene</td>
+<td style="text-align: left;">= 2^-(ΔCq)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">ΔCq Control Average</td>
+<td style="text-align: left;">dcq_ctrl_avg</td>
+<td style="text-align: left;">The average ΔCq value for the control group for the selected gene. Used for ΔΔCq calculations</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ΔΔCq (Delta Delta Cq)</td>
+<td style="text-align: left;">ddcq_gene</td>
+<td style="text-align: left;">= ΔCq (Gene of Interest) - ΔCq (Control Average)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2^-(ΔΔCq) (Fold Change)</td>
+<td style="text-align: left;">fc_ddcq_gene</td>
+<td style="text-align: left;">= 2^-(ΔΔCq)</td>
+</tr>
+</tbody>
+</table>
+<p>The 2^-ΔCq calculations will auto populate with the data from the Input Data Tab. The 2^ΔΔCq requires the user to specify a few more inputs before the calculations can be performed. For both calculations, the average of the housekeeper genes will automatically be calculated using arithmetic mean. This is within the 2^-(ΔCq) tab. This will be displayed as the mean_hk column on the right. E.g. the mean_hk for sample1_1_F is calculated as follows:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{mean}_{\text{hk}} &amp;= \frac{29.0352 + 20.6732 + 23.1307}{3} \\
+                        &amp;= 24.2797
+\end{aligned}
+\]</span></p>
+<details>
+<summary>
+Click to Expand
+</summary>
+<img src="images/picture11.png" class="img-fluid" width="700">
+</details>
+<p>To use geometric mean, select this option on the side panel:</p>
+<p><img src="images/picture12.png" class="img-fluid" width="300"></p>
+<p>The geometric mean is calculated as follows for sample1_1_F:</p>
+<span class="math display">\[
+\begin{aligned}
+\text{Product} &amp;= 29.0352 \times 20.6732 \times 23.1307 = 13{,}884.29033 \\
+N_{\text{housekeepers}} &amp;= 3 \\
+\text{Geometric mean} &amp;= \sqrt[3]{\text{Product}}
+                       = \sqrt[3]{13{,}884.29033} \\
+                      &amp;\approx 24.03483
+\end{aligned}
+\]</span>
+<details>
+<summary>
+Click to Expand
+</summary>
+<img src="images/picture13.png" class="img-fluid" width="700">
+</details>
+<section id="δcq" class="level2">
+<h2 class="anchored" data-anchor-id="δcq">2^-(ΔCq)</h2>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

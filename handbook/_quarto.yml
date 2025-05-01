@@ -22,7 +22,7 @@ website:
 
       - text: "How to Use"
         menu:
-          - text: "Data Input"
+          - text: "Input Data"
             file: data_input.qmd
           - text: "Calculations"
             file: calculations.qmd

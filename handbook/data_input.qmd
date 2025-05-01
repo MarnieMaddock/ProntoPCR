@@ -1,5 +1,72 @@
 ---
-title: "Data Input"
+title: "Input Data"
 ---
 
-About this site
+An example data file can be directly downloaded from the ProntoPCR app under the Input Data Tab. All the example outputs in the images in the following tabs came from the exampledata.csv file.
+
+![](images/picture6.png){width="350"}
+
+## Data Input
+
+1.	Collate all PCR Cq values into one .csv file. It must be in the following format:
+
+| Sample      | Target | Num.of.Replicates | Cq.Mean | Cq.SD   | Result.Quality.Issues |
+|-------------|--------|-------------------|---------|---------|-----------------------|
+| sample1_1_F | IL6    | 3                 | 25.30085| 0.072676| NA                    |
+| sample1_1_M | IL6    | 3                 | 24.23049| 0.048782| NA                    |
+| sample1_2_F | IL6    | 3                 | 26.19892| 0.095016| NA                    |
+| sample1_2_M | IL6    | 3                 | 24.71755| 0.245184| NA                    |
+| sample1_3_F | IL6    | 3                 | 26.67306| 0.148824| NA                    |
+| sample1_3_M | IL6    | 3                 | 24.62151| 0.110833| NA                    |
+| sample1_4_M | IL6    | 3                 | 27.77184| 0.216552| NA                    |
+| sample2_1_F | IL6    | 3                 | 26.76899| 0.204109| NA                    |
+| sample2_1_M | IL6    | 3                 | 24.84037| 0.245151| NA                    |
+| sample2_2_F | IL6    | 3                 | 26.54405| 0.041040| NA                    |
+| sample2_2_M | IL6    | 3                 | 25.25585| 0.161338| NA                    |
+
+Columns Included in the .csv file:
+
+- **Sample**: The sample name. This can be any name, but it must be unique for each sample. The sample name must not contain any spaces or special characters (e.g., #, $, %, &, etc.). The sample name must be in the format Grouping1_BioRepNumber_Grouping2. For example depression_1_Female, depression_1_Male, ctrl_1_Female etc.
+- **Target**: The target gene name.
+- **Num.of.Replicates**: The number of technical PCR replicates for each sample. This column is not used in the analysis but is included for reference.
+- **Cq.Mean**: The mean Cq value for each sample. This is the average of the Cq values for the technical replicates.
+- **Cq.SD**: The standard deviation of the Cq values for each sample. This is the standard deviation of the Cq values for the technical replicates. This column is not used in the analysis but is included for reference.
+- **Result.Quality.Issues**: This column is not used in the analysis but is included for reference. 
+
+Checklist:
+
+-	CSV file containing PCR data with the formatting given above? 
+-	Column names have capital letters when specified?
+-	Column names have full-stops . when specified?
+-	There are no spaces present in the column names?
+-	There are no gaps between rows in your dataset. Each row should have at least one measurement.
+-	If you have 'undetermined' amplification i.e. no amplification, 0 has been entered in your dataset for those instances. Any NA values will be disregarded.
+-	All Sample names have no spaces and use underscores (_) in the naming system. Note the format is given by group1_biologicalReplicateNumber_group2. **If there is no second group**, write NIL. E.g. sample2_1_NIL.
+-	All non-template controls (NTC) and no reverse transcriptase controls (-RT) have been removed.
+
+::: {.Callout-note title=""}
+This file format is compatible with the output given by the QuantStudio5 PCR machine (ThermoFisher Scientific). To do this, set up the plate format similar to below in the Quantstudio Design and Analysis Software:
+
+<details><summary>Click to Expand</summary>
+![](images/picture7.png){width="450"}
+
+
+To export the results go to the Quality Check tab > Replicate Group > Export:
+
+![](images/picture8.png){width="700"}
+</details>
+:::
+
+2.	Open ProntoPCR and select the Input Data Tab.
+3.	Insert .csv file of PCR data by clicking on Browse… The data will be displayed on the right side.
+4.	Enter how many housekeeping genes to normalise the data to.
+5.	Enter the name of the housekeeping gene – exactly as it appears in the .csv file.
+
+![](images/picture9.png){width="700"}
+
+6.	Save the names of the housekeeper genes by selecting the ‘Save housekeeper names’ button. An error message will appear if the housekeeper's name is incorrect or not found. If the names of the housekeepers are correct, they will be displayed below the button:
+
+![](images/picture10.png){width="300"}
+
+
+[Calculations »](calculations.qmd){.btn .btn-md style="background:#00359bff;border-color:#00359bff;color:#fff;"}

@@ -19,7 +19,7 @@ page-layout: full     # optional: no side gutters
 
 #### Interactive qPCR Analysis & Visualisation App
 
-[Get Started »](overview.qmd){.btn .btn-primary .btn-lg}
+[Get Started »](overview.qmd){.btn .btn-lg style="background:#00359bff;border-color:#00359bff;color:#fff;"}
 
 ##### **Developed by Marnie Maddock**
 ##### Prof Mirella Dottori and Prof Alberto Nettel-Aguirre

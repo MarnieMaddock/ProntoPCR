@@ -2,4 +2,11 @@
 title: "Online Access"
 ---
 
-About this site
+Access to ProntoPCR is available here: <https://marniem.shinyapps.io/ProntoPCR/>
+
+::: {.callout-note title=""}
+ProntoPCR is available for free online. However, it is recommended to download the app locally for the best experience. The online version may be slower and less reliable than the local version. The online version times out after 5 minutes of inactivity.
+:::
+
+
+[How to Use ProntoPCR »](data_input.qmd){.btn .btn-md style="background:#00359bff;border-color:#00359bff;color:#fff;"}

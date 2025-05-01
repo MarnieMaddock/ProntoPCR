@@ -12,38 +12,99 @@ title: "Local Access (Recommended)"
 
 3.  Within the Console, type these pieces of code. After each line of code, highlight the line, or ensure the cursor is on the line of code. Press control/command enter to run it:
 
-::: {.gray-box}
+::: gray-box
 ```         
 install.packages("devtools")
 ```
 :::
 
-Once the installation has completed, a \> will appear in the console.
+Once the installation has completed, a \> will appear in the console. It will say something similar to 'the downloaded binary packages are in ...\`
 
 ::: {.callout-note title=""}
 It may ask you to download Rtools, but this is not necessary to use ProntoPCR. Disregard this message.
 :::
 
-4.  Next, type this line of code in the Console and press control/command enter to run it:
+<details><summary>Click to Expand</summary>
+![](images/picture1.png){width="800"}
+</details>
 
-::: {.gray-box}
+::: gray-box
 ```         
 library(devtools)
 ```
 :::
 
-
-![](images/clipboard-690767370.png)
-
-
-5.  Similarly run:
-
-::: {.gray-box}
+::: gray-box
 ```         
 devtools::install_github("MarnieMaddock/ProntoPCR")
 ```
 :::
 
-This will load the ProntoPCR app from GitHub. It may ask you to update some packages. Press 1 and enter to update these. If this message does not appear, the required packages are up to date.
+This will download the ProntoPCR app from GitHub. It may ask you to update some packages. Press 1 and enter to update these. If this message does not appear, the required packages are up to date.
 
-![](images/clipboard-2242457864.png)
+<details><summary>Click to Expand</summary>
+![](images/picture2.png){width="700"}
+
+![](images/picture3.png){width="700"}
+</details>
+
+::: {.callout-note title=""}
+Occasionally, a pop-up message may appear asking to install from the sources the package which needs compilation. If it does, please press **"Yes"** to continue. This dialog box doesn't always appear, and it's not an issue if it doesn't.
+:::
+
+Once the installation has completed, a \> will appear in the console. It will say something similar to '\* DONE (ProntoPCR)\*'
+
+<details><summary>Click to Expand</summary>
+![](images/picture4.png){width="700"}
+</details>
+
+ProntoCPR has been downloaded, but it has not been loaded into the R session. To do this, type this line of code in the Console and press control/command enter to run it:
+
+::: gray-box
+```
+library(ProntoPCR)
+```
+:::
+
+This itself will not open the application. To open the application, run:
+
+::: gray-box
+```
+ProntoPCR()
+```
+:::
+
+This should open the ProntoPCR app in a new window. If not, the http address given in your console following “Listening on” can be copied into a web browser to open ProntoPCR.
+
+<details><summary>Click to Expand</summary>
+![](images/picture5.png){width="700"}
+</details>
+
+## Once Installed:
+
+Once the devtools and ProntoPCR packages have been installed on the computer, they do not need to be redownloaded unless there are updates. To run ProntoPCR in a new session use:
+
+::: gray-box
+```
+library(ProntoPCR)
+ProntoPCR()
+```
+:::
+
+## For Existing R Users:
+
+1.	Open RStudio and Run:
+
+::: gray-box
+```
+install.packages("devtools")
+library(devtools)
+devtools::install_github("MarnieMaddock/ProntoPCR")
+library(ProntoPCR)
+ProntoPCR()
+```
+:::
+ 
+2.	ProntoPCR will open in a new window.
+
+[How to Use ProntoPCR »](data_input.qmd){.btn .btn-md style="background:#00359bff;border-color:#00359bff;color:#fff;"}
