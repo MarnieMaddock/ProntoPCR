@@ -15,8 +15,10 @@ Description of terms and formulas used in qPCR calculations within ProntoPCR.
 | ΔΔCq (Delta Delta Cq) | ddcq_gene | = ΔCq (Gene of Interest) - ΔCq (Control Average) |
 | 2^-(ΔΔCq) (Fold Change) | fc_ddcq_gene | = 2^-(ΔΔCq) |
 
+## Average of Housekeeper Genes
 
-The 2^-ΔCq calculations will auto populate with the data from the Input Data Tab. The 2^ΔΔCq requires the user to specify a few more inputs before the calculations can be performed. For both calculations, the average of the housekeeper genes will automatically be calculated using arithmetic mean. This is within the 2^-(ΔCq) tab. This will be displayed as the mean_hk column on the right. E.g. the mean_hk for sample1_1_F is calculated as follows:
+The average of housekeeper genes is calculated within the 2^-(ΔCq) tab. The user can select the housekeeper genes to be used in the calculation. The average of the selected housekeeper genes will be calculated and displayed in the mean_hk column.
+The 2^-ΔCq calculations will auto populate with the data from the Input Data Tab. The 2^ΔΔCq requires the user to specify a few more inputs before the calculations can be performed. For both calculations, the average of the housekeeper genes will automatically be calculated using arithmetic mean. E.g. the mean_hk for sample1_1_F is calculated as follows:
 
 $$
 \begin{aligned}
@@ -56,3 +58,98 @@ The ΔCq is calculated as follows:
 ::: {.gray-box}
  ΔCq = Cq (gene of interest) – Cq (average of the housekeeping genes)
 :::
+
+The ΔCq is displayed as dcq_geneName within the table on the right. E.g. for the gene IL6, the ΔCq (dcq_IL6) is calculated by:
+
+$$
+25.3008457 – 24.0348396 = 1.2660060…
+$$
+
+<details><summary>Click to Expand</summary>
+![](images/picture14.png){width=500px}
+</details>
+
+Relative fold change (2^(- ΔCq)) is automatically calculated and given as fc_dcq_gene within the table. E.g. the relative fold change of IL6 (fc_dcq_IL6):
+
+$$
+= 2^{-1.266006}
+=0.415809
+$$
+
+<details><summary>Click to Expand</summary>
+![](images/picture15.png){width=500px}
+</details>
+
+To save the relative fold change data, press the download processed data button:
+
+![](images/picture16.png){width=700px}
+
+To save biological replicate average values from the 2^(- ΔCq) method, select the Biological Replicate tab and press the ‘Download Replicate Average Data’ Button:
+
+![](images/picture17.png){width=700px}
+
+## 2^-(ΔΔCq)
+
+The data for 2^-(ΔΔCq) calculations is not auto-populated.
+
+Select the sample/group to be used as the control/reference sample. E.g. F_sample1:
+
+<details><summary>Click to Expand</summary>
+![](images/picture18.png){width=300px}
+</details>
+
+Select the remaining groups, and the gene/target to perform the calculation on.	Save the 2^(- ΔΔCq) data set within the ProntoPCR environment by pressing the ‘Save ΔΔCq Data’ button. It will appear light blue if it has been saved. This is important to do if performing statistics and/or graphing.
+
+![](images/picture19.png){width=300px}
+
+2^(- ΔΔCq) is calculated as follows:
+
+Average the ΔCq values of the control group. This will appear as dcq_ctrl_avg, and the same number will be displayed down the column of the table. E.g. the dcq_ctrl_avg for the control sample (F_sample1) is calculated by:
+    
+$$
+\begin{aligned}
+\text{dcq\_ctrl\_avg} &= \frac{1.266006 + 3.5411287 + 3.5114439}{3} \\
+\text{dcq\_ctrl\_avg} &= 2.7728595
+\end{aligned}
+$$
+
+
+<details><summary>Click to Expand</summary>
+![](images/picture20.png){width=700px}
+</details>
+
+Then ΔΔCq (ddcq) is performed by calculating the difference between the ΔCq of your gene of interest and the average of the control group (dcq_ctrl_avg):
+
+::: {.gray-box}
+∆∆Cq= ∆Cq (Gene of Interest)- ∆Cq (Control Group)
+:::
+
+E.g. the ΔΔCq for IL6 and sample1_1_M is:
+
+$$
+\begin{aligned}
+\Delta\Delta Cq &= 2.24241235 - 2.77285958 \\
+                &= -0.5304472
+\end{aligned}
+$$
+
+
+Therefore the fold change (fc_ddcq) 2^(- ΔΔCq):
+
+$$
+\begin{aligned}
+2^{-\Delta\Delta Cq} &= 2^{-(-0.5304472)} \\
+                     &= 1.44437
+\end{aligned}
+$$
+
+
+![](images/picture21.png){width=700px}
+
+Press the ‘Download Processed Data’ Button to save the fold change data.
+
+The biological replicate average data is displayed in the ‘Biological Replicate’ tab and can be saved using the ‘Download Replicate Data’ button.
+
+![](images/picture22.png){width=700px}
+
+[Statistics »](statistics.qmd){.btn .btn-md style="background:#00359bff;border-color:#00359bff;color:#fff;"}
