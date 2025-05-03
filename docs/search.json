@@ -11,7 +11,7 @@
     "href": "statistics.html",
     "title": "Statistics",
     "section": "",
-    "text": "About this site"
+    "text": "Note: There is no one-size-fits-all approach to statistical analysis. The statistical tests given within ProntoPCR are not exhaustive. It may be more appropriate to use another statistical program in conjunction with ProntoPCR.\nThe p-value significance is denoted as follows, with the default α = 0.05:"
   },
   {
     "objectID": "overview.html",
@@ -173,5 +173,54 @@
     "title": "Calculations",
     "section": "2^-(ΔΔCq)",
     "text": "2^-(ΔΔCq)\nThe data for 2^-(ΔΔCq) calculations is not auto-populated.\nSelect the sample/group to be used as the control/reference sample. E.g. F_sample1:\n\n\nClick to Expand\n\n\n\nSelect the remaining groups, and the gene/target to perform the calculation on. Save the 2^(- ΔΔCq) data set within the ProntoPCR environment by pressing the ‘Save ΔΔCq Data’ button. It will appear light blue if it has been saved. This is important to do if performing statistics and/or graphing.\n\n2^(- ΔΔCq) is calculated as follows:\nAverage the ΔCq values of the control group. This will appear as dcq_ctrl_avg, and the same number will be displayed down the column of the table. E.g. the dcq_ctrl_avg for the control sample (F_sample1) is calculated by:\n\\[\n\\begin{aligned}\n\\text{dcq\\_ctrl\\_avg} &= \\frac{1.266006 + 3.5411287 + 3.5114439}{3} \\\\\n\\text{dcq\\_ctrl\\_avg} &= 2.7728595\n\\end{aligned}\n\\]\n\n\nClick to Expand\n\n\n\nThen ΔΔCq (ddcq) is performed by calculating the difference between the ΔCq of your gene of interest and the average of the control group (dcq_ctrl_avg):\n\n∆∆Cq= ∆Cq (Gene of Interest)- ∆Cq (Control Group)\n\nE.g. the ΔΔCq for IL6 and sample1_1_M is:\n\\[\n\\begin{aligned}\n\\Delta\\Delta Cq &= 2.24241235 - 2.77285958 \\\\\n                &= -0.5304472\n\\end{aligned}\n\\]\nTherefore the fold change (fc_ddcq) 2^(- ΔΔCq):\n\\[\n\\begin{aligned}\n2^{-\\Delta\\Delta Cq} &= 2^{-(-0.5304472)} \\\\\n                     &= 1.44437\n\\end{aligned}\n\\]\n\nPress the ‘Download Processed Data’ Button to save the fold change data.\nThe biological replicate average data is displayed in the ‘Biological Replicate’ tab and can be saved using the ‘Download Replicate Data’ button.\n\nStatistics »"
+  },
+  {
+    "objectID": "statistics.html#selecting-the-data",
+    "href": "statistics.html#selecting-the-data",
+    "title": "Statistics",
+    "section": "Selecting the Data",
+    "text": "Selecting the Data\nStatistics can be performed on the 2^(- ΔCq), 2^(- ΔΔCq) or housekeeper gene mean values. It is not performed on the raw Cq or ΔCq/ ΔΔCq values, only the transformed (2^) data.\nSelect the data to be used for statistics:\n\nIf 2^(- ΔCq) is selected, choose the gene and samples to perform statistics on:\n\n\n\nIf 2^(- ΔΔCq) is selected, the gene will automatically be inputted based on the selected options in the calculations &gt; 2^(- ΔΔCq) tab. Select your samples in the dropdown menu. If you don’t see a sample in this section, it must be added to the dataset created in the Calculations &gt; 2^(- ΔΔCq) tab:\n\n\nIf the 2^(- ΔΔCq) dataset has not been created yet, this error message will be displayed:\n\n\nIf Housekeeper mean is selected, the mean_hk column will be used as the ‘Gene’ to perform statistics on:"
+  },
+  {
+    "objectID": "statistics.html#descriptive-statistics",
+    "href": "statistics.html#descriptive-statistics",
+    "title": "Statistics",
+    "section": "Descriptive Statistics",
+    "text": "Descriptive Statistics\nFrom this point onwards, all output given has been performed on the 2^(- ΔCq) dataset for the gene IL6 from the example data using the geometric mean for averaging the housekeepers.\nDescriptive Statistics can be computed by selecting the checkboxes in the side panel. Descriptive statistics available include:\n\nSample Size\nCalculated by counting the number of valid (non-missing) data points within each specified group for that gene.\n\n\nMean\nThe mean values are calculated for each specified group by averaging the valid (non-missing) data points using the arithmetic mean for that gene.\n\n\nGeometric Mean\nThe geometric means are calculated for each specified group by taking the exponent of the average of the logarithms of the valid (non-missing) data points.\n\n\nMedian\nThe median values are calculated for each specified group by finding the middle value of the sorted valid (non-missing) data points within each group.\n\n\nStandard Deviation\nThe standard deviations (SD) are calculated for each specified group by measuring the spread of the valid (non-missing) data points around the mean within each group.\n\n\nStandard Error\nThe standard errors (SE) are calculated for each specified group by dividing the standard deviation (SD) of the valid (non-missing) data points by the square root of the number of valid observations in each group (i.e. Sample Size (n)). The standard errors (SE) are calculated as:\n\\[\nSE = \\frac{SD}{\\sqrt{n}}\n\\]\nWhere:\n- SD is the standard deviation\n- n is the sample size\n\n\n95% Confidence Interval of the Mean\nConfidence intervals (CI) are calculated for each group by first determining the standard error based on the standard deviation and sample size, then applying either the Z-score for large samples (n ≥ 30) or the t-score for smaller samples to compute the lower and upper bounds of the interval around the mean. These intervals provide a range where the true population mean is likely to fall with a specified level of confidence (95%).\n\nFor large samples (n ≥ 30):\n\\[\nCI = \\bar{X} \\pm z \\times \\frac{SD}{\\sqrt{n}}\n\\] Where:\n\n\\(\\bar{X}\\) is the sample mean\nSD is the standard deviation\nn is the sample size\nz is the Z-score corresponding to the confidence level (i.e. 1.96 for 95% confidence)\n\n\n\nFor smaller samples (n &lt; 30):\n\\[\nCI = \\bar{X} \\pm t \\times \\frac{SD}{\\sqrt{n}}\n\\]\nWhere:\n\n\\(\\bar{X}\\) is the sample mean\n\nSD is the standard deviation\n\nn is the sample size\n\nt is the t-score corresponding to the desired confidence level and degrees of freedom (df=n-1).\n\nIn both cases, the confidence interval is expressed as:\n\\[\nCI = [CI_{\\text{Lower}},\\ CI_{\\text{Upper}}] = \\left[\\bar{X} - (z \\text{ or } t) \\times \\frac{SD}{\\sqrt{n}},\\ \\bar{X} + (z \\text{ or } t) \\times \\frac{SD}{\\sqrt{n}}\\right]\n\\]\n\n\n\nVariance\nThe variances are calculated for each specified group by measuring the average of the squared differences between each valid (non-missing) data point and the group mean. This provides a measure of how spread out the data points are within each group.Variance is calculated as:\n\\[\nS^2 = \\frac{\\sum (x_i - \\bar{x})^2}{n - 1}\n\\]\nWhere:\n- \\(S^2\\) is the sample variance\n- \\(∑\\) denotes the summation over all observations - \\(x_i\\) is each individual observation\n- \\(\\bar{x}\\) is the mean of the observations\n- n is the number of observations\n- n - 1 is the degrees of freedom\n\n\nMinimum and Maximum\nThe minimum and maximum values are determined by identifying the smallest and largest valid data points for each group.\n\nExample results:"
+  },
+  {
+    "objectID": "statistics.html#normality-testing",
+    "href": "statistics.html#normality-testing",
+    "title": "Statistics",
+    "section": "Normality Testing",
+    "text": "Normality Testing\nThe normality of data can be tested using a Shapiro-Wilk test, QQ plots and density plots in ProntoPCR. By default, the normality is tested per group on the raw data. If one-way ANOVA is selected, the normality tests will be performed on the residuals, not the raw data. A Residuals vs Fitted plot will also be displayed if One-way ANOVA and a normality test are both selected. The raw values are the default if no comparison of groups test, or any other group comparison tests are selected. Note that normality testing is usually considered to be unreliable for small sample sizes.\n\nShapiro-Wilk Test\nA Shapiro-Wilk test can be performed by selecting the checkbox on the side panel.\n\nRaw data:\n\n\n\nResiduals:\n\n\n\n\nQQ Plot\nA QQ Plot will be generated by selecting the checkbox on the side panel.\n\n\n\nDensity Plot\nA density plot will be generated by selecting the ‘Density Plot’ checkbox on the side panel."
+  },
+  {
+    "objectID": "statistics.html#homogeneity-of-variance-testing",
+    "href": "statistics.html#homogeneity-of-variance-testing",
+    "title": "Statistics",
+    "section": "Homogeneity of Variance Testing",
+    "text": "Homogeneity of Variance Testing\nThe homogeneity of variance can be tested using a Levene’s Test."
+  },
+  {
+    "objectID": "statistics.html#log-transformation",
+    "href": "statistics.html#log-transformation",
+    "title": "Statistics",
+    "section": "Log Transformation",
+    "text": "Log Transformation\nIf required, data can be log-transformed using log2() or log10(). For PCR data, it is recommended to use log2() transformations, however, log10() is given as an additional option if there are large differences in expression. If log2 or log10 is selected, all statistics will be performed on the transformed values e.g. log2(2^-ΔΔCq). Log transformation may help with normalizing data and reducing skewness. Note log transforming data points = 0 will return NA. To perform a log transformation, select Log2 or Log10 in the side panel. Any selected statistics will be performed on the log-transformed data when selected."
+  },
+  {
+    "objectID": "statistics.html#group-comparison-tests",
+    "href": "statistics.html#group-comparison-tests",
+    "title": "Statistics",
+    "section": "Group Comparison Tests",
+    "text": "Group Comparison Tests\n\nIf two samples are selected:\n\nIndependent t-test → Parametric Test\n\nMann–Whitney U test → Non-parametric Test\n\nWelch t-test → Welch’s Test\n\n\n\nIf more than two samples are selected:\n\nOne-way ANOVA → Parametric Test\nPost-hoc tests:\n\nTukey’s HSD\n\nPairwise t-test with Bonferroni adjustment for multiple comparisons\n\nPairwise t-test with Holm adjustment for multiple comparisons\n\nPairwise t-test with Benjamini–Hochberg adjustment for multiple comparisons\n\nScheffé’s post-hoc\n\nKruskal–Wallis Test → Non-parametric Test\nPost-hoc test:\n\nDunn’s test with:\n\nBonferroni adjustment for multiple comparisons\n\nŠidák adjustment for multiple comparisons\n\nHolm adjustment for multiple comparisons\n\nHolm–Šidák adjustment for multiple comparisons\n\nBenjamini–Hochberg adjustment for multiple comparisons\n\nHochberg’s Step-Up adjustment for multiple comparisons\n\n\nWelch ANOVA → Welch’s Test\nPost-hoc test:\n\nGames–Howell post-hoc\n\n\n\nNote: Post-hoc test results will be performed and displayed regardless of the group comparison p-value. This decision was made to ensure that all comparisons are available for review, as some users may wish to explore trends or patterns even in the absence of statistically significant differences. However, it is only appropriate to interpret the post-hoc results if the group comparison p-value is less than 0.05, as this threshold indicates a statistically significant difference between the groups.\nTo perform group comparisons, select an option from the side panel:\n\nIf a group comparison test is selected, a compact letter display results table will be provided. Samples sharing the same letter are not significantly different from one another, based on the selected post-hoc test results."
+  },
+  {
+    "objectID": "statistics.html#saving-results",
+    "href": "statistics.html#saving-results",
+    "title": "Statistics",
+    "section": "Saving Results",
+    "text": "Saving Results\nAll results can be saved as an HTML file by selecting the Download Statistics Report Button on the side panel. This can be opened in any web browser for viewing.\n\nGraphing »"
   }
 ]

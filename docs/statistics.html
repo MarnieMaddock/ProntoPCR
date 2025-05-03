@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.27">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -30,16 +30,15 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-985aa47af68dae11cd4d235c71fb941e.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dfb324f25d9b1687192fa8be62ac8f9c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,10 +67,40 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed quarto-light">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -114,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
     <ul class="dropdown-menu" aria-labelledby="nav-menu-how-to-use">    
         <li>
     <a class="dropdown-item" href="./data_input.html">
- <span class="dropdown-text">Data Input</span></a>
+ <span class="dropdown-text">Input Data</span></a>
   </li>  
         <li>
     <a class="dropdown-item" href="./calculations.html">
@@ -168,8 +197,36 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#selecting-the-data" id="toc-selecting-the-data" class="nav-link active" data-scroll-target="#selecting-the-data">Selecting the Data</a></li>
+  <li><a href="#descriptive-statistics" id="toc-descriptive-statistics" class="nav-link" data-scroll-target="#descriptive-statistics">Descriptive Statistics</a>
+  <ul class="collapse">
+  <li><a href="#sample-size" id="toc-sample-size" class="nav-link" data-scroll-target="#sample-size">Sample Size</a></li>
+  <li><a href="#mean" id="toc-mean" class="nav-link" data-scroll-target="#mean">Mean</a></li>
+  <li><a href="#geometric-mean" id="toc-geometric-mean" class="nav-link" data-scroll-target="#geometric-mean">Geometric Mean</a></li>
+  <li><a href="#median" id="toc-median" class="nav-link" data-scroll-target="#median">Median</a></li>
+  <li><a href="#standard-deviation" id="toc-standard-deviation" class="nav-link" data-scroll-target="#standard-deviation">Standard Deviation</a></li>
+  <li><a href="#standard-error" id="toc-standard-error" class="nav-link" data-scroll-target="#standard-error">Standard Error</a></li>
+  <li><a href="#confidence-interval-of-the-mean" id="toc-confidence-interval-of-the-mean" class="nav-link" data-scroll-target="#confidence-interval-of-the-mean">95% Confidence Interval of the Mean</a></li>
+  <li><a href="#variance" id="toc-variance" class="nav-link" data-scroll-target="#variance">Variance</a></li>
+  <li><a href="#minimum-and-maximum" id="toc-minimum-and-maximum" class="nav-link" data-scroll-target="#minimum-and-maximum">Minimum and Maximum</a></li>
+  </ul></li>
+  <li><a href="#normality-testing" id="toc-normality-testing" class="nav-link" data-scroll-target="#normality-testing">Normality Testing</a>
+  <ul class="collapse">
+  <li><a href="#shapiro-wilk-test" id="toc-shapiro-wilk-test" class="nav-link" data-scroll-target="#shapiro-wilk-test">Shapiro-Wilk Test</a></li>
+  <li><a href="#qq-plot" id="toc-qq-plot" class="nav-link" data-scroll-target="#qq-plot">QQ Plot</a></li>
+  <li><a href="#density-plot" id="toc-density-plot" class="nav-link" data-scroll-target="#density-plot">Density Plot</a></li>
+  </ul></li>
+  <li><a href="#homogeneity-of-variance-testing" id="toc-homogeneity-of-variance-testing" class="nav-link" data-scroll-target="#homogeneity-of-variance-testing">Homogeneity of Variance Testing</a></li>
+  <li><a href="#log-transformation" id="toc-log-transformation" class="nav-link" data-scroll-target="#log-transformation">Log Transformation</a></li>
+  <li><a href="#group-comparison-tests" id="toc-group-comparison-tests" class="nav-link" data-scroll-target="#group-comparison-tests">Group Comparison Tests</a></li>
+  <li><a href="#saving-results" id="toc-saving-results" class="nav-link" data-scroll-target="#saving-results">Saving Results</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -193,248 +250,465 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>About this site</p>
+<p>Note: There is no one-size-fits-all approach to statistical analysis. The statistical tests given within ProntoPCR are not exhaustive. It may be more appropriate to use another statistical program in conjunction with ProntoPCR.</p>
+<p>The p-value significance is denoted as follows, with the default α = 0.05:</p>
+<ul>
+<li><code>***</code> p-values ≤ 0.001</li>
+<li><code>**</code> p-values ≤ 0.01</li>
+<li><code>*</code> p-values ≤ 0.05</li>
+<li><code>ns</code> (not significant) for p-values &gt; 0.05</li>
+</ul>
+<section id="selecting-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="selecting-the-data">Selecting the Data</h2>
+<p>Statistics can be performed on the 2^(- ΔCq), 2^(- ΔΔCq) or housekeeper gene mean values. It is not performed on the raw Cq or ΔCq/ ΔΔCq values, only the transformed (2^) data.</p>
+<p>Select the data to be used for statistics:</p>
+<ol type="a">
+<li>If 2^(- ΔCq) is selected, choose the gene and samples to perform statistics on:</li>
+</ol>
+<p><img src="images/picture23.png" class="img-fluid" width="300"></p>
+<ol start="2" type="a">
+<li>If 2^(- ΔΔCq) is selected, the gene will automatically be inputted based on the selected options in the calculations &gt; 2^(- ΔΔCq) tab. Select your samples in the dropdown menu. If you don’t see a sample in this section, it must be added to the dataset created in the Calculations &gt; 2^(- ΔΔCq) tab:</li>
+</ol>
+<p><img src="images/picture24.png" class="img-fluid" width="300"></p>
+<p>If the 2^(- ΔΔCq) dataset has not been created yet, this error message will be displayed:</p>
+<p><img src="images/picture25.png" class="img-fluid" width="300"></p>
+<ol start="3" type="a">
+<li>If Housekeeper mean is selected, the mean_hk column will be used as the ‘Gene’ to perform statistics on:</li>
+</ol>
+<p><img src="images/picture26.png" class="img-fluid" width="300"></p>
+</section>
+<section id="descriptive-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="descriptive-statistics">Descriptive Statistics</h2>
+<p>From this point onwards, all output given has been performed on the 2^(- ΔCq) dataset for the gene IL6 from the example data using the geometric mean for averaging the housekeepers.</p>
+<p>Descriptive Statistics can be computed by selecting the checkboxes in the side panel. Descriptive statistics available include:</p>
+<section id="sample-size" class="level3">
+<h3 class="anchored" data-anchor-id="sample-size">Sample Size</h3>
+<p>Calculated by counting the number of valid (non-missing) data points within each specified group for that gene.</p>
+</section>
+<section id="mean" class="level3">
+<h3 class="anchored" data-anchor-id="mean">Mean</h3>
+<p>The mean values are calculated for each specified group by averaging the valid (non-missing) data points using the arithmetic mean for that gene.</p>
+</section>
+<section id="geometric-mean" class="level3">
+<h3 class="anchored" data-anchor-id="geometric-mean">Geometric Mean</h3>
+<p>The geometric means are calculated for each specified group by taking the exponent of the average of the logarithms of the valid (non-missing) data points.</p>
+</section>
+<section id="median" class="level3">
+<h3 class="anchored" data-anchor-id="median">Median</h3>
+<p>The median values are calculated for each specified group by finding the middle value of the sorted valid (non-missing) data points within each group.</p>
+</section>
+<section id="standard-deviation" class="level3">
+<h3 class="anchored" data-anchor-id="standard-deviation">Standard Deviation</h3>
+<p>The standard deviations (SD) are calculated for each specified group by measuring the spread of the valid (non-missing) data points around the mean within each group.</p>
+</section>
+<section id="standard-error" class="level3">
+<h3 class="anchored" data-anchor-id="standard-error">Standard Error</h3>
+<p>The standard errors (SE) are calculated for each specified group by dividing the standard deviation (SD) of the valid (non-missing) data points by the square root of the number of valid observations in each group (i.e.&nbsp;Sample Size (n)). The standard errors (SE) are calculated as:</p>
+<p><span class="math display">\[
+SE = \frac{SD}{\sqrt{n}}
+\]</span></p>
+<p>Where:<br>
+- <strong>SD</strong> is the standard deviation<br>
+- <strong>n</strong> is the sample size</p>
+</section>
+<section id="confidence-interval-of-the-mean" class="level3">
+<h3 class="anchored" data-anchor-id="confidence-interval-of-the-mean">95% Confidence Interval of the Mean</h3>
+<p>Confidence intervals (CI) are calculated for each group by first determining the standard error based on the standard deviation and sample size, then applying either the Z-score for large samples (n ≥ 30) or the t-score for smaller samples to compute the lower and upper bounds of the interval around the mean. These intervals provide a range where the true population mean is likely to fall with a specified level of confidence (95%).</p>
+<section id="for-large-samples-n-30" class="level4">
+<h4 class="anchored" data-anchor-id="for-large-samples-n-30">For large samples (n ≥ 30):</h4>
+<p><span class="math display">\[
+CI = \bar{X} \pm z \times \frac{SD}{\sqrt{n}}
+\]</span> Where:</p>
+<ul>
+<li><span class="math inline">\(\bar{X}\)</span> is the sample mean</li>
+<li><strong>SD</strong> is the standard deviation</li>
+<li><strong>n</strong> is the sample size</li>
+<li><strong>z</strong> is the Z-score corresponding to the confidence level (i.e.&nbsp;1.96 for 95% confidence)</li>
+</ul>
+</section>
+<section id="for-smaller-samples-n-30" class="level4">
+<h4 class="anchored" data-anchor-id="for-smaller-samples-n-30">For smaller samples (n &lt; 30):</h4>
+<p><span class="math display">\[
+CI = \bar{X} \pm t \times \frac{SD}{\sqrt{n}}
+\]</span></p>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(\bar{X}\)</span> is the sample mean<br>
+</li>
+<li><strong>SD</strong> is the standard deviation<br>
+</li>
+<li><strong>n</strong> is the sample size<br>
+</li>
+<li><strong>t</strong> is the t-score corresponding to the desired confidence level and degrees of freedom (df=n-1).</li>
+</ul>
+<p>In both cases, the confidence interval is expressed as:</p>
+<p><span class="math display">\[
+CI = [CI_{\text{Lower}},\ CI_{\text{Upper}}] = \left[\bar{X} - (z \text{ or } t) \times \frac{SD}{\sqrt{n}},\ \bar{X} + (z \text{ or } t) \times \frac{SD}{\sqrt{n}}\right]
+\]</span></p>
+</section>
+</section>
+<section id="variance" class="level3">
+<h3 class="anchored" data-anchor-id="variance">Variance</h3>
+<p>The variances are calculated for each specified group by measuring the average of the squared differences between each valid (non-missing) data point and the group mean. This provides a measure of how spread out the data points are within each group.Variance is calculated as:</p>
+<p><span class="math display">\[
+S^2 = \frac{\sum (x_i - \bar{x})^2}{n - 1}
+\]</span></p>
+<p>Where:<br>
+- <span class="math inline">\(S^2\)</span> is the sample variance<br>
+- <span class="math inline">\(∑\)</span> denotes the summation over all observations - <span class="math inline">\(x_i\)</span> is each individual observation<br>
+- <span class="math inline">\(\bar{x}\)</span> is the mean of the observations<br>
+- <strong>n</strong> is the number of observations<br>
+- <strong>n - 1</strong> is the degrees of freedom</p>
+</section>
+<section id="minimum-and-maximum" class="level3">
+<h3 class="anchored" data-anchor-id="minimum-and-maximum">Minimum and Maximum</h3>
+<p>The minimum and maximum values are determined by identifying the smallest and largest valid data points for each group.</p>
+<hr>
+<p>Example results:</p>
+<p><img src="images/picture27.png" class="img-fluid" width="700"></p>
+<p><img src="images/picture28.png" class="img-fluid" width="700"></p>
+</section>
+</section>
+<section id="normality-testing" class="level2">
+<h2 class="anchored" data-anchor-id="normality-testing">Normality Testing</h2>
+<p>The normality of data can be tested using a Shapiro-Wilk test, QQ plots and density plots in ProntoPCR. By default, the normality is tested per group on the raw data. If one-way ANOVA is selected, the normality tests will be performed on the residuals, not the raw data. A Residuals vs Fitted plot will also be displayed if One-way ANOVA and a normality test are both selected. The raw values are the default if no comparison of groups test, or any other group comparison tests are selected. Note that normality testing is usually considered to be unreliable for small sample sizes.</p>
+<section id="shapiro-wilk-test" class="level3">
+<h3 class="anchored" data-anchor-id="shapiro-wilk-test">Shapiro-Wilk Test</h3>
+<p>A Shapiro-Wilk test can be performed by selecting the checkbox on the side panel.</p>
+<section id="raw-data" class="level4">
+<h4 class="anchored" data-anchor-id="raw-data">Raw data:</h4>
+<p><img src="images/picture29.png" class="img-fluid" width="700"></p>
+</section>
+<section id="residuals" class="level4">
+<h4 class="anchored" data-anchor-id="residuals">Residuals:</h4>
+<p><img src="images/picture30.png" class="img-fluid" width="700"></p>
+</section>
+</section>
+<section id="qq-plot" class="level3">
+<h3 class="anchored" data-anchor-id="qq-plot">QQ Plot</h3>
+<p>A QQ Plot will be generated by selecting the checkbox on the side panel.</p>
+<p><img src="images/picture31.png" class="img-fluid" width="700"></p>
+</section>
+<section id="density-plot" class="level3">
+<h3 class="anchored" data-anchor-id="density-plot">Density Plot</h3>
+<p>A density plot will be generated by selecting the ‘Density Plot’ checkbox on the side panel.</p>
+<p><img src="images/picture32.png" class="img-fluid" width="700"></p>
+</section>
+</section>
+<section id="homogeneity-of-variance-testing" class="level2">
+<h2 class="anchored" data-anchor-id="homogeneity-of-variance-testing">Homogeneity of Variance Testing</h2>
+<p>The homogeneity of variance can be tested using a Levene’s Test.</p>
+<p><img src="images/picture33.png" class="img-fluid" width="700"></p>
+</section>
+<section id="log-transformation" class="level2">
+<h2 class="anchored" data-anchor-id="log-transformation">Log Transformation</h2>
+<p>If required, data can be log-transformed using log2() or log10(). For PCR data, it is recommended to use log2() transformations, however, log10() is given as an additional option if there are large differences in expression. If log2 or log10 is selected, all statistics will be performed on the transformed values e.g.&nbsp;log2(2^-ΔΔCq). Log transformation may help with normalizing data and reducing skewness. Note log transforming data points = 0 will return NA. To perform a log transformation, select Log2 or Log10 in the side panel. Any selected statistics will be performed on the log-transformed data when selected.</p>
+<p><img src="images/picture34.png" class="img-fluid" width="300"></p>
+</section>
+<section id="group-comparison-tests" class="level2">
+<h2 class="anchored" data-anchor-id="group-comparison-tests">Group Comparison Tests</h2>
+<section id="if-two-samples-are-selected" class="level4">
+<h4 class="anchored" data-anchor-id="if-two-samples-are-selected">If two samples are selected:</h4>
+<ul>
+<li><strong>Independent t-test</strong> → Parametric Test<br>
+</li>
+<li><strong>Mann–Whitney U test</strong> → Non-parametric Test<br>
+</li>
+<li><strong>Welch t-test</strong> → Welch’s Test</li>
+</ul>
+</section>
+<section id="if-more-than-two-samples-are-selected" class="level4">
+<h4 class="anchored" data-anchor-id="if-more-than-two-samples-are-selected">If more than two samples are selected:</h4>
+<ul>
+<li><strong>One-way ANOVA</strong> → Parametric Test<br>
+<strong>Post-hoc tests:</strong>
+<ul>
+<li>Tukey’s HSD<br>
+</li>
+<li>Pairwise t-test with Bonferroni adjustment for multiple comparisons<br>
+</li>
+<li>Pairwise t-test with Holm adjustment for multiple comparisons<br>
+</li>
+<li>Pairwise t-test with Benjamini–Hochberg adjustment for multiple comparisons<br>
+</li>
+<li>Scheffé’s post-hoc</li>
+</ul></li>
+<li><strong>Kruskal–Wallis Test</strong> → Non-parametric Test<br>
+<strong>Post-hoc test:</strong>
+<ul>
+<li>Dunn’s test with:
+<ul>
+<li>Bonferroni adjustment for multiple comparisons<br>
+</li>
+<li>Šidák adjustment for multiple comparisons<br>
+</li>
+<li>Holm adjustment for multiple comparisons<br>
+</li>
+<li>Holm–Šidák adjustment for multiple comparisons<br>
+</li>
+<li>Benjamini–Hochberg adjustment for multiple comparisons<br>
+</li>
+<li>Hochberg’s Step-Up adjustment for multiple comparisons</li>
+</ul></li>
+</ul></li>
+<li><strong>Welch ANOVA</strong> → Welch’s Test<br>
+<strong>Post-hoc test:</strong>
+<ul>
+<li>Games–Howell post-hoc</li>
+</ul></li>
+</ul>
+<hr>
+<p>Note: Post-hoc test results will be performed and displayed regardless of the group comparison p-value. This decision was made to ensure that all comparisons are available for review, as some users may wish to explore trends or patterns even in the absence of statistically significant differences. However, it is only appropriate to interpret the post-hoc results if the group comparison p-value is less than 0.05, as this threshold indicates a statistically significant difference between the groups.</p>
+<p>To perform group comparisons, select an option from the side panel:</p>
+<p><img src="images/picture35.png" class="img-fluid" width="300"></p>
+<p>If a group comparison test is selected, a compact letter display results table will be provided. Samples sharing the same letter are not significantly different from one another, based on the selected post-hoc test results.</p>
+<p><img src="images/picture36.png" class="img-fluid" width="700"></p>
+</section>
+</section>
+<section id="saving-results" class="level2">
+<h2 class="anchored" data-anchor-id="saving-results">Saving Results</h2>
+<p>All results can be saved as an HTML file by selecting the Download Statistics Report Button on the side panel. This can be opened in any web browser for viewing.</p>
+<p><img src="images/picture37.png" class="img-fluid" width="300"></p>
+<p><a href="./graphs.html" class="btn btn-md" style="background:#00359bff;border-color:#00359bff;color:#fff;">Graphing »</a></p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-    const icon = "";
-    const anchorJS = new window.AnchorJS();
-    anchorJS.options = {
-      placement: 'right',
-      icon: icon
-    };
-    anchorJS.add('.anchored');
-    const isCodeAnnotation = (el) => {
-      for (const clz of el.classList) {
-        if (clz.startsWith('code-annotation-')) {                     
-          return true;
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
         }
       }
-      return false;
-    }
-    const onCopySuccess = function(e) {
-      // button target
-      const button = e.trigger;
-      // don't keep focus
-      button.blur();
-      // flash "checked"
-      button.classList.add('code-copy-button-checked');
-      var currentTitle = button.getAttribute("title");
-      button.setAttribute("title", "Copied!");
-      let tooltip;
-      if (window.bootstrap) {
-        button.setAttribute("data-bs-toggle", "tooltip");
-        button.setAttribute("data-bs-placement", "left");
-        button.setAttribute("data-bs-title", "Copied!");
-        tooltip = new bootstrap.Tooltip(button, 
-          { trigger: "manual", 
-            customClass: "code-copy-button-tooltip",
-            offset: [0, -8]});
-        tooltip.show();    
-      }
-      setTimeout(function() {
-        if (tooltip) {
-          tooltip.hide();
-          button.removeAttribute("data-bs-title");
-          button.removeAttribute("data-bs-toggle");
-          button.removeAttribute("data-bs-placement");
-        }
-        button.setAttribute("title", currentTitle);
-        button.classList.remove('code-copy-button-checked');
-      }, 1000);
-      // clear code selection
-      e.clearSelection();
-    }
-    const getTextToCopy = function(trigger) {
-        const codeEl = trigger.previousElementSibling.cloneNode(true);
-        for (const childEl of codeEl.children) {
-          if (isCodeAnnotation(childEl)) {
-            childEl.remove();
-          }
-        }
-        return codeEl.innerText;
-    }
-    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-      text: getTextToCopy
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
     });
-    clipboard.on('success', onCopySuccess);
-    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-        text: getTextToCopy,
-        container: window.document.getElementById('quarto-embedded-source-code-modal')
-      });
-      clipboardModal.on('success', onCopySuccess);
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/marniemaddock\.github\.io\/ProntoPCR\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
-      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/marniemaddock\.github\.io\/ProntoPCR\/");
-      var isInternal = (href) => {
-          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-      }
-      // Inspect non-navigation links and adorn them if external
-     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-      for (var i=0; i<links.length; i++) {
-        const link = links[i];
-        if (!isInternal(link.href)) {
-          // undo the damage that might have been done by quarto-nav.js in the case of
-          // links that we want to consider external
-          if (link.dataset.originalHref !== undefined) {
-            link.href = link.dataset.originalHref;
-          }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
         }
       }
-    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
-      const config = {
-        allowHTML: true,
-        maxWidth: 500,
-        delay: 100,
-        arrow: false,
-        appendTo: function(el) {
-            return el.parentElement;
-        },
-        interactive: true,
-        interactiveBorder: 10,
-        theme: 'quarto',
-        placement: 'bottom-start',
-      };
-      if (contentFn) {
-        config.content = contentFn;
-      }
-      if (onTriggerFn) {
-        config.onTrigger = onTriggerFn;
-      }
-      if (onUntriggerFn) {
-        config.onUntrigger = onUntriggerFn;
-      }
-      window.tippy(el, config); 
     }
-    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
-    for (var i=0; i<noterefs.length; i++) {
-      const ref = noterefs[i];
-      tippyHover(ref, function() {
-        // use id or data attribute instead here
-        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
-        try { href = new URL(href).hash; } catch {}
-        const id = href.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note) {
-          return note.innerHTML;
-        } else {
-          return "";
-        }
-      });
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
     }
-    const xrefs = window.document.querySelectorAll('a.quarto-xref');
-    const processXRef = (id, note) => {
-      // Strip column container classes
-      const stripColumnClz = (el) => {
-        el.classList.remove("page-full", "page-columns");
-        if (el.children) {
-          for (const child of el.children) {
-            stripColumnClz(child);
-          }
-        }
-      }
-      stripColumnClz(note)
-      if (id === null || id.startsWith('sec-')) {
-        // Special case sections, only their first couple elements
-        const container = document.createElement("div");
-        if (note.children && note.children.length > 2) {
-          container.appendChild(note.children[0].cloneNode(true));
-          for (let i = 1; i < note.children.length; i++) {
-            const child = note.children[i];
-            if (child.tagName === "P" && child.innerText === "") {
-              continue;
-            } else {
-              container.appendChild(child.cloneNode(true));
-              break;
-            }
-          }
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(container);
-          }
-          return container.innerHTML
-        } else {
-          if (window.Quarto?.typesetMath) {
-            window.Quarto.typesetMath(note);
-          }
-          return note.innerHTML;
-        }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
       } else {
-        // Remove any anchor links if they are present
-        const anchorLink = note.querySelector('a.anchorjs-link');
-        if (anchorLink) {
-          anchorLink.remove();
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
         }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
         if (window.Quarto?.typesetMath) {
           window.Quarto.typesetMath(note);
         }
-        if (note.classList.contains("callout")) {
-          return note.outerHTML;
-        } else {
-          return note.innerHTML;
-        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
       }
     }
-    for (var i=0; i<xrefs.length; i++) {
-      const xref = xrefs[i];
-      tippyHover(xref, undefined, function(instance) {
-        instance.disable();
-        let url = xref.getAttribute('href');
-        let hash = undefined; 
-        if (url.startsWith('#')) {
-          hash = url;
-        } else {
-          try { hash = new URL(url).hash; } catch {}
-        }
-        if (hash) {
-          const id = hash.replace(/^#\/?/, "");
-          const note = window.document.getElementById(id);
-          if (note !== null) {
-            try {
-              const html = processXRef(id, note.cloneNode(true));
-              instance.setContent(html);
-            } finally {
-              instance.enable();
-              instance.show();
-            }
-          } else {
-            // See if we can fetch this
-            fetch(url.split('#')[0])
-            .then(res => res.text())
-            .then(html => {
-              const parser = new DOMParser();
-              const htmlDoc = parser.parseFromString(html, "text/html");
-              const note = htmlDoc.getElementById(id);
-              if (note !== null) {
-                const html = processXRef(id, note);
-                instance.setContent(html);
-              } 
-            }).finally(() => {
-              instance.enable();
-              instance.show();
-            });
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
           }
         } else {
-          // See if we can fetch a full url (with no hash to target)
-          // This is a special case and we should probably do some content thinning / targeting
-          fetch(url)
+          // See if we can fetch this
+          fetch(url.split('#')[0])
           .then(res => res.text())
           .then(html => {
             const parser = new DOMParser();
             const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.querySelector('main.content');
+            const note = htmlDoc.getElementById(id);
             if (note !== null) {
-              // This should only happen for chapter cross references
-              // (since there is no id in the URL)
-              // remove the first header
-              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-                note.children[0].remove();
-              }
-              const html = processXRef(null, note);
+              const html = processXRef(id, note);
               instance.setContent(html);
             } 
           }).finally(() => {
@@ -442,161 +716,185 @@ ul.task-list li input[type="checkbox"] {
             instance.show();
           });
         }
-      }, function(instance) {
-      });
-    }
-        let selectedAnnoteEl;
-        const selectorForAnnotation = ( cell, annotation) => {
-          let cellAttr = 'data-code-cell="' + cell + '"';
-          let lineAttr = 'data-code-annotation="' +  annotation + '"';
-          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
-          return selector;
-        }
-        const selectCodeLines = (annoteEl) => {
-          const doc = window.document;
-          const targetCell = annoteEl.getAttribute("data-target-cell");
-          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
-          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
-          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
-          const lineIds = lines.map((line) => {
-            return targetCell + "-" + line;
-          })
-          let top = null;
-          let height = null;
-          let parent = null;
-          if (lineIds.length > 0) {
-              //compute the position of the single el (top and bottom and make a div)
-              const el = window.document.getElementById(lineIds[0]);
-              top = el.offsetTop;
-              height = el.offsetHeight;
-              parent = el.parentElement.parentElement;
-            if (lineIds.length > 1) {
-              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
-              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
-              height = bottom - top;
-            }
-            if (top !== null && height !== null && parent !== null) {
-              // cook up a div (if necessary) and position it 
-              let div = window.document.getElementById("code-annotation-line-highlight");
-              if (div === null) {
-                div = window.document.createElement("div");
-                div.setAttribute("id", "code-annotation-line-highlight");
-                div.style.position = 'absolute';
-                parent.appendChild(div);
-              }
-              div.style.top = top - 2 + "px";
-              div.style.height = height + 4 + "px";
-              div.style.left = 0;
-              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
-              if (gutterDiv === null) {
-                gutterDiv = window.document.createElement("div");
-                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
-                gutterDiv.style.position = 'absolute';
-                const codeCell = window.document.getElementById(targetCell);
-                const gutter = codeCell.querySelector('.code-annotation-gutter');
-                gutter.appendChild(gutterDiv);
-              }
-              gutterDiv.style.top = top - 2 + "px";
-              gutterDiv.style.height = height + 4 + "px";
-            }
-            selectedAnnoteEl = annoteEl;
-          }
-        };
-        const unselectCodeLines = () => {
-          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
-          elementsIds.forEach((elId) => {
-            const div = window.document.getElementById(elId);
-            if (div) {
-              div.remove();
-            }
-          });
-          selectedAnnoteEl = undefined;
-        };
-          // Handle positioning of the toggle
-      window.addEventListener(
-        "resize",
-        throttle(() => {
-          elRect = undefined;
-          if (selectedAnnoteEl) {
-            selectCodeLines(selectedAnnoteEl);
-          }
-        }, 10)
-      );
-      function throttle(fn, ms) {
-      let throttle = false;
-      let timer;
-        return (...args) => {
-          if(!throttle) { // first call gets through
-              fn.apply(this, args);
-              throttle = true;
-          } else { // all the others get throttled
-              if(timer) clearTimeout(timer); // cancel #2
-              timer = setTimeout(() => {
-                fn.apply(this, args);
-                timer = throttle = false;
-              }, ms);
-          }
-        };
-      }
-        // Attach click handler to the DT
-        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
-        for (const annoteDlNode of annoteDls) {
-          annoteDlNode.addEventListener('click', (event) => {
-            const clickedEl = event.target;
-            if (clickedEl !== selectedAnnoteEl) {
-              unselectCodeLines();
-              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
-              if (activeEl) {
-                activeEl.classList.remove('code-annotation-active');
-              }
-              selectCodeLines(clickedEl);
-              clickedEl.classList.add('code-annotation-active');
-            } else {
-              // Unselect the line
-              unselectCodeLines();
-              clickedEl.classList.remove('code-annotation-active');
-            }
-          });
-        }
-    const findCites = (el) => {
-      const parentEl = el.parentElement;
-      if (parentEl) {
-        const cites = parentEl.dataset.cites;
-        if (cites) {
-          return {
-            el,
-            cites: cites.split(' ')
-          };
-        } else {
-          return findCites(el.parentElement)
-        }
       } else {
-        return undefined;
-      }
-    };
-    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
-    for (var i=0; i<bibliorefs.length; i++) {
-      const ref = bibliorefs[i];
-      const citeInfo = findCites(ref);
-      if (citeInfo) {
-        tippyHover(citeInfo.el, function() {
-          var popup = window.document.createElement('div');
-          citeInfo.cites.forEach(function(cite) {
-            var citeDiv = window.document.createElement('div');
-            citeDiv.classList.add('hanging-indent');
-            citeDiv.classList.add('csl-entry');
-            var biblioDiv = window.document.getElementById('ref-' + cite);
-            if (biblioDiv) {
-              citeDiv.innerHTML = biblioDiv.innerHTML;
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
             }
-            popup.appendChild(citeDiv);
-          });
-          return popup.innerHTML;
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
         });
       }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
     }
-  });
-  </script>
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
 </div> <!-- /content -->
 
 
