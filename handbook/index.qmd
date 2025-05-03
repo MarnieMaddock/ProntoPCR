@@ -11,8 +11,6 @@ page-layout: full     # optional: no side gutters
 
 ::: {.text-center .mt-1}
 
-# **ProntoPCR**
-
 ![](images/dottori_lab_pentagon.svg){width=180px .center}
 
 ## Efficient qPCR Data Analysis Software

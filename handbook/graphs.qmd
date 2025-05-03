@@ -2,4 +2,73 @@
 title: "Graphs"
 ---
 
-About this site
+Graphs can be generated within the Graphs Tab. They are automatically generated after selecting the Samples and gene to graph. Each graph is fully customisable. Currently, there are three types of graphs available: scatter plot, grouped scatter plot and column graph: 
+
+![](images/picture38.png){width=700px}
+
+To get started, select whether to graph (2^-ΔCq) or (2^-ΔΔCq) data in the side panel, and select the samples and gene:
+
+![](images/picture40.png){width=400px}
+
+To generate the graph, type the sample names in the order to be displayed on the x-axis. The samples must be separated by a comma with no spaces. It is case-sensitive:
+
+![](images/picture39.png){width=400px}
+
+## Customising Labels
+
+Labels for the x and y axes can be changed in the side panel. To remove a label, enter a space in the text input box.  The x-axis labels can be rotated by selecting the checkbox:
+
+
+![](images/picture41.png){width=700px}
+
+The x and y-axis titles accept markup.
+
+The x and y-axis titles accept markup:
+
+- `*italics*`
+- `**bold**`
+- `***bold and italics***`
+- `<br> </br> Line Break`
+- `<sup> superscript </sup>`
+- `<sub> subscript </sub>`
+
+The font can be changed in the dropdown menu. If your desired font is not listed, download the graph as a scalable vector graphics file (svg) and edit it in Inkscape, PowerPoint or Illustrator. Alternatively, suggest new fonts on [GitHub Issues](https://github.com/MarnieMaddock/ProntoPCR/issues). Text size can be changed by pressing the up or down arrow, or by typing in the required size in the respective box on the side panel
+
+![](images/picture42.png){width=700px}
+
+If Grouped Scatter Plot is selected, the legend can be customised or removed:
+
+![](images/picture43.png){width=700px}
+
+## Graph Design
+
+To change the colours of the graph, select from the drop-down menu. An error message will be displayed if there are too many groups for the selected palette. Colour palettes available:
+
+![](images/color_schemes.png){width=700px}
+![](images/picture44.png){width=700px}
+
+To change the graph type, select the preferred option in the Choose Plot Type menu:
+
+![](images/picture45.png){width=700px}
+
+## Significance
+
+A group comparison test must be performed in the Statistics Tab to add significance options to a graph. The results from the post-hoc test will be used on the graph. The chosen calculation (i.e. 2-(ΔCq) or 2-(ΔΔCq)), samples and gene must be identical in the Statistics and Graphs tab for the correct p-values to be plotted. Error messages (Discrepancy detected) will appear if the options do not match, and will prompt the user to alter the selection. If the graph is empty, it may mean that a discrepancy was detected and needs to be changed for the graph to generate. For example, to add significance to a graph for the samples: F_sample1, M_sample1, F_sample2, M_sample2 and gene ISL1 with a log2 transformation:
+
+![](images/picture46.png){width=700px}
+
+Three ways to denote significance on a graph are available, including asterisk notation (`*, **, ***, ns`), p-values (`0.001`), or compact letter display (`a, b, c, ac`).
+
+a.	Asterisk Option: The label size (size of *), bracket thickness (line thickness), step increase (the vertical distance between each bracket) and tip length (vertical bracket length) can all be altered by changing the up and down arrows, or by entering in a number value. Non-significant comparisons can be hidden by pressing the Hide ns checkbox.
+
+![](images/picture47.png){width=700px}
+
+b.	P Values Option: The label size (size of 0.002), bracket thickness (line thickness), step increase (the vertical distance between each bracket), tip length (vertical bracket length) and p-value decimal places can all be altered by changing the up and down arrows, or by entering in a number value. Non-significant comparisons can be hidden by pressing the Hide ns checkbox. The leading 0 from the p-value can also be removed by pressing the corresponding checkbox. P = can also be added before the p-value by selecting this option in the P-value prefix selection.
+
+![](images/picture48.png){width=700px}
+
+c.	Compact Letter Display: Letters denoting differences between groups come from the output given in the Statistics tab. The Label Size and Step Increase can be changed by using the up and down errors within the box, or entering a number.
+
+![](images/picture49.png){width=700px}
+
+## Error Bars
