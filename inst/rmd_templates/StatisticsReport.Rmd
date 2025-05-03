@@ -36,7 +36,7 @@ library(kableExtra)
 
 ### **ProntoPCR**
 
-All statistics within the ProntoPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated github page (INSERT VIGNETTE HERE), or refer to the source code [GitHub](https://github.com/MarnieMaddock/ProntoPCR).
+All statistics within the ProntoPCR app were performed in the R programming language. For more detailed information on the specifics of the statistical tests used, please refer to the documentation provided in the associated [ProntoPCR handbook](https://marniemaddock.github.io/ProntoPCR/), or refer to the source code [GitHub](https://github.com/MarnieMaddock/ProntoPCR).
 
 
 ### **Your Data**

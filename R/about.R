@@ -23,7 +23,7 @@ about_text <- div(
       All graphs also have the option to be saved as an .svg so that aesthetics can be further modified in other programs such as Illustrator and Inkscape (which is free!).
       Additionally, all statistics and analysis can be saved as a report in .html format."),
   p("We request that users of ProntoPCR cite the associated journal article if the application has been used in analysis. The citation is as follows:"),
-  p(HTML('Please refer to the <a href="https://github.com/MarnieMaddock/ProntoPCR/blob/main/ProntoPCR_Handbook.docx" target="_blank">user guide</a> for more information on how to use the application.')),
+  p(HTML('Please refer to the <a href="https://marniemaddock.github.io/ProntoPCR/" target="_blank">user guide</a> for more information on how to use the application.')),
   shiny::tags$br(),
   shiny::tags$br(),
   shiny::tags$br(),
