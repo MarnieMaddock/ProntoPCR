@@ -1,5 +1,43 @@
 ---
-title: "Input Errors"
+title: "Input Data Error Messages"
 ---
 
-About this site
+Numerous error messages may appear when using ProntoPCR. These are designed to guide the user into selecting the correct option or ensuring the correct data is inserted/used etc. If an error message appears within the app that is not described in the below section, please submit a screenshot of the issue and any information about how you got to this error in Github: [GitHub Issues](https://github.com/MarnieMaddock/ProntoPCR/issues). Please cover/anonymise sensitive information.
+
+## Input Data Tab Errors
+
+When uploading your CSV file to ProntoPCR, it must meet certain requirements. If the file does not comply, error messages will prompt you to adjust the CSV file accordingly.
+
+### Duplicate Row Detected:
+Often this error appears when inserting a file that includes technical replicates of PCR data. Please average these technical replicates and insert the averaged data. There should only be 1 sample for that gene in the file.
+
+![](images/picture60.png){width="500px"}
+
+###	Duplicate Rows Detected:
+Two or more rows in the .csv file are identical. Remove the duplicates.
+
+![](images/picture61.png){width="500px"}
+
+### Empty Rows Detected:
+Remove empty rows or NA rows to fix this error.
+
+![](images/picture62.png){width="500px"}
+
+### Error in uploaded file:
+This appears when there is a discrepancy detected in the column names. It will prompt the user with the problematic column name. Correct the column name to resolve this issue.
+![](images/picture63.png){width="500px"}
+
+### Incorrect Format in Sample Column:
+An error appears if the samples within the Sample column are in the incorrect format. It should be in the format name_number_group. See the [Input Data](data_input.qmd) section for more information.
+
+![](images/picture64.png){width="500px"}
+
+### Error: The following housekeeper names are not found:
+
+Appears if the spelling, capitalisation etc does not match the gene present in the Target Column. Rename the gene in the csv file, or alter the inputted name. If all genes are matched, they will appear in the side panel after pressing the Save Housekeeper Names button.
+
+![](images/picture65.png){width="700px"}
+
+---
+
+For error messages related to Statistics and Graphs, see the [Statistics and Graphs Errors](stat_graph_errors.qmd)

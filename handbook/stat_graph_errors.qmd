@@ -1,5 +1,19 @@
 ---
-title: "Stat graph errors"
+title: "Statistics and Graph Error Messages"
 ---
 
-About this site
+Numerous error messages may appear when using ProntoPCR. These are designed to guide the user into selecting the correct option or ensuring the correct data is inserted/used etc. If an error message appears within the app that is not described in the below section, please submit a screenshot of the issue and any information about how you got to this error in Github: [GitHub Issues](https://github.com/MarnieMaddock/ProntoPCR/issues). Please cover/anonymise sensitive information.
+
+## Statistics and Graph Errors
+Given the numerous options for performing statistics and creating graphs, error messages will appear if there are discrepancies between tabs, ensuring that the data used for statistical analysis matches the data being graphed.
+
+### Data Selection Mismatch:
+This error appears if the user has selected 2^-ΔCq for statistics and 2^-ΔΔCq for graphing (or vice versa). Change the stats/graphs tab to match either 2^-ΔCq or 2^-ΔΔCq.
+
+![](images/picture66.png){width="300px"}
+
+###	Discrepancy Detected: The selected gene for statistics does not match the gene for graphing
+This error occurs if the gene in the statistics tab does not match the selected gene in the graphs tab. Change the stats/graphs tab to match the gene name.
+
+![](images/picture67.png){width="300px"}
+

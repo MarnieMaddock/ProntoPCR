@@ -1,5 +1,6 @@
 ---
-title: "Features Issues"
+title: "Feature Requests and Issues"
 ---
 
-About this site
+If you'd like to request a new feature, suggestions or report an issue/bug, please submit it on GitHub: [GitHub Issues](https://github.com/MarnieMaddock/ProntoPCR/issues). Please include as much detail as possible to help us address your request effectively. For further information, or clarification on how to use ProntoPCR, please contact the [developers](mailto:mlm715@uowmail.edu.au?subject=ProntoPCR%20Query:).
+

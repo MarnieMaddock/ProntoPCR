@@ -2,9 +2,9 @@
   {
     "objectID": "version_history.html",
     "href": "version_history.html",
-    "title": "Vesrion History",
+    "title": "Version History",
     "section": "",
-    "text": "About this site"
+    "text": "ProntoPCR was developed in R version 4.2.3, and R Shiny version 1.9.1. All code is available on the GitHub repository:\nVersion 1.0.0: • Initial publicly available version."
   },
   {
     "objectID": "statistics.html",
@@ -44,9 +44,9 @@
   {
     "objectID": "features_issues.html",
     "href": "features_issues.html",
-    "title": "Features Issues",
+    "title": "Feature Requests and Issues",
     "section": "",
-    "text": "About this site"
+    "text": "If you’d like to request a new feature, suggestions or report an issue/bug, please submit it on GitHub: GitHub Issues. Please include as much detail as possible to help us address your request effectively. For further information, or clarification on how to use ProntoPCR, please contact the developers."
   },
   {
     "objectID": "calculations.html",
@@ -79,9 +79,9 @@
   {
     "objectID": "input_errors.html",
     "href": "input_errors.html",
-    "title": "Input Errors",
+    "title": "Input Data Error Messages",
     "section": "",
-    "text": "About this site"
+    "text": "Numerous error messages may appear when using ProntoPCR. These are designed to guide the user into selecting the correct option or ensuring the correct data is inserted/used etc. If an error message appears within the app that is not described in the below section, please submit a screenshot of the issue and any information about how you got to this error in Github: GitHub Issues. Please cover/anonymise sensitive information."
   },
   {
     "objectID": "online_access.html",
@@ -95,14 +95,14 @@
     "href": "references.html",
     "title": "References",
     "section": "",
-    "text": "About this site"
+    "text": "Chang W, Cheng J, Allaire J, Sievert C, Schloerke B, Xie Y, Allen J, McPherson J, Dipert A, Borges B (2024). shiny: Web Application Framework for R. R package version 1.9.1.9000, https://github.com/rstudio/shiny, https://shiny.posit.co/.\nLivak, Kenneth J, and Thomas D Schmittgen. 2001. Analysis of Relative Gene Expression Data Using Real-Time Quantitative PCR and the 2- ΔΔCT Method. Methods 25 (4): 402–8. https://doi.org/https://doi.org/10.1006/meth.2001.1262.\nR Core Team. 2013.R: A Language and Environment for Statistical Computing. Vienna, Austria: R Foundation for Statistical Computing. http://www.R-project.org/."
   },
   {
     "objectID": "stat_graph_errors.html",
     "href": "stat_graph_errors.html",
-    "title": "Stat graph errors",
+    "title": "Statistics and Graph Error Messages",
     "section": "",
-    "text": "About this site"
+    "text": "Numerous error messages may appear when using ProntoPCR. These are designed to guide the user into selecting the correct option or ensuring the correct data is inserted/used etc. If an error message appears within the app that is not described in the below section, please submit a screenshot of the issue and any information about how you got to this error in Github: GitHub Issues. Please cover/anonymise sensitive information."
   },
   {
     "objectID": "index.html#efficient-qpcr-data-analysis-software",
@@ -151,7 +151,7 @@
     "href": "data_input.html#data-input",
     "title": "Input Data",
     "section": "Data Input",
-    "text": "Data Input\n\nCollate all PCR Cq values into one .csv file. It must be in the following format:\n\n\n\n\n\n\n\n\n\n\n\n\nSample\nTarget\nNum.of.Replicates\nCq.Mean\nCq.SD\nResult.Quality.Issues\n\n\n\n\nsample1_1_F\nIL6\n3\n25.30085\n0.072676\nNA\n\n\nsample1_1_M\nIL6\n3\n24.23049\n0.048782\nNA\n\n\nsample1_2_F\nIL6\n3\n26.19892\n0.095016\nNA\n\n\nsample1_2_M\nIL6\n3\n24.71755\n0.245184\nNA\n\n\nsample1_3_F\nIL6\n3\n26.67306\n0.148824\nNA\n\n\nsample1_3_M\nIL6\n3\n24.62151\n0.110833\nNA\n\n\nsample1_4_M\nIL6\n3\n27.77184\n0.216552\nNA\n\n\nsample2_1_F\nIL6\n3\n26.76899\n0.204109\nNA\n\n\nsample2_1_M\nIL6\n3\n24.84037\n0.245151\nNA\n\n\nsample2_2_F\nIL6\n3\n26.54405\n0.041040\nNA\n\n\nsample2_2_M\nIL6\n3\n25.25585\n0.161338\nNA\n\n\n\nColumns Included in the .csv file:\n\nSample: The sample name. This can be any name, but it must be unique for each sample. The sample name must not contain any spaces or special characters (e.g., #, $, %, &, etc.). The sample name must be in the format Grouping1_BioRepNumber_Grouping2. For example depression_1_Female, depression_1_Male, ctrl_1_Female etc.\nTarget: The target gene name.\nNum.of.Replicates: The number of technical PCR replicates for each sample. This column is not used in the analysis but is included for reference.\nCq.Mean: The mean Cq value for each sample. This is the average of the Cq values for the technical replicates.\nCq.SD: The standard deviation of the Cq values for each sample. This is the standard deviation of the Cq values for the technical replicates. This column is not used in the analysis but is included for reference.\nResult.Quality.Issues: This column is not used in the analysis but is included for reference.\n\nChecklist:\n\nCSV file containing PCR data with the formatting given above?\nColumn names have capital letters when specified?\nColumn names have full-stops . when specified?\nThere are no spaces present in the column names?\nThere are no gaps between rows in your dataset. Each row should have at least one measurement.\nIf you have ‘undetermined’ amplification i.e. no amplification, 0 has been entered in your dataset for those instances. Any NA values will be disregarded.\nAll Sample names have no spaces and use underscores (_) in the naming system. Note the format is given by group1_biologicalReplicateNumber_group2. If there is no second group, write NIL. E.g. sample2_1_NIL.\nAll non-template controls (NTC) and no reverse transcriptase controls (-RT) have been removed.\n\n\nThis file format is compatible with the output given by the QuantStudio5 PCR machine (ThermoFisher Scientific). To do this, set up the plate format similar to below in the Quantstudio Design and Analysis Software:\n\n\nClick to Expand\n\n\nTo export the results go to the Quality Check tab &gt; Replicate Group &gt; Export:\n\n\n\n\nOpen ProntoPCR and select the Input Data Tab.\nInsert .csv file of PCR data by clicking on Browse… The data will be displayed on the right side.\nEnter how many housekeeping genes to normalise the data to.\nEnter the name of the housekeeping gene – exactly as it appears in the .csv file.\n\n\n\nSave the names of the housekeeper genes by selecting the ‘Save housekeeper names’ button. An error message will appear if the housekeeper’s name is incorrect or not found. If the names of the housekeepers are correct, they will be displayed below the button:\n\n\nCalculations »"
+    "text": "Data Input\n\nCollate all PCR Cq values into one .csv file. It must be in the following format:\n\n\n\n\n\n\n\n\n\n\n\n\nSample\nTarget\nNum.of.Replicates\nCq.Mean\nCq.SD\nResult.Quality.Issues\n\n\n\n\nsample1_1_F\nIL6\n3\n25.30085\n0.072676\nNA\n\n\nsample1_1_M\nIL6\n3\n24.23049\n0.048782\nNA\n\n\nsample1_2_F\nIL6\n3\n26.19892\n0.095016\nNA\n\n\nsample1_2_M\nIL6\n3\n24.71755\n0.245184\nNA\n\n\nsample1_3_F\nIL6\n3\n26.67306\n0.148824\nNA\n\n\nsample1_3_M\nIL6\n3\n24.62151\n0.110833\nNA\n\n\nsample1_4_M\nIL6\n3\n27.77184\n0.216552\nNA\n\n\nsample2_1_F\nIL6\n3\n26.76899\n0.204109\nNA\n\n\nsample2_1_M\nIL6\n3\n24.84037\n0.245151\nNA\n\n\nsample2_2_F\nIL6\n3\n26.54405\n0.041040\nNA\n\n\nsample2_2_M\nIL6\n3\n25.25585\n0.161338\nNA\n\n\n\nColumns Included in the .csv file:\n\nSample: The sample name. This can be any name, but it must be unique for each sample. The sample name must not contain any spaces or special characters (e.g., #, $, %, &, etc.). The sample name must be in the format Grouping1_BioRepNumber_Grouping2. For example depression_1_Female, depression_1_Male, ctrl_1_Female etc.\nTarget: The target gene name.\nNum.of.Replicates: The number of technical PCR replicates for each sample. This column is not used in the analysis but is included for reference.\nCq.Mean: The mean Cq value for each sample. This is the average of the Cq values for the technical replicates.\nCq.SD: The standard deviation of the Cq values for each sample. This is the standard deviation of the Cq values for the technical replicates. This column is not used in the analysis but is included for reference.\nResult.Quality.Issues: This column is not used in the analysis but is included for reference.\n\nChecklist:\n\nCSV file containing PCR data with the formatting given above?\nColumn names have capital letters when specified?\nColumn names have full-stops . when specified?\nThere are no spaces present in the column names?\nThere are no gaps between rows in your dataset. Each row should have at least one measurement.\nIf you have ‘undetermined’ amplification i.e. no amplification, 0 has been entered in your dataset for those instances. Any NA values will be disregarded.\nAll Sample names have no spaces and use underscores (_) in the naming system. Note the format is given by group1_biologicalReplicateNumber_group2. If there is no second group, write NIL. E.g. sample2_1_NIL.\nAll non-template controls (NTC) and no reverse transcriptase controls (-RT) have been removed.\n\nIf you are receiving Error Messages when uploading your data, please check the Input Errors page for more information.\n\nThis file format is compatible with the output given by the QuantStudio5 PCR machine (ThermoFisher Scientific). To do this, set up the plate format similar to below in the Quantstudio Design and Analysis Software:\n\n\nClick to Expand\n\n\nTo export the results go to the Quality Check tab &gt; Replicate Group &gt; Export:\n\n\n\n\nOpen ProntoPCR and select the Input Data Tab.\nInsert .csv file of PCR data by clicking on Browse… The data will be displayed on the right side.\nEnter how many housekeeping genes to normalise the data to.\nEnter the name of the housekeeping gene – exactly as it appears in the .csv file.\n\n\n\nSave the names of the housekeeper genes by selecting the ‘Save housekeeper names’ button. An error message will appear if the housekeeper’s name is incorrect or not found. If the names of the housekeepers are correct, they will be displayed below the button:\n\n\nCalculations »"
   },
   {
     "objectID": "calculations.html#δcq",
@@ -249,6 +249,34 @@
     "href": "graphs.html#error-bars",
     "title": "Graphs",
     "section": "Error Bars",
-    "text": "Error Bars"
+    "text": "Error Bars\nThree types of error bars can be selected in the Choose Error Bar section, including: Standard error, standard deviation and 95% Confidence Interval.\n\nOften, error bars are missing if the Start Y-axis at 0 checkbox is selected. Uncheck this box to display error bars correctly:\n\nError bar and average bar width and thickness can be changed using the up and down arrows within the box, or by entering a number:\n\nError bar and average line colours can be matched to the dot points by selecting the corresponding checkboxes:"
+  },
+  {
+    "objectID": "graphs.html#point-design",
+    "href": "graphs.html#point-design",
+    "title": "Graphs",
+    "section": "Point Design",
+    "text": "Point Design\nFor scatter plots and grouped scatter plots:\n\nData points on the graph can be customised by size, thickness and point spread by changing the number on the corresponding boxes. Shapes can be changed using the dropdown box:\n\n\nIf data points are overlapping the seed number can be changed. This is a random and arbitrary number. The same seed number will keep the points in the same position each time the graph generates:\n\nFor column graphs:\n\nThe column graph can be customised by colour fill or border by toggling the Choose fill or Border dropdown menu:\n\n\nPoint size and spread can be altered by changing the number of the corresponding box:"
+  },
+  {
+    "objectID": "graphs.html#downloading-graphs",
+    "href": "graphs.html#downloading-graphs",
+    "title": "Graphs",
+    "section": "Downloading Graphs",
+    "text": "Downloading Graphs\nGraphs can be downloaded by clicking the Download Graph button. Graphs can be saved as an SVG, tiff, png, or jpeg by toggling the dropdown menu. It is recommended to download as an SVG, as these files can be opened in Inkscape, PowerPoint or Illustrator to further customise graph aesthetics. Remember to ungroup the graph to edit the individual components.\nThe width and height of the graph can be changed, as well as the dots per inch (DPI) by altering the numbers in the corresponding boxes. Note that by changing the DPI it alters the graph dimensions, and so may change the aesthetics of the graph. After downloading a graph check it meets your requirements.\n\nTo save the options selected to create the graph, press the download selected graph options button. This is useful as a reference to keep graph aesthetics similar across samples/genes etc. It is downloaded as a HTML file which can be opened in most web browsers.\n\nError Messages »"
+  },
+  {
+    "objectID": "input_errors.html#input-data-tab-errors",
+    "href": "input_errors.html#input-data-tab-errors",
+    "title": "Input Data Error Messages",
+    "section": "Input Data Tab Errors",
+    "text": "Input Data Tab Errors\nWhen uploading your CSV file to ProntoPCR, it must meet certain requirements. If the file does not comply, error messages will prompt you to adjust the CSV file accordingly.\n\nDuplicate Row Detected:\nOften this error appears when inserting a file that includes technical replicates of PCR data. Please average these technical replicates and insert the averaged data. There should only be 1 sample for that gene in the file.\n\n\n\nDuplicate Rows Detected:\nTwo or more rows in the .csv file are identical. Remove the duplicates.\n\n\n\nEmpty Rows Detected:\nRemove empty rows or NA rows to fix this error.\n\n\n\nError in uploaded file:\nThis appears when there is a discrepancy detected in the column names. It will prompt the user with the problematic column name. Correct the column name to resolve this issue. \n\n\nIncorrect Format in Sample Column:\nAn error appears if the samples within the Sample column are in the incorrect format. It should be in the format name_number_group. See the Input Data section for more information.\n\n\n\nError: The following housekeeper names are not found:\nAppears if the spelling, capitalisation etc does not match the gene present in the Target Column. Rename the gene in the csv file, or alter the inputted name. If all genes are matched, they will appear in the side panel after pressing the Save Housekeeper Names button.\n\n\nFor error messages related to Statistics and Graphs, see the Statistics and Graphs Errors"
+  },
+  {
+    "objectID": "stat_graph_errors.html#statistics-and-graph-errors",
+    "href": "stat_graph_errors.html#statistics-and-graph-errors",
+    "title": "Statistics and Graph Error Messages",
+    "section": "Statistics and Graph Errors",
+    "text": "Statistics and Graph Errors\nGiven the numerous options for performing statistics and creating graphs, error messages will appear if there are discrepancies between tabs, ensuring that the data used for statistical analysis matches the data being graphed.\n\nData Selection Mismatch:\nThis error appears if the user has selected 2^-ΔCq for statistics and 2^-ΔΔCq for graphing (or vice versa). Change the stats/graphs tab to match either 2^-ΔCq or 2^-ΔΔCq.\n\n\n\nDiscrepancy Detected: The selected gene for statistics does not match the gene for graphing\nThis error occurs if the gene in the statistics tab does not match the selected gene in the graphs tab. Change the stats/graphs tab to match the gene name."
   }
 ]

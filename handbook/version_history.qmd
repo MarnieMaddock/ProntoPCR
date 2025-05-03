@@ -1,5 +1,12 @@
 ---
-title: "Vesrion History"
+title: "Version History"
 ---
 
-About this site
+ProntoPCR was developed in R version 4.2.3, and R Shiny version 1.9.1. All code is available on the GitHub [repository](https://github.com/MarnieMaddock/ProntoPCR): 
+
+Version 1.0.0: 
+
+•	Initial publicly available version.
+
+
+

@@ -7,6 +7,7 @@ resources:
 website:
   title: "ProntoPCR Handbook"
   site-url: "https://marniemaddock.github.io/ProntoPCR/"
+  favicon: favicon.ico
 
   navbar:
     left:
@@ -31,11 +32,11 @@ website:
           - text: "Graphs"
             file: graphs.qmd
 
-      - text: "Errors"
+      - text: "Error Messages"
         menu:
           - text: "Input Data Errors"
             file: input_errors.qmd
-          - text: "Stat & Graph Errors"
+          - text: "Stats & Graph Errors"
             file: stat_graph_errors.qmd
 
       - text: "Version History"

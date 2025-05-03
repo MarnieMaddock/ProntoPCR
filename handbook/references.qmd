@@ -2,4 +2,9 @@
 title: "References"
 ---
 
-About this site
+Chang W, Cheng J, Allaire J, Sievert C, Schloerke B, Xie Y, Allen J, McPherson J, Dipert A, Borges B (2024). *shiny: Web Application Framework for R.* R package version 1.9.1.9000, <https://github.com/rstudio/shiny>, <https://shiny.posit.co/>.
+
+Livak, Kenneth J, and Thomas D Schmittgen. 2001. *Analysis of Relative Gene Expression Data Using Real-Time Quantitative PCR and the 2- ΔΔCT Method.* Methods 25 (4): 402–8. <https://doi.org/https://doi.org/10.1006/meth.2001.1262>.
+
+R Core Team. 2013.*R: A Language and Environment for Statistical Computing.* Vienna, Austria: R Foundation for Statistical Computing. <http://www.R-project.org/>.
+

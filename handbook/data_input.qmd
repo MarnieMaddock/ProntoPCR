@@ -44,6 +44,8 @@ Checklist:
 -	All Sample names have no spaces and use underscores (_) in the naming system. Note the format is given by group1_biologicalReplicateNumber_group2. **If there is no second group**, write NIL. E.g. sample2_1_NIL.
 -	All non-template controls (NTC) and no reverse transcriptase controls (-RT) have been removed.
 
+If you are receiving Error Messages when uploading your data, please check the [Input Errors](input_errors.qmd) page for more information.
+
 ::: {.Callout-note title=""}
 This file format is compatible with the output given by the QuantStudio5 PCR machine (ThermoFisher Scientific). To do this, set up the plate format similar to below in the Quantstudio Design and Analysis Software:
 
