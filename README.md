@@ -16,7 +16,7 @@ ProntoPCR has been designed to operate both online and locally. Whilst we aim to
 
 ### Local Installation
 
-For detailed installation instructions, especially for users unfamilar with the R coding language, refer to the [ProntoPCR Handbook](). 
+For detailed installation instructions, especially for users unfamilar with the R coding language, refer to the [ProntoPCR Handbook](https://marniemaddock.github.io/ProntoPCR/). 
 
 To use **ProntoPCR**, you can install it directly from GitHub within the R console:
 
@@ -38,7 +38,7 @@ ProntoPCR()
 [ProntoPCR Online](https://marniem.shinyapps.io/ProntoPCR/)
 
 ## Instuctions for Use
-How to use instructions are available within the [ProntoPCR Handbook]().
+How to use instructions are available within the [ProntoPCR Handbook](https://marniemaddock.github.io/ProntoPCR/).
 
 ## Citation
 If ProntoPCR is used for your analysis, please cite the journal article:
