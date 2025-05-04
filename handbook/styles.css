@@ -7,3 +7,23 @@
 }
 
 .btn-md { font-size: 1.05rem; padding: .6rem 1.2rem; }
+
+
+h1, h2, h3 {
+  color: #00359bff;
+}
+
+/* Navbar brand/title */
+.navbar-title {
+  color: #00359bff !important;
+}
+
+/* Navbar links */
+.navbar-nav .nav-link {
+  color: #00359bff !important;
+}
+
+/* Hover effect on nav links */
+.navbar-nav .nav-link:hover {
+  color: #cce0ff !important;
+}
