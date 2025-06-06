@@ -13,7 +13,7 @@ authors:
   corresponding: true
   affiliation: 2,3
 affiliations:
-- name: Molecular Horizons, School of Medical, Indigenous and Health Sciences, 
+- name: Molecular Horizons, School of Medical, Indigenous and Health Sciences 
   index: 1
 - name: National Institute for Applied Statistics Research Australia
   index: 2
@@ -59,7 +59,7 @@ Methods of quantifying relative gene expression through qPCR have remained large
 
 # Requirements and Limitations
 
-The main requirement for \texttt{ProntoPCR} to run is a correctly formatted .csv file, including the Sample names. If the inserted .csv file does not meet the requirements, a variety of error messages can prompt the user to alter the .csv file until it is in the correct format (see [user guide](https://marniemaddock.github.io/ProntoPCR/)). The application also does not include exhaustive options for statistics and graphing, however users can download the results of each calculation, which can be fed into their own analysis pipelines. 
+The main requirement for \texttt{ProntoPCR} to run is a correctly formatted .csv file, including the sample names. If the inserted .csv file does not meet the requirements, a variety of error messages can prompt the user to alter the .csv file until it is in the correct format (see [user guide](https://marniemaddock.github.io/ProntoPCR/)). The application also does not include exhaustive options for statistics and graphing, however users can download the results of each calculation, which can be fed into their own analysis pipelines. 
 
 
 # Acknowledgements
