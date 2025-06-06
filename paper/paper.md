@@ -6,7 +6,7 @@ authors:
   corresponding: true
   affiliation: 1,3
 - name: Mirella Dottori
-  orcid: "0000-0002-9975-0367"
+  orcid: "0000-0003-0598-4195"
   affiliation: 1,3
 - name: Alberto Nettel-Aguirre
   orcid: "0000-0001-6604-0652"
@@ -64,6 +64,6 @@ The main requirement for \texttt{ProntoPCR} to run is a correctly formatted .csv
 
 # Acknowledgements
 
-This project was supported by the University of Wollongong and the Australian Government Research Training Program (AGRTP) scholarship. We also like to thank the Hacky Hours community run by Dr Dezerae Cox and Dr Bradley Wakefield for their support and feedback.
+This project was supported by the University of Wollongong and the Australian Government Research Training Program (AGRTP) scholarship, Friedreich’s Ataxia Research Alliance, Friedreich Ataxia Research Association Australia, Australian Research Council Linkage Grant (LP190101139), Australian Research Council Discovery Project (DP240102511 and DP230101369) and Medical Research Future Fund Stem Cell Therapies Mission (2007421). We also like to thank the Hacky Hours community—led by Dr Dezerae Cox and Dr Bradley Wakefield — for their valuable support and constructive feedback, and the Ranson Group at the University of Wollongong for generously evaluating early versions of ProntoPCR.
 
 # References
