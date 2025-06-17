@@ -38,6 +38,7 @@ Imports:
     showtext,
     sysfonts,
     svglite,
+    xfun (>= 0.52),
     kableExtra
 License: `use_mit_license()`
 Depends: R (>= 4.2.3)
