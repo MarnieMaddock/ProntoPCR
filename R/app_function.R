@@ -114,7 +114,7 @@ ProntoPCR <-  function(...) {
           "\n",
           "\n📌 Citation Here",
           "\n",
-          "\n🙏 Thank you for supporting open-source research! 😊",
+          "\nThank you for supporting open-source research!",
           "\n==================================================================\n")
   
  #set up UI 
@@ -128,7 +128,7 @@ ProntoPCR <-  function(...) {
     
     # Application title
     div(tags$h1("ProntoPCR v1.0.0", style = "margin-left: 65px;")),
-    useShinyjs(), # Use shinyjs to hide and show elements
+    shinyjs::useShinyjs(), # Use shinyjs to hide and show elements
     #sidebar options
     sidebarLayout(
       sidebarPanel(

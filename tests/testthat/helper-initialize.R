@@ -1,8 +1,20 @@
 # File: tests/testthat/helper-initialize.R
+options(
+  shinytest2.headless = TRUE,
+  shinytest2.viewport_width = NULL,
+  shinytest2.viewport_height = NULL,
+  shinytest2.view = FALSE
+)
+
 
 initialize_app <- function() {
   # Initialize the Shiny app
-  app <- shinytest2::AppDriver$new(ProntoPCR(), name = "pronto_pcr", variant = shinytest2::platform_variant())
+  app <- shinytest2::AppDriver$new(ProntoPCR(), name = "pronto_pcr", 
+                                   variant = shinytest2::platform_variant(),
+                                   height = 1000,
+                                   width = 1600,
+                                   seed = 123,
+                                   shiny_args = list(launch.browser = TRUE))
   
   
   # Simulate selecting the "Input Data" tab (value = 2)
