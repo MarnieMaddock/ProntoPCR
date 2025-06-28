@@ -29,7 +29,7 @@ bibliography: paper.bib
 
 # Summary
 
-Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to amplify and quantify the amount of DNA, gene or transcript in a sample by measuring the quantification cycle (Cq) threshold. qPCR is widely used in molecular biology, genetics, and diagnostics, and involves a standardised and routine analysis process. Inherently, this means qPCR analysis is repetitive and time-consuming, especially for large data sets. Therefore, an intuitive and versatile software application would be beneficial to automate and fast-track the analysis for a variety of disciplines. \texttt{ProntoPCR} is a software application that serves this purpose, aiming to efficiently and automatically perform routine qPCR calculations, such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq, relative fold-change (2<sup>-(ΔCq)</sup>), and fold-change (2<sup>-(ΔΔCq)</sup>) of the target gene. It also provides the user with options to perform statistics and graphing of the data. 
+Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to amplify and quantify the amount of DNA, gene or transcript in a sample by measuring the quantification cycle (Cq) threshold. qPCR is widely used in molecular biology, genetics, and diagnostics, and involves a standardised and routine analysis process. Inherently, this means qPCR analysis is repetitive and time-consuming, especially for large data sets. Therefore, an intuitive and versatile software application would be beneficial to automate and fast-track the analysis for a variety of disciplines. \texttt{ProntoPCR} is a software application that serves this purpose, aiming to efficiently and automatically perform routine qPCR calculations, such as averaging the housekeeper genes, calculating ΔCq, ΔΔCq, relative fold-change (2^{−ΔCq}), and fold-change (2^{−ΔΔCq}) of the target gene. It also provides the user with options to perform statistics and graphing of the data. 
 
 
 # Statement of Need
@@ -42,10 +42,10 @@ Methods of quantifying relative gene expression through qPCR have remained large
 | :------------------- | :------------- | :---------------------- |
 | Housekeeper Average | mean_hk             | = Mean(Housekeeper Gene<sub> *1*</sub>, ..., Housekeeper Gene<sub> *n*</sub>)  |
 | ΔCq (Delta Cq)      | dcq_gene            | = Cq (Gene of Interest) - Cq (Housekeeper Average) |
-| 2^-(ΔCq) (Relative Fold Change) |  fc_dcq_gene | = 2<sup>-(ΔCq)</sup> |
+| 2^{−ΔCq} (Relative Fold Change) |  fc_dcq_gene | = 2^{−ΔCq} |
 | ΔCq Control Average    | dcq_ctrl_avg | The average ΔCq value for the control group for the selected gene. Used for ΔΔCq calculations   |
 | ΔΔCq (Delta Delta Cq) | ddcq_gene | = ΔCq (Gene of Interest) - ΔCq (Control Average) |
-| 2^-(ΔΔCq) (Fold Change) | fc_ddcq_gene | = 2<sup>-(ΔΔCq)</sup> |
+| 2^{−ΔΔCq} (Fold Change) | fc_ddcq_gene | = 2^{−ΔΔCq} |
 
 # Overview
 
