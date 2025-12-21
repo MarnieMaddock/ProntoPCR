@@ -105,7 +105,7 @@ include_analytics_html <- function() {
 
 #' @export
 ProntoPCR <-  function(...) {
-  #only perform if app is being sed on R
+  #only perform if app is run locally
   if(Sys.getenv("RSCONNECT_SERVER") == ""){
     check_for_updates()
     # Display formal citation message in console
@@ -119,9 +119,6 @@ ProntoPCR <-  function(...) {
             "\n==================================================================\n")
   }
 
-  
-
-  
  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
@@ -265,51 +262,198 @@ ProntoPCR <-  function(...) {
                        regular = get_font_path("tahoma.ttf"),
                        bold = get_font_path("tahomabd.ttf"))
     
-    # #insert csv file and check that it meets the required formatting
-    csv_data  <- checkCSVfile("file")
-    downloadExampleData("file") #download example data file link
-    # Generate dynamic text input fields for housekeeper genes
-    fileModule <- inputFileServer("file")
+    ## store reactive vals
+    csv_data               <- reactiveVal(NULL)
+    fileModule             <- reactiveVal(NULL)
     
-    # Use the input data module to display inserted file in the UI
-    inputDataServer("inputDataModule", csv_data)
+    wrangled_data_module   <- reactiveVal(NULL)
+    wrangled_data          <- reactiveVal(NULL)
+    filter_condition       <- reactiveVal(NULL)
     
-    #calculate mean housekeepers, delta Cq and fold change dcq
-    wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
+    rep_avg_data           <- reactiveVal(NULL)
     
-    # Display and calculate biological replicate average values for dcq. Save variables
-    wrangled_data <- wrangled_data_module$wrangled_data
-    filter_condition <- wrangled_data_module$filter_condition
+    ddcq_data_module       <- reactiveVal(NULL)
+    average_dcq            <- reactiveVal(NULL)
+    selected_gene          <- reactiveVal(NULL)
+    ddcq_repData           <- reactiveVal(NULL)
     
-    #perform biological replicate calculations
-    DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
-    #save dcq rep avg data table
-    rep_avg_data <- DCQ_repData$rep_avg_data
+    stats_module           <- reactiveVal(NULL)
     
-    # select groups for ddcq and calculate ddcq for a gene
-    # Display and calculate biological replicate average values for ddcq
-    ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
-    average_dcq <- ddcq_data_module$average_dcq
-    selected_gene <- ddcq_data_module$extracted_gene
-    ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
-    ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
+    graph_generated        <- reactiveVal(FALSE)
     
-    #statistics
-    stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
-    selected_stat <- stats$selected_stat
-    stats_gene <- stats$columnInput
-    filter_data_stats <- stats$filter_data_stats
-    group_comparison <- stats$group_comparison
-    comparisonResults <- reactive({
-      stats$comparisonResults()
-    })
-    descriptives_table <- stats$descriptives_table
+    ## ------------------------------------------------------------------
+    ## TAB 2 — FILE INPUT + VALIDATION
+    ## ------------------------------------------------------------------
     
-    # Graphing
-    graph_generated <- reactiveVal(FALSE)
-    graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$extracted_gene, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
-                 stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
+    observeEvent(input$tabselected == 2, {
+      
+      csv <- checkCSVfile("file")
+      fm  <- inputFileServer("file")
+      
+      downloadExampleData("file")
+      inputDataServer("inputDataModule", csv)
+      
+      csv_data(csv)
+      fileModule(fm)
+      
+    }, once = TRUE)
     
+    
+    ## ------------------------------------------------------------------
+    ## TAB 3 — DCQ + DDCQ PIPELINE
+    ## ------------------------------------------------------------------
+    
+    observeEvent(input$tabselected == 3, {
+      
+      req(csv_data(), fileModule())
+      
+      ## ---- DCQ wrangling ----
+      wdm <- wrangleDataServer(
+        "wrangleDataModule",
+        fileModule()$save_btn,
+        csv_data()$data,
+        fileModule()$saved_variables
+      )
+      
+      wrangled_data_module(wdm)
+      wrangled_data(wdm$wrangled_data)
+      filter_condition(wdm$filter_condition)
+      
+      ## ---- Biological replicate DCQ ----
+      DCQ_repData <- repDataServer(
+        "rep_data",
+        wrangled_data(),
+        filter_condition()
+      )
+      
+      rep_avg_data(DCQ_repData$rep_avg_data)
+      
+      ## ---- DDCQ ----
+      ddcq_mod <- ddcqServer("ddcqModule", wrangled_data())
+      
+      ddcq_data_module(ddcq_mod)
+      average_dcq(ddcq_mod$average_dcq)
+      selected_gene(ddcq_mod$extracted_gene)
+      
+      ddcq_rep_mod <- DDCQrepServer(
+        "ddcqRep",
+        average_dcq(),
+        selected_gene()
+      )
+      
+      ddcq_repData(ddcq_rep_mod$rep_avg_data_ddcq)
+      
+    }, once = TRUE)
+    
+    
+    ## ------------------------------------------------------------------
+    ## TAB 4 — STATISTICS
+    ## ------------------------------------------------------------------
+    
+    observeEvent(input$tabselected == 4, {
+      
+      req(
+        ddcq_data_module(),
+        wrangled_data(),
+        average_dcq()
+      )
+      
+      sm <- statsServer(
+        "statsModule",
+        values              = ddcq_data_module()$values,
+        dcq_data            = wrangled_data(),
+        ddcq_data           = average_dcq(),
+        ddcq_selected_gene  = ddcq_data_module()$gene_for_download
+      )
+      
+      stats_module(sm)
+      
+    }, once = TRUE)
+    
+    
+    ## ------------------------------------------------------------------
+    ## TAB 5 — GRAPHING
+    ## ------------------------------------------------------------------
+    
+    observeEvent(input$tabselected == 5, {
+      
+      req(
+        ddcq_data_module(),
+        wrangled_data(),
+        average_dcq(),
+        stats_module(),
+        rep_avg_data(),
+        ddcq_repData()
+      )
+      
+      graphsServer(
+        "graphsModule",
+        tabselected              = reactive(input$tabselected),
+        values                   = ddcq_data_module()$values,
+        ddcq_repAvg              = ddcq_repData(),
+        descriptivesTable        = stats_module()$descriptives_table,
+        theme_Marnie             = theme_Marnie,
+        wrangled_data            = wrangled_data(),
+        ddcq_selected_gene       = ddcq_data_module()$extracted_gene,
+        ddcq_data                = average_dcq(),
+        select_dcq_or_ddcq_stats = stats_module()$selected_stat,
+        stats_gene               = stats_module()$columnInput,
+        shapiro_data_reactive    = stats_module()$filter_data_stats,
+        graph_generated          = graph_generated,
+        rep_avg_data             = rep_avg_data(),
+        rep_avg_data_ddcq        = ddcq_repData(),
+        comparisonResults        = stats_module()$comparisonResults,
+        group_comparison         = stats_module()$group_comparison
+      )
+      
+    }, once = TRUE)
+    
+    # 
+    # # #insert csv file and check that it meets the required formatting
+    # csv_data  <- checkCSVfile("file")
+    # downloadExampleData("file") #download example data file link
+    # # Generate dynamic text input fields for housekeeper genes
+    # fileModule <- inputFileServer("file")
+    # 
+    # # Use the input data module to display inserted file in the UI
+    # inputDataServer("inputDataModule", csv_data)
+    # 
+    # #calculate mean housekeepers, delta Cq and fold change dcq
+    # wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
+    # 
+    # # Display and calculate biological replicate average values for dcq. Save variables
+    # wrangled_data <- wrangled_data_module$wrangled_data
+    # filter_condition <- wrangled_data_module$filter_condition
+    # 
+    # #perform biological replicate calculations
+    # DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
+    # #save dcq rep avg data table
+    # rep_avg_data <- DCQ_repData$rep_avg_data
+    # 
+    # # select groups for ddcq and calculate ddcq for a gene
+    # # Display and calculate biological replicate average values for ddcq
+    # ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
+    # average_dcq <- ddcq_data_module$average_dcq
+    # selected_gene <- ddcq_data_module$extracted_gene
+    # ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
+    # ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
+    # 
+    # #statistics
+    # stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
+    # selected_stat <- stats$selected_stat
+    # stats_gene <- stats$columnInput
+    # filter_data_stats <- stats$filter_data_stats
+    # group_comparison <- stats$group_comparison
+    # comparisonResults <- reactive({
+    #   stats$comparisonResults()
+    # })
+    # descriptives_table <- stats$descriptives_table
+    # 
+    # # Graphing
+    # graph_generated <- reactiveVal(FALSE)
+    # graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$extracted_gene, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
+    #              stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
+    # 
   }
   shinyApp(ui, server, ...)
 }
