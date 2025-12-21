@@ -1,7 +1,0 @@
-^\.github$
-^tests$
-^docs$
-^handbook$
-^.*\.Rproj$
-^\.Rproj\.user$
-^renv$

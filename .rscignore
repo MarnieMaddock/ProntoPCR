@@ -1,1 +1,7 @@
-tests/
+^\.github/
+^tests/
+^docs/
+^handbook/
+^renv/
+^.*\.Rproj$
+^\.Rproj\.user$
