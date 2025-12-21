@@ -105,17 +105,22 @@ include_analytics_html <- function() {
 
 #' @export
 ProntoPCR <-  function(...) {
-  check_for_updates()
+  #only perform if app is being sed on R
+  if(Sys.getenv("RSCONNECT_SERVER") == ""){
+    check_for_updates()
+    # Display formal citation message in console
+    message("\n==================================================================",
+            "\n📖 If you use ProntoPCR for data analysis or in a journal article,",
+            "\nplease cite the following reference:",
+            "\n",
+            "\n📌 Citation Here",
+            "\n",
+            "\nThank you for supporting open-source research!",
+            "\n==================================================================\n")
+  }
+
   
-  # Display formal citation message in console
-  message("\n==================================================================",
-          "\n📖 If you use ProntoPCR for data analysis or in a journal article,",
-          "\nplease cite the following reference:",
-          "\n",
-          "\n📌 Citation Here",
-          "\n",
-          "\nThank you for supporting open-source research!",
-          "\n==================================================================\n")
+
   
  #set up UI 
   ui <- fluidPage(
