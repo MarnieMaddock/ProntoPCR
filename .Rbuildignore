@@ -4,3 +4,5 @@ _\.new\.png$
 ^tests/testthat/_snaps/
 ^docs$
 ^handbook$
+^tests$
+^\.github$
