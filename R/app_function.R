@@ -71,18 +71,6 @@ get_UOW_path <- function() {
   }
 }
 
-# get_font_path <- function(file) {
-#   if (file.exists(paste0("inst/www/", file))) {
-#     return(paste0("inst/www/", file))
-#   } else {
-#     return(paste0("www/", file))
-#   }
-# }
-
-get_font_path <- function(file) {
-  system.file("www", file, package = "ProntoPCR")
-}
-
 include_analytics_html <- function() {
   # Check if the file exists locally or for shinyapps.io
   file_path <- if (file.exists("inst/www/analytics.html")) {
