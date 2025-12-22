@@ -36,7 +36,6 @@ graphsSidebar <- function(id) {
       textInput(ns("x_label"), "Enter X-axis Label. Markup is accepted.", value = "Group"), #renders x axis label input
       helpText("To have no x or y-axis label enter a space."),
       tags$br(),
-      selectInput(ns("font_selector"), "Select Font", choices = c("Arial", "Arial Bold", "Calibri", "Times New Roman", "Georgia", "Comic Sans MS", "Century Gothic", "Tahoma")),
       fluidRow(
         column(
           width = 6,
@@ -1088,11 +1087,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         # Apply axis label theme to the plot
         plot <- plot + axis_label_theme2
         
-        # Set font based on user selection
-        # Enable automatic font rendering via showtext
-        showtext::showtext_auto()
-        
-        plot <- plot + theme(text = element_text(family = input$font_selector))
         
         #allow markdown on y and x axis
         plot <- plot + theme(axis.title.y = element_markdown())
@@ -1286,12 +1280,8 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
       content = function(file) {
         # Save the plot 
         set.seed(input$seed_input)
-        # Get the last plot and apply the selected font family
-        last_plot <- last_plot() + 
-          theme(text = element_text(family = input$font_selector))  # Apply selected font family
-        
-        # Ensure font rendering is handled for downloads
-        showtext::showtext_auto()
+        # Get the last plot
+        last_plot <- last_plot() 
         
         ggsave(file, plot = last_plot, device = input$file_format, dpi = input$dpi, width = input$width, height = input$height)
       }
@@ -1313,7 +1303,6 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
                             rotateXLabels = input$rotate_labels,
                             yAxisLabel = input$y_label,
                             xAxisLabel = input$x_label,
-                            font = input$font_selector,
                             xAxisTitleFontSize = input$x_axis_title_font_size,
                             yAxisTitleFontSize = input$y_axis_title_font_size,
                             xAxisTextFontSize = input$x_axis_label_font_size,

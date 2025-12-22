@@ -224,55 +224,6 @@ ProntoPCR <-  function(...) {
   ) #fluidPage close bracket
   
   server <- function(input, output, session) {
-
-    # Add system fonts
-    fonts_loaded <- reactiveVal(FALSE)
-    observeEvent(input$tabselected == 5, {
-      if (!fonts_loaded()) {
-        # Enable automatic font rendering via showtext
-        showtext::showtext_auto()
-        
-        sysfonts::font_add("Arial",
-                           regular = get_font_path("arial.ttf"),
-                           italic = get_font_path("ariali.ttf"),
-                           bold = get_font_path("arialbd.ttf"),
-                           bolditalic = get_font_path("arialbi.ttf"))
-        sysfonts::font_add("Arial Bold", get_font_path("arialbd.ttf"))
-        sysfonts::font_add("Calibri",
-                           regular = get_font_path("calibri.ttf"),
-                           italic = get_font_path("calibrii.ttf"),
-                           bold = get_font_path("calibrib.ttf"),
-                           bolditalic = get_font_path("calibriz.ttf"))
-        sysfonts::font_add("Times New Roman",
-                           regular = get_font_path("times.ttf"),
-                           italic = get_font_path("timesi.ttf"),
-                           bold = get_font_path("timesbd.ttf"),
-                           bolditalic = get_font_path("timesbi.ttf"))
-        sysfonts::font_add("Georgia",
-                           regular = get_font_path("georgia.ttf"),
-                           italic = get_font_path("georgiai.ttf"),
-                           bold = get_font_path("georgiab.ttf"),
-                           bolditalic = get_font_path("georgiaz.ttf"))
-        sysfonts::font_add("Comic Sans MS",
-                           regular = get_font_path("comic.ttf"),
-                           italic = get_font_path("comici.ttf"),
-                           bold = get_font_path("comicbd.ttf"),
-                           bolditalic = get_font_path("comicz.ttf"))
-        sysfonts::font_add("Century Gothic",
-                           regular = get_font_path("GOTHIC.TTF"),
-                           italic = get_font_path("GOTHICI.TTF"),
-                           bold = get_font_path("GOTHICB.TTF"),
-                           bolditalic = get_font_path("GOTHICBI.TTF"))
-        sysfonts::font_add("Tahoma",
-                           regular = get_font_path("tahoma.ttf"),
-                           bold = get_font_path("tahomabd.ttf"))
-        
-        fonts_loaded(TRUE)
-      }
-    }, once = TRUE, ignoreInit = TRUE)
-    
-    # 
-    
     
     ## store reactive vals
     csv_data               <- reactiveVal(NULL)

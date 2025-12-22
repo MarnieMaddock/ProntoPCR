@@ -5,7 +5,6 @@ params:
   rotateXLabels: NA
   yAxisLabel: NA
   xAxisLabel: NA
-  font: NA
   xAxisTitleFontSize: NA
   yAxisTitleFontSize: NA
   xAxisTextFontSize: NA
@@ -64,7 +63,6 @@ library(rmarkdown)
 * Rotate x-axis labels: `r params$rotateXLabels`
 * Y-axis label: `r params$yAxisLabel`
 * X-axis label: `r params$xAxisLabel`
-* Font: `r params$font`
 * X-axis title font size: `r params$xAxisTitleFontSize`
 * Y-axis title font size: `r params$yAxisTitleFontSize`
 * X-axis text font size: `r params$xAxisTextFontSize`

@@ -33,10 +33,7 @@ Imports:
     FSA,
     rstatix,
     multcompView,
-    Cairo,
     remotes,
-    showtext,
-    sysfonts,
     svglite,
     xfun (>= 0.52),
     kableExtra

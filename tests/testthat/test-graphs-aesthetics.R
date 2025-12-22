@@ -49,62 +49,6 @@ test_that("Graphs aesthetics are customisable", {
     selector = "html"
   ))
   
-  #fonts
-  app$set_inputs(`graphsModule-font_selector` = "Arial Bold")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  app$set_inputs(`graphsModule-font_selector` = "Calibri")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
-  app$set_inputs(`graphsModule-font_selector` = "Times New Roman")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
-  app$set_inputs(`graphsModule-font_selector` = "Georgia")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
-  app$set_inputs(`graphsModule-font_selector` = "Comic Sans MS")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
-  app$set_inputs(`graphsModule-font_selector` = "Century Gothic")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
-  app$set_inputs(`graphsModule-font_selector` = "Tahoma")
-  app$wait_for_idle()  # Give the app enough time to update
-  # Take a full-page screenshot of basic graph
-  app$expect_screenshot(screenshot_args = list(
-    cliprect = NULL,
-    selector = "html"
-  ))
-  
   #font size
   app$set_inputs(`graphsModule-x_axis_title_font_size` = 25)
   app$set_inputs(`graphsModule-y_axis_title_font_size` = 20)
