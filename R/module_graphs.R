@@ -1,3 +1,5 @@
+#' @importFrom ggtext element_markdown
+
 #module_graphs.R
 #define function to dynamically change file path of rmd file
 get_rmd_template_path <- function(file) {
@@ -1089,10 +1091,10 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
         
         
         #allow markdown on y and x axis
-        plot <- plot + theme(axis.title.y = element_markdown())
-        plot <- plot + theme(axis.title.x = element_markdown())
-        plot <- plot + theme(axis.text.x = element_markdown())
-        plot <- plot + theme(axis.text.y = element_markdown())
+        plot <- plot + theme(axis.title.y = ggtext::element_markdown())
+        plot <- plot + theme(axis.title.x = ggtext::element_markdown())
+        plot <- plot + theme(axis.text.x = ggtext::element_markdown())
+        plot <- plot + theme(axis.text.y = ggtext::element_markdown())
         
         observe({
           req(input$add_significance != "none")

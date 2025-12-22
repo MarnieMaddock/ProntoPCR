@@ -1,5 +1,5 @@
 Package: ProntoPCR
-Title: ProntoPCR performs routine RT-qPCR calculations automatically through a user-friendly interface.
+Title: ProntoPCR performs routine RT-qPCR calculations automatically through a user-friendly interface
 Version: 1.0.0
 Authors@R: 
     person("Marnie", "Maddock", , "mlm715@uowmail.edu.au", role = c("aut", "cre"),
@@ -37,7 +37,7 @@ Imports:
     svglite,
     xfun (>= 0.52),
     kableExtra
-License: `use_mit_license()`
+License: MIT + file LICENSE
 Depends: R (>= 4.2.3)
 Encoding: UTF-8
 Remotes: 
