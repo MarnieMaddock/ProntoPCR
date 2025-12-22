@@ -4,14 +4,14 @@ authors:
 - name: Marnie Maddock
   orcid: "0000-0001-6393-4837"
   corresponding: true
-  affiliation: 1,3
+  affiliation: [1, 3]
 - name: Mirella Dottori
   orcid: "0000-0003-0598-4195"
-  affiliation: 1,3
+  affiliation: [1, 3]
 - name: Alberto Nettel-Aguirre
   orcid: "0000-0001-6604-0652"
   corresponding: true
-  affiliation: 2,3
+  affiliation: [2,3]
 affiliations:
 - name: Molecular Horizons, School of Medical, Indigenous and Health Sciences 
   index: 1
