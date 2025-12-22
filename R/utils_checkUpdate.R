@@ -1,5 +1,11 @@
 #function to check for updates on github
 check_for_updates <- function(repo = "MarnieMaddock/ProntoPCR") {
+  
+  # only run if ProntoPCR is an installed package
+  if (!requireNamespace("ProntoPCR", quietly = TRUE)) {
+    return(invisible(NULL))
+  }
+  
   # Get local version
   local_version <- as.character(utils::packageVersion("ProntoPCR"))
   

@@ -118,8 +118,8 @@ ProntoPCR <-  function(...) {
             "\nThank you for supporting open-source research!",
             "\n==================================================================\n")
   }
-
- #set up UI 
+  
+  #set up UI 
   ui <- fluidPage(
     theme = bslib::bs_theme(version = 4, bootswatch = "pulse"), #theme
     include_analytics_html(), # Include Google Analytics
@@ -137,22 +137,22 @@ ProntoPCR <-  function(...) {
         style = "height: 85vh; overflow-y: auto;", # Set the sidebar height and add a scroll bar
         conditionalPanel(condition = "input.tabselected==2 && input.subInput == 2.1",
                          inputFileUI("file")
-                         ), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
+        ), #insert csv file and check that it meets the required formatting, enter housekeeper names and save them
         #Calculations tab: #Delta Cq tab
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.1",
                          wrangleDataSidebar("wrangleDataModule") #display delta Cq data, average housekeepers module
-                        ),
+        ),
         conditionalPanel(condition = "input.tabselected == 3 && input.subPanel == 3.2 && input.subCalc2 == 3",
                          ddcqSidebar("ddcqModule") #display ddcq data module
-                        ),
+        ),
         # Statistics tab
         # Suggested workflow tab
         conditionalPanel(condition = "input.tabselected == 4",
                          statsSidebar("statsModule") #display stats options module
-                        ),
+        ),
         conditionalPanel(condition = "input.tabselected == 5",
                          graphsSidebar("graphsModule") #display graphs options
-                        ),
+        ),
       ), #sidebarPanel closing bracket
       
       mainPanel(
@@ -224,43 +224,55 @@ ProntoPCR <-  function(...) {
   ) #fluidPage close bracket
   
   server <- function(input, output, session) {
-    # Enable automatic font rendering via showtext
-    showtext::showtext_auto()
+
     # Add system fonts
-    sysfonts::font_add("Arial", 
-                       regular = get_font_path("arial.ttf"), 
-                       italic = get_font_path("ariali.ttf"), 
-                       bold = get_font_path("arialbd.ttf"), 
-                       bolditalic = get_font_path("arialbi.ttf"))
-    sysfonts::font_add("Arial Bold", get_font_path("arialbd.ttf"))
-    sysfonts::font_add("Calibri", 
-                       regular = get_font_path("calibri.ttf"), 
-                       italic = get_font_path("calibrii.ttf"), 
-                       bold = get_font_path("calibrib.ttf"), 
-                       bolditalic = get_font_path("calibriz.ttf"))
-    sysfonts::font_add("Times New Roman", 
-                       regular = get_font_path("times.ttf"), 
-                       italic = get_font_path("timesi.ttf"), 
-                       bold = get_font_path("timesbd.ttf"), 
-                       bolditalic = get_font_path("timesbi.ttf"))
-    sysfonts::font_add("Georgia", 
-                       regular = get_font_path("georgia.ttf"), 
-                       italic = get_font_path("georgiai.ttf"), 
-                       bold = get_font_path("georgiab.ttf"), 
-                       bolditalic = get_font_path("georgiaz.ttf"))
-    sysfonts::font_add("Comic Sans MS", 
-                       regular = get_font_path("comic.ttf"), 
-                       italic = get_font_path("comici.ttf"), 
-                       bold = get_font_path("comicbd.ttf"), 
-                       bolditalic = get_font_path("comicz.ttf"))
-    sysfonts::font_add("Century Gothic", 
-                       regular = get_font_path("GOTHIC.TTF"), 
-                       italic = get_font_path("GOTHICI.TTF"), 
-                       bold = get_font_path("GOTHICB.TTF"), 
-                       bolditalic = get_font_path("GOTHICBI.TTF"))
-    sysfonts::font_add("Tahoma", 
-                       regular = get_font_path("tahoma.ttf"),
-                       bold = get_font_path("tahomabd.ttf"))
+    fonts_loaded <- reactiveVal(FALSE)
+    observeEvent(input$tabselected == 5, {
+      if (!fonts_loaded()) {
+        # Enable automatic font rendering via showtext
+        showtext::showtext_auto()
+        
+        sysfonts::font_add("Arial",
+                           regular = get_font_path("arial.ttf"),
+                           italic = get_font_path("ariali.ttf"),
+                           bold = get_font_path("arialbd.ttf"),
+                           bolditalic = get_font_path("arialbi.ttf"))
+        sysfonts::font_add("Arial Bold", get_font_path("arialbd.ttf"))
+        sysfonts::font_add("Calibri",
+                           regular = get_font_path("calibri.ttf"),
+                           italic = get_font_path("calibrii.ttf"),
+                           bold = get_font_path("calibrib.ttf"),
+                           bolditalic = get_font_path("calibriz.ttf"))
+        sysfonts::font_add("Times New Roman",
+                           regular = get_font_path("times.ttf"),
+                           italic = get_font_path("timesi.ttf"),
+                           bold = get_font_path("timesbd.ttf"),
+                           bolditalic = get_font_path("timesbi.ttf"))
+        sysfonts::font_add("Georgia",
+                           regular = get_font_path("georgia.ttf"),
+                           italic = get_font_path("georgiai.ttf"),
+                           bold = get_font_path("georgiab.ttf"),
+                           bolditalic = get_font_path("georgiaz.ttf"))
+        sysfonts::font_add("Comic Sans MS",
+                           regular = get_font_path("comic.ttf"),
+                           italic = get_font_path("comici.ttf"),
+                           bold = get_font_path("comicbd.ttf"),
+                           bolditalic = get_font_path("comicz.ttf"))
+        sysfonts::font_add("Century Gothic",
+                           regular = get_font_path("GOTHIC.TTF"),
+                           italic = get_font_path("GOTHICI.TTF"),
+                           bold = get_font_path("GOTHICB.TTF"),
+                           bolditalic = get_font_path("GOTHICBI.TTF"))
+        sysfonts::font_add("Tahoma",
+                           regular = get_font_path("tahoma.ttf"),
+                           bold = get_font_path("tahomabd.ttf"))
+        
+        fonts_loaded(TRUE)
+      }
+    }, once = TRUE, ignoreInit = TRUE)
+    
+    # 
+    
     
     ## store reactive vals
     csv_data               <- reactiveVal(NULL)
@@ -281,28 +293,21 @@ ProntoPCR <-  function(...) {
     
     graph_generated        <- reactiveVal(FALSE)
     
-    ## ------------------------------------------------------------------
-    ## TAB 2 — FILE INPUT + VALIDATION
-    ## ------------------------------------------------------------------
-    
+    # TAB 2 — FILE INPUT + VALIDATION
     observeEvent(input$tabselected == 2, {
       
-      csv <- checkCSVfile("file")
-      fm  <- inputFileServer("file")
+      csv <- checkCSVfile("file") #insert csv file and check that it meets the required formatting
+      fm  <- inputFileServer("file") # Generate dynamic text input fields for housekeeper genes
       
-      downloadExampleData("file")
-      inputDataServer("inputDataModule", csv)
+      downloadExampleData("file") #download example data file link
+      inputDataServer("inputDataModule", csv) # Use the input data module to display inserted file in the UI
       
       csv_data(csv)
       fileModule(fm)
       
-    }, once = TRUE)
+    }, once = TRUE, ignoreInit = TRUE)
     
-    
-    ## ------------------------------------------------------------------
-    ## TAB 3 — DCQ + DDCQ PIPELINE
-    ## ------------------------------------------------------------------
-    
+    # TAB 3 — DCQ + DDCQ PIPELINE
     observeEvent(input$tabselected == 3, {
       
       req(csv_data(), fileModule())
@@ -313,22 +318,26 @@ ProntoPCR <-  function(...) {
         fileModule()$save_btn,
         csv_data()$data,
         fileModule()$saved_variables
-      )
+      ) #calculate mean housekeepers, delta Cq and fold change dcq
       
+      # Display and calculate biological replicate average values for dcq. Save variables
       wrangled_data_module(wdm)
       wrangled_data(wdm$wrangled_data)
       filter_condition(wdm$filter_condition)
       
-      ## ---- Biological replicate DCQ ----
+      #---- Biological replicate DCQ ----
+      #perform biological replicate calculations
       DCQ_repData <- repDataServer(
         "rep_data",
         wrangled_data(),
         filter_condition()
       )
-      
+      #save dcq rep avg data table
       rep_avg_data(DCQ_repData$rep_avg_data)
       
-      ## ---- DDCQ ----
+      #---- DDCQ ----
+      # select groups for ddcq and calculate ddcq for a gene
+      # Display and calculate biological replicate average values for ddcq
       ddcq_mod <- ddcqServer("ddcqModule", wrangled_data())
       
       ddcq_data_module(ddcq_mod)
@@ -343,13 +352,9 @@ ProntoPCR <-  function(...) {
       
       ddcq_repData(ddcq_rep_mod$rep_avg_data_ddcq)
       
-    }, once = TRUE)
+    }, once = TRUE, ignoreInit = TRUE)
     
-    
-    ## ------------------------------------------------------------------
-    ## TAB 4 — STATISTICS
-    ## ------------------------------------------------------------------
-    
+    # TAB 4 — STATISTICS
     observeEvent(input$tabselected == 4, {
       
       req(
@@ -368,13 +373,9 @@ ProntoPCR <-  function(...) {
       
       stats_module(sm)
       
-    }, once = TRUE)
+    }, once = TRUE, ignoreInit = TRUE)
     
-    
-    ## ------------------------------------------------------------------
-    ## TAB 5 — GRAPHING
-    ## ------------------------------------------------------------------
-    
+    # TAB 5 — GRAPHING
     observeEvent(input$tabselected == 5, {
       
       req(
@@ -406,54 +407,8 @@ ProntoPCR <-  function(...) {
         group_comparison         = stats_module()$group_comparison
       )
       
-    }, once = TRUE)
+    }, once = TRUE, ignoreInit = TRUE)
     
-    # 
-    # # #insert csv file and check that it meets the required formatting
-    # csv_data  <- checkCSVfile("file")
-    # downloadExampleData("file") #download example data file link
-    # # Generate dynamic text input fields for housekeeper genes
-    # fileModule <- inputFileServer("file")
-    # 
-    # # Use the input data module to display inserted file in the UI
-    # inputDataServer("inputDataModule", csv_data)
-    # 
-    # #calculate mean housekeepers, delta Cq and fold change dcq
-    # wrangled_data_module <- wrangleDataServer("wrangleDataModule", fileModule$save_btn, csv_data$data, fileModule$saved_variables)
-    # 
-    # # Display and calculate biological replicate average values for dcq. Save variables
-    # wrangled_data <- wrangled_data_module$wrangled_data
-    # filter_condition <- wrangled_data_module$filter_condition
-    # 
-    # #perform biological replicate calculations
-    # DCQ_repData <- repDataServer("rep_data", wrangled_data, filter_condition)
-    # #save dcq rep avg data table
-    # rep_avg_data <- DCQ_repData$rep_avg_data
-    # 
-    # # select groups for ddcq and calculate ddcq for a gene
-    # # Display and calculate biological replicate average values for ddcq
-    # ddcq_data_module <- ddcqServer("ddcqModule", wrangled_data)
-    # average_dcq <- ddcq_data_module$average_dcq
-    # selected_gene <- ddcq_data_module$extracted_gene
-    # ddcq_rep_module <- DDCQrepServer("ddcqRep", average_dcq, selected_gene)
-    # ddcq_repData <- ddcq_rep_module$rep_avg_data_ddcq
-    # 
-    # #statistics
-    # stats <- statsServer("statsModule", values = ddcq_data_module$values, dcq_data = wrangled_data, ddcq_data = average_dcq, ddcq_selected_gene = ddcq_data_module$gene_for_download)
-    # selected_stat <- stats$selected_stat
-    # stats_gene <- stats$columnInput
-    # filter_data_stats <- stats$filter_data_stats
-    # group_comparison <- stats$group_comparison
-    # comparisonResults <- reactive({
-    #   stats$comparisonResults()
-    # })
-    # descriptives_table <- stats$descriptives_table
-    # 
-    # # Graphing
-    # graph_generated <- reactiveVal(FALSE)
-    # graphsServer("graphsModule", tabselected = reactive(input$tabselected), values = ddcq_data_module$values, ddcq_repAvg = ddcq_repData, descriptivesTable = descriptives_table, theme_Marnie, wrangled_data = wrangled_data, ddcq_selected_gene = ddcq_data_module$extracted_gene, ddcq_data = average_dcq, select_dcq_or_ddcq_stats = selected_stat,
-    #              stats_gene = stats_gene, shapiro_data_reactive = filter_data_stats, graph_generated = graph_generated, rep_avg_data = rep_avg_data, rep_avg_data_ddcq = ddcq_repData, comparisonResults = comparisonResults, group_comparison = group_comparison)
-    # 
   }
   shinyApp(ui, server, ...)
 }
