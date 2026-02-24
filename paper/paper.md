@@ -1,7 +1,7 @@
 ---
 title: 'ProntoPCR: Efficient qPCR Data Analysis Software'
 authors:
-- name: Marnie Maddock
+- name: Marnie L. Maddock
   orcid: "0000-0001-6393-4837"
   corresponding: true
   affiliation: "1, 4"
