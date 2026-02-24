@@ -62,7 +62,7 @@ Graphical applications with point-and-click interfaces have also been developed.
 
 \texttt{ProntoPCR} has been designed to operate both online and locally. Whilst we aim to maintain online availability, the hosted platform may change or become unavailable. Therefore, it is recommended to rely on the local version, which functions with the same features as the online option. The local version also does not require internet access once installed. To run the application locally, the user needs to download [R](https://cran.r-project.org/) and [RStudio](https://posit.co/downloads/). A step-by-step guide on how to install and use \texttt{ProntoPCR} is available: [ProntoPCR Handbook](https://marniemaddock.github.io/ProntoPCR/). The guide is aimed at users with minimal programming expertise, making ProntoPCR accessible to all researchers. An example dataset can be downloaded directly from the application. The online application is available [here](https://marniem.shinyapps.io/ProntoPCR/).
 
-![Figure 1. Overview of ProntoPCR graphical user interface including A) Calculations, B) Statistics, and C) Graphs tabs.](figs/GUI_fig.png)
+![Overview of ProntoPCR graphical user interface including A) Calculations, B) Statistics, and C) Graphs tabs.](figs/GUI_fig.png)
 
 # Requirements and Limitations
 
