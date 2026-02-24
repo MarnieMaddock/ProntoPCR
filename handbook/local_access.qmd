@@ -107,4 +107,29 @@ ProntoPCR()
  
 2.	ProntoPCR will open in a new window.
 
+
+## Troubleshooting Installation
+
+Occasionally, installation from GitHub may fail on macOS systems or on computers connected to university, hospital, or corporate networks. This is usually due to network security settings or download method issues - not a problem with ProntoPCR itself. If installation fails, try the following steps. In the R Console, run:
+
+::: gray-box
+```
+# Install devtools package if not already installed
+install.packages("devtools")
+
+# Set download options
+options(download.file.method = "curl")
+
+# Install ProntoPCR from GitHub
+devtools::install_github("MarnieMaddock/ProntoPCR")
+
+# Run the application
+library(ProntoPCR)
+ProntoPCR()
+
+```
+:::
+
+If you continue to experience issues: please report it on the GitHub issues [page](https://github.com/MarnieMaddock/ProntoPCR/issues).
+
 [How to Use ProntoPCR »](data_input.qmd){.btn .btn-md style="background:#00359bff;border-color:#00359bff;color:#fff;"}

@@ -95,7 +95,14 @@
     "href": "local_access.html#for-existing-r-users",
     "title": "Local Access (Recommended)",
     "section": "For Existing R Users:",
-    "text": "For Existing R Users:\n\nOpen RStudio and Run:\n\n\ninstall.packages(\"devtools\")\nlibrary(devtools)\ndevtools::install_github(\"MarnieMaddock/ProntoPCR\")\nlibrary(ProntoPCR)\nProntoPCR()\n\n\nProntoPCR will open in a new window.\n\nHow to Use ProntoPCR »"
+    "text": "For Existing R Users:\n\nOpen RStudio and Run:\n\n\ninstall.packages(\"devtools\")\nlibrary(devtools)\ndevtools::install_github(\"MarnieMaddock/ProntoPCR\")\nlibrary(ProntoPCR)\nProntoPCR()\n\n\nProntoPCR will open in a new window."
+  },
+  {
+    "objectID": "local_access.html#troubleshooting-installation",
+    "href": "local_access.html#troubleshooting-installation",
+    "title": "Local Access (Recommended)",
+    "section": "Troubleshooting Installation",
+    "text": "Troubleshooting Installation\nOccasionally, installation from GitHub may fail on macOS systems or on computers connected to university, hospital, or corporate networks. This is usually due to network security settings or download method issues - not a problem with ProntoPCR itself. If installation fails, try the following steps. In the R Console, run:\n\n# Install devtools package if not already installed\ninstall.packages(\"devtools\")\n\n# Set download options\noptions(download.file.method = \"curl\")\n\n# Install ProntoPCR from GitHub\ndevtools::install_github(\"MarnieMaddock/ProntoPCR\")\n\n# Run the application\nlibrary(ProntoPCR)\nProntoPCR()\n\n\nIf you continue to experience issues: please report it on the GitHub issues page.\nHow to Use ProntoPCR »"
   },
   {
     "objectID": "index.html",
