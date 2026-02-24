@@ -4,21 +4,23 @@ authors:
 - name: Marnie Maddock
   orcid: "0000-0001-6393-4837"
   corresponding: true
-  affiliation: "1, 3"
+  affiliation: "1, 4"
 - name: Mirella Dottori
   orcid: "0000-0003-0598-4195"
-  affiliation: "1, 3"
+  affiliation: "1, 4"
 - name: Alberto Nettel-Aguirre
   orcid: "0000-0001-6604-0652"
   corresponding: true
-  affiliation: "2, 3"
+  affiliation: "2, 3, 4"
 affiliations:
 - name: Molecular Horizons, School of Medical, Indigenous and Health Sciences 
   index: 1
 - name: National Institute for Applied Statistics Research Australia
   index: 2
-- name: University of Wollongong, Wollongong NSW 2522, Australia
+- name: Pediatrics department, University  of Calgary, AB T3G5B3 Canada
   index: 3
+- name: University of Wollongong, Wollongong NSW 2522, Australia
+  index: 4
 tags:
 - R
 - R Shiny
@@ -34,7 +36,7 @@ Quantitative Polymerase Chain Reaction (qPCR) is an essential technique used to 
 
 # Statement of Need
 
-Methods of quantifying relative gene expression through qPCR have remained largely unchanged since its implementation in 2001 [@livak2001analysis]. These calculations rely on raw quantification cycle (Cq) results from a qPCR reaction, which can then be normalised in various manners (Table 1). These methods however, are usually performed manually in programs such as Excel. Although this quantification is relatively simple, there are caveats to manual analysis such as being time consuming and prone to human or data entry errors. There is a growing need to automate these tasks, especially for handling large volumes of data. Presenting data in graphical formats is also a laborious task for many samples and targets. Therefore, we developed an application called \texttt{ProntoPCR} to address these issues by seamlessly semi-automating the calculations and analysis of qPCR data. A user can go from raw data to results, including statistics and graphs in just a few clicks.
+Methods of quantifying relative gene expression through qPCR have remained largely unchanged since its implementation in 2001 [@livak2001analysis]. These calculations rely on raw quantification cycle (Cq) results from a qPCR reaction, which can then be normalised in various manners (Table 1). These methods, however, are usually performed manually in programs such as Excel. Although this quantification is relatively simple, there are caveats to manual analysis such as being time consuming and prone to human or data entry errors. There is a growing need to automate these tasks, especially for handling large volumes of data. Presenting data in graphical formats is also a laborious task for many samples and targets. Therefore, we developed an application called \texttt{ProntoPCR} to address these issues by seamlessly semi-automating the calculations and analysis of qPCR data. A user can go from raw data to results, including statistics and graphs in just a few clicks.
 
 : Description of terms and formulas used in qPCR calculations within ProntoPCR.
 
