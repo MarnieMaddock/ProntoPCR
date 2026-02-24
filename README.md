@@ -34,6 +34,28 @@ devtools::install_github("MarnieMaddock/ProntoPCR")
 library(ProntoPCR)
 ProntoPCR()
 ```
+
+#### MacOS or Restricted-Network Users
+
+For some macOS or restricted network users, the above installation instructions may fail. To fix this, you can force the curl download method by running the following code in your R console:
+
+```r
+# Install devtools package if not already installed
+install.packages("devtools")
+
+# Set download options
+options(download.file.method = "curl")
+
+# Install ProntoPCR from GitHub
+devtools::install_github("MarnieMaddock/ProntoPCR")
+
+# Run the application
+library(ProntoPCR)
+ProntoPCR()
+
+```
+
+
 ### Online Access
 [ProntoPCR Online](https://marniem.shinyapps.io/ProntoPCR/)
 
