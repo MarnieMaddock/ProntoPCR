@@ -17,7 +17,7 @@ affiliations:
   index: 1
 - name: National Institute for Applied Statistics Research Australia
   index: 2
-- name: Pediatrics department, University  of Calgary, AB T3G5B3 Canada
+- name: Department of Pediatrics, University  of Calgary, AB T3G5B3 Canada
   index: 3
 - name: University of Wollongong, Wollongong NSW 2522, Australia
   index: 4
