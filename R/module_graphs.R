@@ -1119,13 +1119,13 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             req(comparisonResults()$posthoc)
             comparisonResults_posthoc_renamed <- comparisonResults()$posthoc %>%
               rename(p.signif = `P Value Summary`)
-            plot <- plot + stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
+            plot <- plot + ggpubr::stat_pvalue_manual(comparisonResults_posthoc_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                               step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
           }else{
             req(comparisonResults()$test)
             comparisonResults_renamed <- comparisonResults()$test %>%
               rename(p.signif = `P Value Summary`)
-            plot <- plot + stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
+            plot <- plot + ggpubr::stat_pvalue_manual(comparisonResults_renamed, label = "p.signif", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                               step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
           }
           
@@ -1137,7 +1137,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             mutate(group1 = Group, 
                    group2 = Group)
           
-          plot <- plot + stat_pvalue_manual(cld_data, label = "Letters", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
+          plot <- plot + ggpubr::stat_pvalue_manual(cld_data, label = "Letters", y.position = y_position_auto, label.size = input$sigSize, bracket.size = input$bracketSize, 
                                             step.increase = input$stepIncrease, hide.ns = input$hideNS, tip.length = input$tipLength, na.rm = TRUE, inherit.aes= FALSE)
         }else if(input$add_significance == "pval"){
           num_groups <- length(unique(shapiro_data_reactive()$cell))
@@ -1182,7 +1182,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
               # Update plot_data with formatted p-values
               plot_data$`p.signif` <- unlist(formatted_pvalues)
               # Finally, add the formatted p-values to the plot
-              plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
+              plot <- plot + ggpubr::stat_pvalue_manual(plot_data, label = "p.signif", 
                                                 y.position = y_position_auto, label.size = input$sigSize, 
                                                 bracket.size = input$bracketSize, 
                                                 step.increase = input$stepIncrease, hide.ns = input$hideNS, 
@@ -1226,7 +1226,7 @@ graphsServer <- function(id, tabselected, values, ddcq_repAvg, descriptivesTable
             # Update plot_data with formatted p-values
             plot_data$`p.signif` <- unlist(formatted_pvalues)
             # Finally, add the formatted p-values to the plot
-            plot <- plot + stat_pvalue_manual(plot_data, label = "p.signif", 
+            plot <- plot + ggpubr::stat_pvalue_manual(plot_data, label = "p.signif", 
                                               y.position = y_position_auto, label.size = input$sigSize, 
                                               bracket.size = input$bracketSize, 
                                               step.increase = input$stepIncrease, hide.ns = input$hideNS, 
