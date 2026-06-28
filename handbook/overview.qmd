@@ -6,7 +6,9 @@ ProntoPCR is a software application that aims to perform routine qPCR calculatio
 
 We request that users of ProntoPCR cite the associated journal article if the application has been used in analysis. The citation is as follows:
 
-<br><br>
+Maddock et al., (2026). ProntoPCR: Efficient qPCR Data Analysis Software. Journal of Open Source Software, 11(122), 9949, https://doi.org/10.21105/joss.09949
+
+The journal article is available at [https://joss.theoj.org/papers/10.21105/joss.09949](https://joss.theoj.org/papers/10.21105/joss.09949).
 
 # Instructions for Use
 
