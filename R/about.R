@@ -22,7 +22,38 @@ about_text <- div(
   p("All calculations can be downloaded as a .csv file if the user wishes to analyse the data in another application. 
       All graphs also have the option to be saved as an .svg so that aesthetics can be further modified in other programs such as Illustrator and Inkscape (which is free!).
       Additionally, all statistics and analysis can be saved as a report in .html format."),
-  p("We request that users of ProntoPCR cite the associated journal article if the application has been used in analysis. The citation is as follows:"),
+  h4("Citation Info"),
+  p("ProntoPCR was published in the Journal of Open Source Software (JOSS) in 2026. If you use ProntoPCR in your research, please cite:"),
+  
+  tags$a(
+    href = "https://doi.org/10.21105/joss.09949",
+    target = "_blank",
+    tags$img(
+      src = "https://joss.theoj.org/papers/10.21105/joss.09949/status.svg",
+      alt = "DOI badge",
+      style = "border-width:0;"
+    )
+  ),
+  
+  tags$br(),
+  tags$br(),
+  
+  tags$p(
+    tags$em(
+      "Maddock, M., et al. (2026). ProntoPCR: Efficient qPCR Data Analysis Software. ",
+      tags$i("Journal of Open Source Software"),
+      ", 11(122), 9949."
+    ),
+    tags$br(),
+    tags$a(
+      href = "https://doi.org/10.21105/joss.09949",
+      target = "_blank",
+      "https://doi.org/10.21105/joss.09949"
+    )
+  ),
+  
+  tags$br(),
+  
   p(HTML('Please refer to the <a href="https://marniemaddock.github.io/ProntoPCR/" target="_blank">user guide</a> for more information on how to use the application.')),
   shiny::tags$br(),
   shiny::tags$br(),

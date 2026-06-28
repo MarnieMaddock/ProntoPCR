@@ -101,7 +101,10 @@ ProntoPCR <-  function(...) {
             "\n📖 If you use ProntoPCR for data analysis or in a journal article,",
             "\nplease cite the following reference:",
             "\n",
-            "\n📌 Citation Here",
+            "\nMaddock M, et al. (2026).",
+            "\nProntoPCR: Efficient qPCR Data Analysis Software.",
+            "\nJournal of Open Source Software, 11(122), 9949.",
+            "\nhttps://doi.org/10.21105/joss.09949",
             "\n",
             "\nThank you for supporting open-source research!",
             "\n==================================================================\n")
